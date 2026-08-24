@@ -201,13 +201,11 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
 
 ## Housekeeping TODOs (small, do them early)
 
-1. **Copy `specs/` into the repo** (`docs/specs/`) and commit. They are in `/private/tmp` right now.
-   Losing them costs ~1.7M tokens of analysis. **Highest-priority item on this list.**
-2. **Move the corpus generators into the repo.** Unit 5's `gen_css_golden.py`/`ctrl.py`/`fuzz.py`,
-   unit 6's `gen.py` (~1000 lines of expression tables), unit 8's `mdgold/`, unit 7's
-   `verify_rust_db.py` — all live under `/Users/himanshu/.claude/jobs/a62e4b8e/tmp/`. The corpora
-   **cannot be regenerated from a clean checkout** until these move to `tools/` or `xtask/`.
-   Same class of risk as #1.
+1. ~~Copy `specs/` into the repo~~ — **done**, commit `e837c0b`. Now at `docs/specs/` (684 KB).
+2. ~~Move the corpus generators into the repo~~ — **done**, commit `e837c0b`. All 49 scripts now at
+   `tools/corpus/`, with a `README.md` mapping each directory to the testdata it regenerates.
+   Note: the scripts still carry absolute paths from the original session — adjust the constants at
+   the top before re-running.
 3. **Fix `browser-dom`'s `remove_blank_text`** — the single highest-value correctness fix
    outstanding. It currently deletes *every* whitespace-only text node outside `pre`/`textarea`;
    libxml2's `areBlanks()` keeps blanks whose parent allows PCDATA and **never** treats U+00A0 as
