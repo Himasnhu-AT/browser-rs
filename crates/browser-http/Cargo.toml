@@ -1,0 +1,47 @@
+[package]
+name = "browser-http"
+description = "The HTTP fetchers of browser-rs: TLS impersonation, safe redirects, retry policy, sessions."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+browser-fingerprint.workspace = true
+browser-parser.workspace = true
+
+async-trait.workspace = true
+bytes.workspace = true
+cookie.workspace = true
+encoding_rs.workspace = true
+futures.workspace = true
+http.workspace = true
+indexmap.workspace = true
+mime.workspace = true
+parking_lot.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync", "time", "macros", "rt"] }
+tracing.workspace = true
+url.workspace = true
+
+wreq = { workspace = true, optional = true }
+wreq-util = { workspace = true, optional = true }
+
+[features]
+default = ["impersonate"]
+# The BoringSSL-backed `wreq` backend that supplies JA3/JA4 impersonation.
+# Needs cmake and a C++ toolchain at build time.
+impersonate = ["dep:wreq", "dep:wreq-util"]
+# The synchronous façade over a lazily created multi-thread runtime (§5.2).
+blocking = ["tokio/rt-multi-thread"]
+markdown = ["browser-parser/markdown"]
+adaptive = ["browser-parser/adaptive"]

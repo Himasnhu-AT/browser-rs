@@ -1,0 +1,42 @@
+[package]
+name = "browser-rs"
+description = "An undetectable, adaptive web-scraping library for Rust — the Rust port of the reference implementation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+
+browser-cdp = { workspace = true, optional = true }
+browser-http = { workspace = true, optional = true }
+browser-parser = { workspace = true, optional = true }
+browser-spider = { workspace = true, optional = true }
+browser-templates = { workspace = true, optional = true }
+
+thiserror.workspace = true
+
+[features]
+default = ["http", "parser"]
+parser = ["dep:browser-parser"]
+http = ["dep:browser-http", "parser"]
+browser = ["dep:browser-cdp", "http"]
+spider = ["dep:browser-spider", "dep:browser-templates", "http"]
+markdown = ["browser-parser/markdown"]
+adaptive = ["browser-parser/adaptive"]
+blocking = ["browser-http/blocking"]
+full = ["browser", "spider", "markdown", "adaptive", "blocking"]
+
+[lints.rust]
+# `docsrs` is set only by docs.rs; teach the `unexpected_cfgs` lint about it.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(docsrs)'] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

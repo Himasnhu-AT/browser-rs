@@ -1,0 +1,70 @@
+# cargo-deny configuration. See ARCHITECTURE.md §2 for the dependency rationale.
+
+[graph]
+all-features = true
+
+[advisories]
+version = 2
+yanked = "deny"
+ignore = []
+
+[licenses]
+version = 2
+# Everything in the tree must be a permissive licence we can ship in a MIT crate.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "CC0-1.0",
+    "OpenSSL",
+    "BSL-1.0",
+]
+confidence-threshold = 0.9
+exceptions = []
+
+[bans]
+# Duplicate-version budget. §2.1 predicts the one duplicate we care about, and
+# the lockfile confirms it: `selectors` 0.40 pulls the `phf` 0.13 family while we
+# use `phf` 0.14 directly. The rest of the observed duplicates are the usual
+# transitive long tail (`digest`/`crypto-common` 0.10 vs 0.11 from the RustCrypto
+# 0.11 migration, `rand` 0.9 vs 0.10, `thiserror` 1 vs 2, `windows-*`), none of
+# which we control. Kept at "warn" so a genuine regression is visible without
+# failing CI on somebody else's dependency tree.
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+deny = [
+    # ARCHITECTURE.md §2.4 — explicitly rejected. Fail the build if one sneaks in.
+    { name = "rquest" },
+    { name = "impit" },
+    { name = "libxml" },
+    { name = "sxd-xpath" },
+    { name = "sxd-document" },
+    { name = "skyscraper" },
+    { name = "scraper" },
+    { name = "tl" },
+    { name = "kuchikiki" },
+    { name = "lol_html" },
+    { name = "governor" },
+    { name = "sitemap" },
+    { name = "robotstxt" },
+    { name = "html2md" },
+    { name = "htmd" },
+]
+# `strsim` / `similar` are rejected as *direct* dependencies (§2.4 — they compute
+# different ratios than Ratcliff/Obershelp) but arrive transitively via `clap`,
+# so they are not banned outright.
+skip = []
+skip-tree = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

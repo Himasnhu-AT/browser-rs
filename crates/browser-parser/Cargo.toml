@@ -1,0 +1,37 @@
+[package]
+name = "browser-parser"
+description = "The public document API of browser-rs: `Document`, `Node`, `find_all`, `find_similar` and adaptive relocation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+browser-dom.workspace = true
+browser-selectors.workspace = true
+browser-xpath.workspace = true
+
+browser-markdown = { workspace = true, optional = true }
+browser-storage = { workspace = true, optional = true }
+
+indexmap.workspace = true
+rayon.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+url.workspace = true
+
+[features]
+default = []
+# `rag` in Python: `Document::markdown()` and the AI sanitiser.
+markdown = ["dep:browser-markdown"]
+# Adaptive selector storage; pulls a bundled SQLite.
+adaptive = ["dep:browser-storage"]

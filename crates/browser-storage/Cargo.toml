@@ -1,0 +1,28 @@
+[package]
+name = "browser-storage"
+description = "Adaptive-selector persistence for browser-rs: a SQLite store byte-compatible with the reference implementation's Python schema."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+
+hex.workspace = true
+parking_lot.workspace = true
+psl.workspace = true
+rusqlite.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+url.workspace = true
+
+[features]
+default = []

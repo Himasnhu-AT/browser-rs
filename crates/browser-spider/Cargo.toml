@@ -1,0 +1,55 @@
+[package]
+name = "browser-spider"
+description = "The crawling engine of browser-rs: scheduler, sessions, stats, throttling, robots.txt, checkpoints."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+browser-http.workspace = true
+browser-parser.workspace = true
+
+browser-cdp = { workspace = true, optional = true }
+
+async-stream.workspace = true
+async-trait.workspace = true
+base64.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+csv.workspace = true
+dashmap.workspace = true
+form_urlencoded.workspace = true
+futures.workspace = true
+hex.workspace = true
+http.workspace = true
+httpdate.workspace = true
+idna.workspace = true
+indexmap.workspace = true
+parking_lot.workspace = true
+percent-encoding.workspace = true
+psl.workspace = true
+quick-xml.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha1.workspace = true
+tempfile.workspace = true
+texting_robots.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync", "time", "macros", "rt", "fs", "signal"] }
+tokio-util.workspace = true
+tracing.workspace = true
+url.workspace = true
+
+[features]
+default = []
+# Let a spider fetch through the headless-browser engine as well as HTTP.
+browser = ["dep:browser-cdp"]
+markdown = ["browser-parser/markdown"]
+adaptive = ["browser-parser/adaptive"]

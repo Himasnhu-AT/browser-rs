@@ -1,0 +1,42 @@
+[package]
+name = "browser-cli"
+description = "The `browser-rs` command-line interface: one-shot fetches, extraction to markdown/html/text, and `uncurl`."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[lib]
+name = "browser_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "browser-rs"
+path = "src/main.rs"
+
+[dependencies]
+browser-rs = { workspace = true, features = ["http", "parser", "markdown", "adaptive", "blocking"] }
+
+chromiumoxide_fetcher = { workspace = true, optional = true }
+
+anyhow.workspace = true
+chrono.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+shlex.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "signal", "fs"] }
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
+url.workspace = true
+
+[features]
+default = ["browser"]
+# `stealthy-fetch` plus the `install` command's Chromium downloader.
+browser = ["browser-rs/browser", "dep:chromiumoxide_fetcher"]
+spider = ["browser-rs/spider"]

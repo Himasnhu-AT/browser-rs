@@ -1,0 +1,23 @@
+[package]
+name = "browser-markdown"
+description = "A faithful port of markdownify for browser-rs, plus HTML noise stripping and AI sanitisation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+browser-dom.workspace = true
+
+bitflags.workspace = true
+regex.workspace = true
+thiserror.workspace = true
+
+[features]
+default = []

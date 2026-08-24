@@ -1,0 +1,31 @@
+[package]
+name = "browser-core"
+description = "Shared vocabulary for browser-rs: text helpers, entities, attribute maps, similarity and fingerprints. Zero I/O."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+cookie.workspace = true
+fancy-regex.workspace = true
+indexmap = { workspace = true, features = ["serde"] }
+phf.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order"] }
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter", "registry"] }
+url.workspace = true
+
+[build-dependencies]
+phf_codegen.workspace = true
+
+[features]
+default = []

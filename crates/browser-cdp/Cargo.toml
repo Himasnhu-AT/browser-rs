@@ -1,0 +1,36 @@
+[package]
+name = "browser-cdp"
+description = "Headless-Chromium fetchers for browser-rs, driven over raw CDP with a hand-rolled networkidle and Cloudflare solver."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+browser-fingerprint.workspace = true
+browser-http.workspace = true
+
+async-trait.workspace = true
+base64.workspace = true
+bytes.workspace = true
+chromiumoxide.workspace = true
+futures.workspace = true
+http.workspace = true
+indexmap.workspace = true
+parking_lot.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync", "time", "macros", "rt", "fs", "process"] }
+tracing.workspace = true
+url.workspace = true
+
+[features]
+default = []

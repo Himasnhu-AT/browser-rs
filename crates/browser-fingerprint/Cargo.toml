@@ -1,0 +1,33 @@
+[package]
+name = "browser-fingerprint"
+description = "Impersonation profiles, synthesised browser headers, status phrases and ad-domain tables for browser-rs."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+build = "build.rs"
+include = ["src/**/*", "assets/**/*", "build.rs", "README.md"]
+
+[dependencies]
+browser-core.workspace = true
+
+phf.workspace = true
+rand.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+url.workspace = true
+
+[build-dependencies]
+phf_codegen.workspace = true
+serde_json.workspace = true
+
+[features]
+default = []

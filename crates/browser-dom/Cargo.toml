@@ -1,0 +1,27 @@
+[package]
+name = "browser-dom"
+description = "html5ever-backed arena DOM for browser-rs, with lxml-compatible post-parse normalisation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+browser-core.workspace = true
+
+ego-tree.workspace = true
+html5ever.workspace = true
+indexmap.workspace = true
+markup5ever.workspace = true
+tendril.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+url.workspace = true
+
+[features]
+default = []
