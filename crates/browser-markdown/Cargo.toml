@@ -21,3 +21,7 @@ thiserror.workspace = true
 
 [features]
 default = []
+
+[dev-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

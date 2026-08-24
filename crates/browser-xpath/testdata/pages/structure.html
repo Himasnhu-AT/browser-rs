@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xml:lang="en-GB">
+<head>
+    <title>Structure &amp; axes</title>
+    <meta charset="utf-8">
+    <base href="https://example.com/base/">
+</head>
+<body id="top" class="page main">
+    <div id="d1" class="box" data-n="1" data-flag="">
+        <span class="first">alpha</span>
+        <b>bold</b>
+        <span class="second">beta</span>
+    </div>
+    <div id="d2" class="box wide" data-n="2">
+        <p>Line one</p>
+        <p>   </p>
+        <p>Line three &amp; four</p>
+    </div>
+    <table id="grid">
+        <thead>
+            <tr><th>Cell 1</th><th>Cell 2</th></tr>
+        </thead>
+        <tbody>
+            <tr class="row odd"><td>1</td><td>2.5</td></tr>
+            <tr class="row even"><td>3</td><td>-4</td></tr>
+            <tr class="row odd"><td>abc</td><td></td></tr>
+        </tbody>
+    </table>
+    <ul id="list">
+        <li class="item" xml:lang="fr">un</li>
+        <li class="item">deux</li>
+        <li class="item last">trois</li>
+    </ul>
+    <form id="form">
+        <input type="checkbox" checked="checked" id="c1">
+        <input type="text" value="typed" id="c2">
+        <select><option selected="selected">one</option><option>two</option></select>
+        <textarea id="ta">  keep   me  </textarea>
+    </form>
+    <svg xmlns="http://www.w3.org/2000/svg" id="drawing" width="10">
+        <rect width="5" height="5"></rect>
+        <g><circle r="1"></circle></g>
+    </svg>
+    <div id="prices">
+        <span class="price">$1,234.50</span>
+        <span class="price">$99.00</span>
+        <span class="price">free</span>
+    </div>
+    <p id="unicode">héllo 😀 &#8212; wörld</p>
+    <div id="empty"></div>
+</body>
+</html>

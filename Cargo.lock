@@ -2472,12 +2472,17 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "browser-rs"
 version = "0.1.0"
 dependencies = [
+ "indexmap",
  "browser-cdp",
  "browser-core",
+ "browser-dom",
  "browser-http",
  "browser-parser",
+ "browser-selectors",
  "browser-spider",
+ "browser-storage",
  "browser-templates",
+ "browser-xpath",
  "thiserror 2.0.20",
 ]
 
@@ -2606,6 +2611,8 @@ dependencies = [
  "regex",
  "browser-core",
  "browser-dom",
+ "serde",
+ "serde_json",
  "thiserror 2.0.20",
 ]
 
@@ -2635,9 +2642,11 @@ version = "0.1.0"
 dependencies = [
  "cssparser",
  "markup5ever",
+ "precomputed-hash",
  "browser-core",
  "browser-dom",
  "selectors",
+ "serde_json",
  "thiserror 2.0.20",
 ]
 
@@ -2688,11 +2697,11 @@ dependencies = [
  "psl",
  "rusqlite",
  "browser-core",
+ "serde",
  "serde_json",
  "sha2",
  "thiserror 2.0.20",
  "tracing",
- "url",
 ]
 
 [[package]]
@@ -2726,6 +2735,7 @@ dependencies = [
  "indexmap",
  "browser-core",
  "browser-dom",
+ "serde_json",
  "thiserror 2.0.20",
 ]
 

@@ -1,0 +1,27 @@
+{"kind": "chromium", "cdp": "Document", "playwright": "document", "explicit": true}
+{"kind": "chromium", "cdp": "Stylesheet", "playwright": "stylesheet", "explicit": true}
+{"kind": "chromium", "cdp": "Image", "playwright": "image", "explicit": true}
+{"kind": "chromium", "cdp": "Media", "playwright": "media", "explicit": true}
+{"kind": "chromium", "cdp": "Font", "playwright": "font", "explicit": true}
+{"kind": "chromium", "cdp": "Script", "playwright": "script", "explicit": true}
+{"kind": "chromium", "cdp": "TextTrack", "playwright": "texttrack", "explicit": true}
+{"kind": "chromium", "cdp": "XHR", "playwright": "xhr", "explicit": true}
+{"kind": "chromium", "cdp": "Fetch", "playwright": "fetch", "explicit": true}
+{"kind": "chromium", "cdp": "Prefetch", "playwright": "other", "explicit": true}
+{"kind": "chromium", "cdp": "EventSource", "playwright": "eventsource", "explicit": true}
+{"kind": "chromium", "cdp": "WebSocket", "playwright": "websocket", "explicit": true}
+{"kind": "chromium", "cdp": "Manifest", "playwright": "manifest", "explicit": true}
+{"kind": "chromium", "cdp": "SignedExchange", "playwright": "other", "explicit": true}
+{"kind": "chromium", "cdp": "Ping", "playwright": "ping", "explicit": true}
+{"kind": "chromium", "cdp": "CSPViolationReport", "playwright": "cspreport", "explicit": true}
+{"kind": "chromium", "cdp": "Preflight", "playwright": "other", "explicit": true}
+{"kind": "chromium", "cdp": "FedCM", "playwright": "other", "explicit": true}
+{"kind": "chromium", "cdp": "Other", "playwright": "other", "explicit": false}
+{"kind": "chromium_default", "playwright": "other"}
+{"kind": "chromium_emitted", "values": ["cspreport", "document", "eventsource", "fetch", "font", "image", "manifest", "media", "other", "ping", "script", "stylesheet", "texttrack", "websocket", "xhr"]}
+{"kind": "webkit_emitted", "values": ["beacon", "document", "eventsource", "fetch", "font", "image", "other", "ping", "script", "stylesheet", "websocket", "xhr"]}
+{"kind": "firefox_emitted", "values": ["beacon", "cspreport", "document", "fetch", "font", "image", "manifest", "media", "other", "script", "stylesheet", "websocket", "xhr"]}
+{"kind": "extra_resources", "values": ["beacon", "csp_report", "font", "image", "imageset", "media", "object", "stylesheet", "texttrack", "websocket"]}
+{"kind": "effective_blocked", "values": ["font", "image", "media", "stylesheet", "texttrack", "websocket"]}
+{"kind": "dead_on_chromium", "values": ["beacon", "csp_report", "imageset", "object"]}
+{"kind": "dead_everywhere", "values": ["csp_report", "imageset", "object"]}

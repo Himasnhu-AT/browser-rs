@@ -1,0 +1,4 @@
+{"document": "comments", "identifier": "comments#3", "stage": "orjson.dumps", "error": "TypeError: Type is not JSON serializable: _cython_3_2_9.cython_function_or_method", "tag": "p"}
+{"document": "comments", "identifier": "comments#4", "stage": "orjson.dumps", "error": "TypeError: Type is not JSON serializable: _cython_3_2_9.cython_function_or_method", "tag": "<cyfunction Comment>"}
+{"document": "comments", "identifier": "comments#5", "stage": "orjson.dumps", "error": "TypeError: Type is not JSON serializable: _cython_3_2_9.cython_function_or_method", "tag": "p"}
+{"document": "comments", "identifier": "comments#6", "stage": "orjson.dumps", "error": "TypeError: Type is not JSON serializable: _cython_3_2_9.cython_function_or_method", "tag": "<cyfunction Comment>"}

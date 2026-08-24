@@ -11,5 +11,13 @@
 pub mod base_url;
 pub mod error;
 pub mod hash;
+pub mod python_json;
 pub mod sqlite;
 pub mod r#trait;
+
+pub use crate::base_url::{registrable_domain, DEFAULT_BASE_URL};
+pub use crate::error::{Result, StorageError};
+pub use crate::hash::identifier_hash;
+pub use crate::python_json::PythonShaped;
+pub use crate::r#trait::StorageSystem;
+pub use crate::sqlite::SqliteStorage;

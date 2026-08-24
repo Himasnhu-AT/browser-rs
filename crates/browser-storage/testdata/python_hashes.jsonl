@@ -1,0 +1,60 @@
+{"identifier": "", "lowered_then_stripped": "", "byte_len": 0, "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855_0"}
+{"identifier": " ", "lowered_then_stripped": "", "byte_len": 0, "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855_0"}
+{"identifier": "  ", "lowered_then_stripped": "", "byte_len": 0, "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855_0"}
+{"identifier": "test", "lowered_then_stripped": "test", "byte_len": 4, "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08_4"}
+{"identifier": "test-identifier", "lowered_then_stripped": "test-identifier", "byte_len": 15, "hash": "115ae872eb1d3e23f9de03f7ab344193b21068812ee52eb37e8169e6d093c7ae_15"}
+{"identifier": "hello", "lowered_then_stripped": "hello", "byte_len": 5, "hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824_5"}
+{"identifier": "  Hello  ", "lowered_then_stripped": "hello", "byte_len": 5, "hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824_5"}
+{"identifier": "HELLO", "lowered_then_stripped": "hello", "byte_len": 5, "hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824_5"}
+{"identifier": "\tHello\n", "lowered_then_stripped": "hello", "byte_len": 5, "hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824_5"}
+{"identifier": "\r\n  spaced  \r\n", "lowered_then_stripped": "spaced", "byte_len": 6, "hash": "4cf28831d09470e8185fbb6ace85c0ae1238bebb05972737d6422c7ff8783cce_6"}
+{"identifier": "Mixed CASE Identifier", "lowered_then_stripped": "mixed case identifier", "byte_len": 21, "hash": "529b92f3b962230a86fe582bff302cfa80d185a3105bf580a6bb77c97dc4ec29_21"}
+{"identifier": "div.product > span.price::text", "lowered_then_stripped": "div.product > span.price::text", "byte_len": 30, "hash": "ee0205807846e647016c998416c606ef2ba40359cfc7c2b16cb8718a95c57691_30"}
+{"identifier": "//div[@id='x']/text()", "lowered_then_stripped": "//div[@id='x']/text()", "byte_len": 21, "hash": "f2b4e0c42851fecda38b3d0a8ac8072155cedcf21e5d9ee9bf065b171dbb4dc6_21"}
+{"identifier": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "lowered_then_stripped": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byte_len": 1000, "hash": "41edece42d63e8d9bf515a9ba6932e1c20cbc9f5a5d134645adb5db1b9737ea3_1000"}
+{"identifier": "0", "lowered_then_stripped": "0", "byte_len": 1, "hash": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9_1"}
+{"identifier": "123", "lowered_then_stripped": "123", "byte_len": 3, "hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3_3"}
+{"identifier": "None", "lowered_then_stripped": "none", "byte_len": 4, "hash": "140bedbf9c3f6d56a9846d2ba7088798683f4da0c248231336e6a05679e4fdfe_4"}
+{"identifier": "null", "lowered_then_stripped": "null", "byte_len": 4, "hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b_4"}
+{"identifier": "ÄÖÜ", "lowered_then_stripped": "äöü", "byte_len": 6, "hash": "bc329dbfa029f66476cb633afcd3136c65c840d0003ef6479583c09e64e2c33e_6"}
+{"identifier": "ß", "lowered_then_stripped": "ß", "byte_len": 2, "hash": "cd3a7e92a9114307055e4a0583acd6549ec3bb6d7c10ecc6ce11ae3d76b3d7db_2"}
+{"identifier": "ẞ", "lowered_then_stripped": "ß", "byte_len": 2, "hash": "cd3a7e92a9114307055e4a0583acd6549ec3bb6d7c10ecc6ce11ae3d76b3d7db_2"}
+{"identifier": "STRASSE", "lowered_then_stripped": "strasse", "byte_len": 7, "hash": "16d96952087774fee069b7585d3991b24d90c181c09b2129b4908c35baa7f0c0_7"}
+{"identifier": "Straße", "lowered_then_stripped": "straße", "byte_len": 7, "hash": "787f4770613d3824cbc89b6d5da90a123e41b07b90b45ea3738c216b14616140_7"}
+{"identifier": "İstanbul", "lowered_then_stripped": "i̇stanbul", "byte_len": 10, "hash": "4a4df120f7d1f3c286f58651abfcec2aade892ace635f96f02b946c96e6e1f86_10"}
+{"identifier": "ıstanbul", "lowered_then_stripped": "ıstanbul", "byte_len": 9, "hash": "e538ba0c1c7a148865ef273d820c18f7dee00b7ced575d36563f466245362841_9"}
+{"identifier": "TITLEİ", "lowered_then_stripped": "titlei̇", "byte_len": 8, "hash": "41e8439a57aa11acffc5bcca0efecee9171b7c409c7b905bd168f867811656da_8"}
+{"identifier": "ΣΣ", "lowered_then_stripped": "σς", "byte_len": 4, "hash": "473dae1a60cb146a6da05840580829132b406e32855a2b35331a4895a8f58f31_4"}
+{"identifier": "ΑΣ", "lowered_then_stripped": "ας", "byte_len": 4, "hash": "aa3d98ae3da0cad0af2e5fd13271d47c4687edea23e9cb91eee8e89cc565d8d9_4"}
+{"identifier": "ς", "lowered_then_stripped": "ς", "byte_len": 2, "hash": "c720c9b7ea6f974386b2a35e224b86538696819cbb1062c44a16521a5f3056b1_2"}
+{"identifier": "σ", "lowered_then_stripped": "σ", "byte_len": 2, "hash": "ff59ed1e562b056aea9bfdf757bada8c1eb638b10b75bfc7835beca4c2db0360_2"}
+{"identifier": "АБВ", "lowered_then_stripped": "абв", "byte_len": 6, "hash": "39e305d37ff46062cc8bfc3ca667491e07d17cfa2e71404c641381fa1b8cc2ca_6"}
+{"identifier": "中文", "lowered_then_stripped": "中文", "byte_len": 6, "hash": "72726d8818f693066ceb69afa364218b692e62ea92b385782363780f47529c21_6"}
+{"identifier": "こんにちは", "lowered_then_stripped": "こんにちは", "byte_len": 15, "hash": "125aeadf27b0459b8760c13a3d80912dfa8a81a68261906f60d87f4a0268646c_15"}
+{"identifier": "😀emoji😀", "lowered_then_stripped": "😀emoji😀", "byte_len": 13, "hash": "18de9a1bc5bc6aec3664cfe8a6d7959260119340296c5f53e2b1ab9945a6d967_13"}
+{"identifier": "é", "lowered_then_stripped": "é", "byte_len": 2, "hash": "4a99557e4033c3539de2eb65472017cad5f9557f7a0625a09f1c3f6e2ba69c4c_2"}
+{"identifier": "é", "lowered_then_stripped": "é", "byte_len": 3, "hash": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6_3"}
+{"identifier": "ＡＢＣ", "lowered_then_stripped": "ａｂｃ", "byte_len": 9, "hash": "e88480e11a7c11593c1526375c9d6623d043a2b78ed919648c1afcf16ae86ddd_9"}
+{"identifier": "İ", "lowered_then_stripped": "i̇", "byte_len": 3, "hash": "fbbdb347060082cf4e72cdc5f02679dd809ebf4e6c601933e858d954a65f5e73_3"}
+{"identifier": "K", "lowered_then_stripped": "k", "byte_len": 1, "hash": "8254c329a92850f6d539dd376f4816ee2764517da5e0235514af433164480d7a_1"}
+{"identifier": "Ṡ", "lowered_then_stripped": "ṡ", "byte_len": 3, "hash": "28bf6bae05369288a79898301d3145a5bc1a515f83c7a143f5ee7fc07d1b777d_3"}
+{"identifier": "µ", "lowered_then_stripped": "µ", "byte_len": 2, "hash": "5a072f1be4c3ee04849a9ad686b287d12d6a99dc4eba13c7a2ca1844e7923a0a_2"}
+{"identifier": "μ", "lowered_then_stripped": "μ", "byte_len": 2, "hash": "deec86264668c4f17635c4f9346342fa3467c9448530eb0a84a1b7c3eb47d886_2"}
+{"identifier": " nbsp ", "lowered_then_stripped": "nbsp", "byte_len": 4, "hash": "95f2755fcc949a3bdc17178d904fc3247e355abbad1f1d5b172ee363825c1915_4"}
+{"identifier": "　ideographic　", "lowered_then_stripped": "ideographic", "byte_len": 11, "hash": "19fdee47ae0b71f0acc52ba9435eeaf426b912f2a77437339effd70b742e0bc6_11"}
+{"identifier": " line ", "lowered_then_stripped": "line", "byte_len": 4, "hash": "38a9c1e721584da284b90ceea4ed7eb8db15ac4ea86c2c75ec925d5f8799fcf0_4"}
+{"identifier": "\u001cfs\u001c", "lowered_then_stripped": "fs", "byte_len": 2, "hash": "dce7cce055566bed799f788cd0048e209a27a473c0f48b956fa1f1780e80d2c1_2"}
+{"identifier": "\u001dgs\u001d", "lowered_then_stripped": "gs", "byte_len": 2, "hash": "7a5443b6636713baa6350c1cf3ec620b2771a8d411ea3180c5d46b502b9ab77d_2"}
+{"identifier": "\u001ers\u001e", "lowered_then_stripped": "rs", "byte_len": 2, "hash": "571b0e35550136585f653a70460974d32f85879142300ecb361eff423ac62cd4_2"}
+{"identifier": "\u001fus\u001f", "lowered_then_stripped": "us", "byte_len": 2, "hash": "79adb2a2fce5c6ba215fe5f27f532d4e7edbac4b6a5e09e1ef3a08084a904621_2"}
+{"identifier": "\u000bvt\u000b", "lowered_then_stripped": "vt", "byte_len": 2, "hash": "28d46654d81889701f7127d6690f4014f817ab52c44d2310d3cda3be2fd0a566_2"}
+{"identifier": "\fff\f", "lowered_then_stripped": "ff", "byte_len": 2, "hash": "05a9bf223fedf80a9d0da5f73f5c191a665bf4a0a4a3e608f2f9e7d5ff23959c_2"}
+{"identifier": "nel", "lowered_then_stripped": "nel", "byte_len": 3, "hash": "e9e9cb695029600fed60d7a65f4b9ad92e377f5e337ed35889fe899c8fdf96b5_3"}
+{"identifier": "​zwsp​", "lowered_then_stripped": "​zwsp​", "byte_len": 10, "hash": "1a73ead8b9eeba6e4bc7da738637fed42c413c86a31029f6b1ea0652ea5804ad_10"}
+{"identifier": " ogham ", "lowered_then_stripped": "ogham", "byte_len": 5, "hash": "ca82185edcf2519a8bd8762cc2d821512317576a19f3390340894c27473731d7_5"}
+{"identifier": " figure ", "lowered_then_stripped": "figure", "byte_len": 6, "hash": "889393fb69a5b305188405f66dd58ca1fefad6cef46cfbf85236146e633f2a66_6"}
+{"identifier": " fnbsp ", "lowered_then_stripped": "fnbsp", "byte_len": 5, "hash": "9ca9f5e0f10ee9be6da4b6c049debdcd1d4da59093e049610c1930ba9b490957_5"}
+{"identifier": "İ ", "lowered_then_stripped": "i̇", "byte_len": 3, "hash": "fbbdb347060082cf4e72cdc5f02679dd809ebf4e6c601933e858d954a65f5e73_3"}
+{"identifier": " İ", "lowered_then_stripped": "i̇", "byte_len": 3, "hash": "fbbdb347060082cf4e72cdc5f02679dd809ebf4e6c601933e858d954a65f5e73_3"}
+{"identifier": "İİ", "lowered_then_stripped": "i̇i̇", "byte_len": 6, "hash": "af2ca92af20579cdf8acb331f5eda351abb321ac44833ae24cded4c89d480e18_6"}
+{"identifier": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中", "lowered_then_stripped": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中", "byte_len": 900, "hash": "ff396aa85acbec901ecfdebfd8b79f5c7516e12f4eeeaef832f81d025f9b10c9_900"}

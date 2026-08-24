@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head><title>Tables</title></head>
+<body>
+<table id="outer" class="grid data" border="1">
+  <caption class="cap">Outer table</caption>
+  <thead><tr class="head"><th class="c1" scope="col">A</th><th class="c2" scope="col">B</th></tr></thead>
+  <tbody id="tb">
+    <tr class="row odd" data-row="1"><td class="cell">1a</td><td class="cell num">1b</td></tr>
+    <tr class="row even" data-row="2"><td class="cell">2a</td><td class="cell num">
+      <table id="inner" class="grid">
+        <tr class="row inner-row"><td class="cell">x</td><td class="cell">y</td></tr>
+        <tr class="row inner-row"><td class="cell" colspan="2">z</td></tr>
+      </table>
+    </td></tr>
+    <tr class="row odd" data-row="3"><td class="cell">3a</td><td class="cell num">3b</td></tr>
+  </tbody>
+  <tfoot><tr class="foot"><td colspan="2">end</td></tr></tfoot>
+</table>
+<table id="bare"><tr><td class="cell bare">no tbody</td></tr></table>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "sqlite_master": [
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_storage_1",
+      "tbl_name": "storage",
+      "sql": null
+    },
+    {
+      "type": "table",
+      "name": "storage",
+      "tbl_name": "storage",
+      "sql": "CREATE TABLE storage (\n                id INTEGER PRIMARY KEY,\n                url TEXT,\n                identifier TEXT,\n                element_data TEXT,\n                UNIQUE (url, identifier)\n            )"
+    }
+  ],
+  "table_info": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "url",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "identifier",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "element_data",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "index_list": [
+    {
+      "seq": 0,
+      "name": "sqlite_autoindex_storage_1",
+      "unique": 1,
+      "origin": "u",
+      "partial": 0
+    }
+  ],
+  "index_info": {
+    "sqlite_autoindex_storage_1": [
+      {
+        "seqno": 0,
+        "cid": 1,
+        "name": "url"
+      },
+      {
+        "seqno": 1,
+        "cid": 2,
+        "name": "identifier"
+      }
+    ]
+  },
+  "journal_mode": "wal",
+  "user_version": 0,
+  "application_id": 0,
+  "encoding": "UTF-8",
+  "schema_sql_literal": "\n            CREATE TABLE IF NOT EXISTS storage (\n                id INTEGER PRIMARY KEY,\n                url TEXT,\n                identifier TEXT,\n                element_data TEXT,\n                UNIQUE (url, identifier)\n            )\n        ",
+  "insert_sql_literal": "\n                INSERT OR REPLACE INTO storage (url, identifier, element_data)\n                VALUES (?, ?, ?)\n            ",
+  "select_sql_literal": "SELECT element_data FROM storage WHERE url = ? AND identifier = ?"
+}

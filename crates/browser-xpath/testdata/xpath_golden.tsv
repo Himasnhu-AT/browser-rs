@@ -1,0 +1,769 @@
+products.html	number	count(//*)	45
+products.html	number	count(//div)	7
+products.html	number	count(/html)	1
+products.html	number	count(/)	1
+products.html	number	count(/html/body)	1
+products.html	number	count(//body/*)	4
+products.html	number	count(//*/*)	44
+products.html	number	count(.//*)	44
+products.html	number	count(//comment())	0
+products.html	number	count(//processing-instruction())	0
+products.html	number	count(//text()[normalize-space()])	25
+products.html	number	count(//@*)	33
+products.html	number	count(//*[@id])	3
+products.html	number	count(//*[@class])	20
+products.html	string	name(/*)	html
+products.html	string	local-name(/*)	html
+products.html	string	name(//*[2])	style
+products.html	number	count(child::html)	0
+products.html	number	count(descendant::div)	7
+products.html	number	count(descendant-or-self::div)	7
+products.html	number	count(//body/child::*)	4
+products.html	number	count(//body/descendant::*)	40
+products.html	number	count(//body/descendant-or-self::*)	41
+products.html	number	count(//body//*)	40
+products.html	number	count(//title/ancestor::*)	2
+products.html	number	count(//title/ancestor-or-self::*)	3
+products.html	number	count(//title/parent::*)	1
+products.html	number	count(//title/..)	1
+products.html	number	count(//body/preceding::*)	3
+products.html	number	count(//body/preceding-sibling::*)	1
+products.html	number	count(//head/following::*)	41
+products.html	number	count(//head/following-sibling::*)	1
+products.html	number	count(//body/self::*)	1
+products.html	number	count(//body/self::body)	1
+products.html	number	count(//body/self::head)	0
+products.html	number	count(//html/attribute::*)	0
+products.html	number	count(//body/namespace::*)	1
+products.html	string	name(//body/namespace::*)	xml
+products.html	number	count(//head/namespace::*)	1
+products.html	string	name(//body/preceding-sibling::*[1])	head
+products.html	number	count(//*[count(ancestor::*) = 2])	6
+products.html	number	count(//*[count(ancestor::*) = 3])	4
+products.html	number	count(//*[count(child::*) > 1])	14
+products.html	number	count(//*[not(*)])	25
+products.html	number	count(//*[not(parent::*)])	1
+products.html	number	count(//*[last()])	21
+products.html	number	count(//div[1])	6
+products.html	number	count((//div)[1])	1
+products.html	number	count((//div)[last()])	1
+products.html	number	count(//div[position() = 1])	6
+products.html	number	count(//div[position() > 1])	1
+products.html	number	count(//div[position() mod 2 = 1])	6
+products.html	number	count(//div[1][1])	6
+products.html	number	count(//div[1][2])	0
+products.html	number	count(//*[@id][2])	1
+products.html	number	count((//*[@id])[2])	1
+products.html	string	name((//*)[3])	title
+products.html	string	name((//*)[last()])	script
+products.html	number	count(//*[string-length(name()) = 1])	9
+products.html	number	count(//*[starts-with(name(), 'd')])	7
+products.html	string	string(//title)	Complex Web Page
+products.html	string	normalize-space(//title)	Complex Web Page
+products.html	string	concat(name(/*), '-', name((//*)[2]))	html-head
+products.html	string	substring(string(//title), 2, 3)	omp
+products.html	string	substring-before(string(//title), ' ')	Complex
+products.html	string	substring-after(string(//title), ' ')	Web Page
+products.html	string	translate(string(//title), 'abcdefghij', 'ABCDEFGHIJ')	ComplEx WEB PAGE
+products.html	boolean	contains(string(//title), 'e')	true
+products.html	boolean	starts-with(string(//title), 'C')	true
+products.html	string	string(count(//div))	7
+products.html	string	string(//nothing)	
+products.html	string	namespace-uri(//nothing)	
+products.html	string	string(namespace-uri(//nothing))	
+products.html	string	string(true())	true
+products.html	string	string(1 div 3)	0.333333333333333
+products.html	string	string(0 div 0)	NaN
+products.html	string	string(1 div 0)	Infinity
+products.html	string	string(-1 div 0)	-Infinity
+products.html	string	string(100000 * 100000 * 100000)	1e+15
+products.html	string	string(2147483647)	2.147483647e+09
+products.html	string	string(1.0)	1
+products.html	string	string(-0.0)	0
+products.html	string	string(0.1 + 0.2)	0.3
+products.html	string	string(1.5 + 1.5)	3
+products.html	string	string(7 mod 3)	1
+products.html	string	string(-7 mod 3)	-1
+products.html	string	string(7 mod -3)	1
+products.html	string	string(round(2.5))	3
+products.html	string	string(round(-2.5))	-2
+products.html	string	string(round(-0.5))	0
+products.html	string	string(floor(-1.5))	-2
+products.html	string	string(ceiling(-1.5))	-1
+products.html	string	string(number('  42 '))	42
+products.html	string	string(number('4.2e1'))	42
+products.html	string	string(number('abc'))	NaN
+products.html	string	string(sum(//nothing))	0
+products.html	string	string(number(//nothing))	NaN
+products.html	number	string-length('😀ab')	3
+products.html	string	substring('😀ab', 2, 1)	a
+products.html	number	count(//*[position() = 2])	14
+products.html	number	count(//*[last() > 1])	38
+products.html	number	count(//div[position() = last()])	6
+products.html	number	count(//div[position() > 1][1])	1
+products.html	number	count(//div[1][position() = 1])	6
+products.html	number	count(//*/parent::*)	20
+products.html	number	count(//*/..)	21
+products.html	number	count(//*/ancestor::*)	20
+products.html	number	count(//*/ancestor-or-self::*)	45
+products.html	number	count(//*[preceding-sibling::*[1][self::div]])	1
+products.html	number	count(//*[ancestor::*[2][self::body]])	4
+products.html	number	count(//div/preceding::*[1])	6
+products.html	number	count(//div[1]/following::*[last()])	1
+products.html	number	count((//div | //p | //span)[position() < 3])	2
+products.html	number	count(//*[self::div or self::p])	13
+products.html	number	count(//*[not(self::div)])	38
+products.html	number	count(//descendant::*[3])	14
+products.html	number	count(//*[@id][position() != 1])	1
+products.html	string	string((//*[@id])[1]/@id)	products
+products.html	boolean	boolean(//div[@id][1])	false
+products.html	number	count(descendant-or-self::div)	7
+products.html	number	count(descendant-or-self::*[@id = 'products'])	1
+products.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' product ')])	3
+products.html	number	count(descendant-or-self::a[@href])	3
+products.html	number	count(descendant-or-self::a[@href and contains(@href, 'e')])	1
+products.html	number	count(descendant-or-self::a[@href and starts-with(@href, '/')])	0
+products.html	number	count(descendant-or-self::a[@href and substring(@href, string-length(@href)-4) = '.html'])	0
+products.html	number	count(descendant-or-self::div/descendant-or-self::*/p)	5
+products.html	number	count(descendant-or-self::div/p/text()[normalize-space()])	2
+products.html	number	count(descendant-or-self::p | descendant-or-self::span)	11
+products.html	number	count(descendant-or-self::a/@href)	3
+products.html	number	count(descendant-or-self::text()[normalize-space()])	25
+products.html	number	count(descendant-or-self::h1[contains(., 'Phone')]/text())	0
+products.html	number	count(descendant-or-self::div[not(@class and contains(concat(' ', normalize-space(@class), ' '), ' hidden '))])	4
+products.html	number	count(descendant-or-self::div[count(preceding-sibling::*) = 0])	1
+products.html	number	count(descendant-or-self::li[count(preceding-sibling::li) = 1])	1
+products.html	number	count(descendant-or-self::li[count(preceding-sibling::*) mod 2 = 0])	2
+products.html	number	count(descendant-or-self::*[1]/div/text())	0
+products.html	number	count(descendant-or-self::input[(@selected and name(.) = 'option') or (@checked and (name(.) = 'input' or name(.) = 'command') and (@type = 'checkbox' or @type = 'radio'))])	0
+products.html	number	count(descendant-or-self::*[not(parent::*)])	1
+products.html	number	count(descendant-or-self::*[count(following-sibling::*) = 0])	21
+products.html	number	count(descendant-or-self::*[count(parent::*/child::*) = 1])	6
+products.html	number	count(descendant-or-self::*[@class and (@class = 'box' or starts-with(@class, 'box-'))])	0
+products.html	number	count(ancestor-or-self::*[@lang][1][starts-with(concat(translate(@lang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '-'), 'en-')])	0
+products.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' item ')][count(preceding-sibling::li) = 2])	0
+products.html	nodes	//title	e:/html/head/title
+products.html	nodes	//title/text()	t:Complex Web Page
+products.html	nodes	/html	e:/html
+products.html	nodes	//body/*	e:/html/body/header\ue:/html/body/main\ue:/html/body/footer\ue:/html/body/script
+products.html	nodes	//*[@id]	e:/html/body/main/section[1]\ue:/html/body/main/section[2]\ue:/html/body/script
+products.html	nodes	//*[@class]	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]\ue:/html/body/main/section[1]/div/article[1]/p\ue:/html/body/main/section[1]/div/article[1]/span\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]\ue:/html/body/main/section[1]/div/article[2]/p\ue:/html/body/main/section[1]/div/article[2]/span\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]\ue:/html/body/main/section[1]/div/article[3]/p\ue:/html/body/main/section[1]/div/article[3]/span\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[1]/span\ue:/html/body/main/section[2]/div/div[2]\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/main/section[2]/div/div[2]/span
+products.html	nodes	//@id	a:/html/body/main/section[1]/@id=products\ua:/html/body/main/section[2]/@id=reviews\ua:/html/body/script/@id=page-data
+products.html	nodes	//@*	a:/html/body/header/nav/ul/li[1]/a/@href=#home\ua:/html/body/header/nav/ul/li[2]/a/@href=#about\ua:/html/body/header/nav/ul/li[3]/a/@href=#contact\ua:/html/body/main/section[1]/@id=products\ua:/html/body/main/section[1]/@schema={"jsonable": "data"}\ua:/html/body/main/section[1]/div/@class=product-list\ua:/html/body/main/section[1]/div/article[1]/@class=product\ua:/html/body/main/section[1]/div/article[1]/@data-id=1\ua:/html/body/main/section[1]/div/article[1]/p/@class=description\ua:/html/body/main/section[1]/div/article[1]/span/@class=price\ua:/html/body/main/section[1]/div/article[1]/div/@class=hidden stock\ua:/html/body/main/section[1]/div/article[2]/@class=product\ua:/html/body/main/section[1]/div/article[2]/@data-id=2\ua:/html/body/main/section[1]/div/article[2]/p/@class=description\ua:/html/body/main/section[1]/div/article[2]/span/@class=price\ua:/html/body/main/section[1]/div/article[2]/div/@class=hidden stock\ua:/html/body/main/section[1]/div/article[3]/@class=product\ua:/html/body/main/section[1]/div/article[3]/@data-id=3\ua:/html/body/main/section[1]/div/article[3]/p/@class=description\ua:/html/body/main/section[1]/div/article[3]/span/@class=price\ua:/html/body/main/section[1]/div/article[3]/div/@class=hidden stock\ua:/html/body/main/section[2]/@id=reviews\ua:/html/body/main/section[2]/div/@class=review-list\ua:/html/body/main/section[2]/div/div[1]/@class=review\ua:/html/body/main/section[2]/div/div[1]/@data-rating=5\ua:/html/body/main/section[2]/div/div[1]/p/@class=review-text\ua:/html/body/main/section[2]/div/div[1]/span/@class=reviewer\ua:/html/body/main/section[2]/div/div[2]/@class=review\ua:/html/body/main/section[2]/div/div[2]/@data-rating=4\ua:/html/body/main/section[2]/div/div[2]/p/@class=review-text\ua:/html/body/main/section[2]/div/div[2]/span/@class=reviewer\ua:/html/body/script/@id=page-data\ua:/html/body/script/@type=application/json
+products.html	nodes	//div	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[2]
+products.html	nodes	//div[1]	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]
+products.html	nodes	(//div)[1]	e:/html/body/main/section[1]/div
+products.html	nodes	(//div)[last()]	e:/html/body/main/section[2]/div/div[2]
+products.html	nodes	//div[@id]	
+products.html	nodes	//div | //p	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]/p\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]/p\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]/p\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[2]\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/footer/p
+products.html	nodes	//p | //div	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]/p\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]/p\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]/p\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[2]\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/footer/p
+products.html	nodes	//div | //div	e:/html/body/main/section[1]/div\ue:/html/body/main/section[1]/div/article[1]/div\ue:/html/body/main/section[1]/div/article[2]/div\ue:/html/body/main/section[1]/div/article[3]/div\ue:/html/body/main/section[2]/div\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[2]
+products.html	nodes	(//div | //p)[1]	e:/html/body/main/section[1]/div
+products.html	nodes	//head/following::*[1]	e:/html/body
+products.html	nodes	//body/descendant::*[3]	e:/html/body/header/nav/ul
+products.html	nodes	//*[last()]/text()	t:\n        .hidden { display: none; }\n    \ut:Home\ut:About\ut:Contact\ut:In stock: 5\ut:In stock: 3\ut:Out of stock\ut:John Doe\ut:Jane Smith\ut:© 2024 Our Company\ut:\n        {"lastUpdated": "2024-09-22T10:30:00Z", "totalProducts": 3}\n    
+products.html	nodes	//*[@id][1]	e:/html/body/main/section[1]\ue:/html/body/script
+products.html	nodes	//title/ancestor::*	e:/html\ue:/html/head
+products.html	nodes	//title/ancestor-or-self::*	e:/html\ue:/html/head\ue:/html/head/title
+products.html	nodes	//body/child::*[2]	e:/html/body/main
+products.html	nodes	//text()[normalize-space()][1]	t:Complex Web Page\ut:\n        .hidden { display: none; }\n    \ut:Home\ut:About\ut:Contact\ut:Products\ut:Product 1\ut:This is product 1\ut:$10.99\ut:In stock: 5\ut:Product 2\ut:This is product 2\ut:$20.99\ut:In stock: 3\ut:Product 3\ut:This is product 3\ut:$15.99\ut:Out of stock\ut:Customer Reviews\ut:Great product!\ut:John Doe\ut:Good value for money.\ut:Jane Smith\ut:© 2024 Our Company\ut:\n        {"lastUpdated": "2024-09-22T10:30:00Z", "totalProducts": 3}\n    
+products.html	nodes	//*[not(*)][1]	e:/html/head/title\ue:/html/body/header/nav/ul/li[1]/a\ue:/html/body/header/nav/ul/li[2]/a\ue:/html/body/header/nav/ul/li[3]/a\ue:/html/body/main/section[1]/h2\ue:/html/body/main/section[1]/div/article[1]/h3\ue:/html/body/main/section[1]/div/article[2]/h3\ue:/html/body/main/section[1]/div/article[3]/h3\ue:/html/body/main/section[2]/h2\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/footer/p\ue:/html/body/script
+products.html	nodes	//*[@id]/@id	a:/html/body/main/section[1]/@id=products\ua:/html/body/main/section[2]/@id=reviews\ua:/html/body/script/@id=page-data
+products.html	nodes	.//*[normalize-space(text())][1]	e:/html/head/title\ue:/html/body/header/nav/ul/li[1]/a\ue:/html/body/header/nav/ul/li[2]/a\ue:/html/body/header/nav/ul/li[3]/a\ue:/html/body/main/section[1]/h2\ue:/html/body/main/section[1]/div/article[1]/h3\ue:/html/body/main/section[1]/div/article[2]/h3\ue:/html/body/main/section[1]/div/article[3]/h3\ue:/html/body/main/section[2]/h2\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/footer/p\ue:/html/body/script
+products.html	nodes	//*[position() = 1]	e:/html\ue:/html/head\ue:/html/head/title\ue:/html/body/header\ue:/html/body/header/nav\ue:/html/body/header/nav/ul\ue:/html/body/header/nav/ul/li[1]\ue:/html/body/header/nav/ul/li[1]/a\ue:/html/body/header/nav/ul/li[2]/a\ue:/html/body/header/nav/ul/li[3]/a\ue:/html/body/main/section[1]\ue:/html/body/main/section[1]/h2\ue:/html/body/main/section[1]/div/article[1]\ue:/html/body/main/section[1]/div/article[1]/h3\ue:/html/body/main/section[1]/div/article[2]/h3\ue:/html/body/main/section[1]/div/article[3]/h3\ue:/html/body/main/section[2]/h2\ue:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[1]/p\ue:/html/body/main/section[2]/div/div[2]/p\ue:/html/body/footer/p
+products.html	boolean	boolean(//div)	true
+products.html	boolean	boolean(//nothing)	false
+products.html	boolean	not(//nothing)	true
+products.html	boolean	count(//*) > 3	true
+products.html	boolean	count(//*) = count(//*)	true
+products.html	boolean	//div = //div	true
+products.html	boolean	//div != //div	true
+products.html	boolean	string(//title) = string(//title)	true
+products.html	boolean	//*[@id] = //*[@id]	true
+products.html	boolean	boolean(//*[@id] = 'nope')	false
+products.html	boolean	true() and false()	false
+products.html	boolean	true() or false()	true
+products.html	boolean	1 = '1'	true
+products.html	boolean	'a' < 'b'	false
+products.html	boolean	number('x') = number('x')	false
+products.html	number	count(//section[@id="reviews"]//div[contains(@class, "review") and @data-rating >= 4])	2
+products.html	number	count(//article[contains(@class,"product")][number(translate(substring-after(.//span[@class="price"], "$"), ",", "")) > 15])	2
+products.html	number	count(//article)	3
+products.html	string	string(//article[1]/h3)	Product 1
+products.html	string	string(//article[2]/@data-id)	2
+products.html	string	string(//article[last()]/div)	Out of stock
+products.html	number	count(//article[@data-id > 1])	2
+products.html	number	count(//div[@class='hidden stock'])	3
+products.html	number	count(//*[contains(@class, 'product')])	4
+products.html	number	count(//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' product ')])	3
+products.html	string	string(//span[@class='price'][1])	$10.99
+products.html	string	string(sum(//article/@data-id))	6
+products.html	number	count(//li/a)	3
+products.html	number	count(//a[starts-with(@href, '#')])	3
+products.html	string	string(//a[2]/@href)	
+products.html	string	string(//section[@id='products']/@schema)	{"jsonable": "data"}
+products.html	number	count(//h2)	2
+products.html	string	string(//h2[2])	
+products.html	number	count(//article/*)	12
+products.html	number	count(//article[1]/following-sibling::article)	2
+products.html	number	count(//article[3]/preceding-sibling::article)	2
+products.html	number	count(//article[2]/preceding::h3)	1
+products.html	number	count(//article[2]/following::span)	3
+products.html	string	string(//article[1]/span[@class='price']/text())	$10.99
+products.html	number	count(//p[@class='description'])	3
+products.html	string	string(//footer/p)	© 2024 Our Company
+products.html	number	count(//script)	1
+products.html	boolean	contains(string(//script), 'totalProducts')	true
+products.html	number	count(//*[@data-id])	3
+products.html	string	string(//article[@data-id='3']/h3)	Product 3
+products.html	number	count(//article[.//div[contains(., 'In stock')]])	2
+products.html	number	count(//article[not(.//div[contains(., 'In stock')])])	1
+products.html	string	string(//div[@class='product-list']/article[2]/p)	This is product 2
+products.html	number	count(//nav//a)	3
+products.html	number	count(//ul/li[position() < 3])	2
+products.html	string	string(//article[1]/preceding::title)	Complex Web Page
+products.html	nodes	//article	e:/html/body/main/section[1]/div/article[1]\ue:/html/body/main/section[1]/div/article[2]\ue:/html/body/main/section[1]/div/article[3]
+products.html	nodes	//article/@data-id	a:/html/body/main/section[1]/div/article[1]/@data-id=1\ua:/html/body/main/section[1]/div/article[2]/@data-id=2\ua:/html/body/main/section[1]/div/article[3]/@data-id=3
+products.html	nodes	//article[2]/h3	e:/html/body/main/section[1]/div/article[2]/h3
+products.html	nodes	//article[2]/h3/text()	t:Product 2
+products.html	nodes	//article[1]/span[@class='price']/text()	t:$10.99
+products.html	nodes	//nav//a/@href	a:/html/body/header/nav/ul/li[1]/a/@href=#home\ua:/html/body/header/nav/ul/li[2]/a/@href=#about\ua:/html/body/header/nav/ul/li[3]/a/@href=#contact
+products.html	nodes	//section[@id='reviews']//div[contains(@class, 'review') and @data-rating >= 4]	e:/html/body/main/section[2]/div/div[1]\ue:/html/body/main/section[2]/div/div[2]
+products.html	nodes	//article[contains(@class,'product')][number(translate(substring-after(.//span[@class='price'], '$'), ',', '')) > 15]	e:/html/body/main/section[1]/div/article[2]\ue:/html/body/main/section[1]/div/article[3]
+products.html	nodes	//article[1]/following-sibling::article	e:/html/body/main/section[1]/div/article[2]\ue:/html/body/main/section[1]/div/article[3]
+products.html	nodes	//article[3]/preceding-sibling::article	e:/html/body/main/section[1]/div/article[1]\ue:/html/body/main/section[1]/div/article[2]
+products.html	nodes	//article[2]/preceding::h3	e:/html/body/main/section[1]/div/article[1]/h3
+products.html	nodes	//h2/text()	t:Products\ut:Customer Reviews
+products.html	nodes	//footer//text()	t:© 2024 Our Company
+products.html	nodes	//li/a/@href	a:/html/body/header/nav/ul/li[1]/a/@href=#home\ua:/html/body/header/nav/ul/li[2]/a/@href=#about\ua:/html/body/header/nav/ul/li[3]/a/@href=#contact
+products.html	error	4 ayo	XPathEvalError
+products.html	error	//p[	XPathEvalError
+products.html	error	//p[1	XPathEvalError
+products.html	error	1 +	XPathEvalError
+products.html	error	()	XPathEvalError
+products.html	error	a/	XPathEvalError
+products.html	error	.[1]	XPathEvalError
+products.html	error	..[1]	XPathEvalError
+products.html	error	//	XPathEvalError
+products.html	error	@	XPathEvalError
+products.html	error	'a	XPathEvalError
+products.html	error	count(1	XPathEvalError
+products.html	error	(1))	XPathEvalError
+products.html	error	a::b	XPathEvalError
+products.html	error	nosuchaxis::x	XPathEvalError
+products.html	error	ends-with(@a, 'b')	XPathEvalError
+products.html	error	matches(., 'x')	XPathEvalError
+products.html	error	my:thing()	XPathEvalError
+products.html	error	concat('a')	XPathEvalError
+products.html	error	count()	XPathEvalError
+products.html	error	count(1, 2)	XPathEvalError
+products.html	error	last(1)	XPathEvalError
+products.html	error	substring('a', 1, 2, 3)	XPathEvalError
+products.html	error	for $x in //a return $x	XPathEvalError
+products.html	error	1 to 5	XPathEvalError
+products.html	error	//p/(a|b)	XPathEvalError
+products.html	error	//p ! 'a'	XPathEvalError
+products.html	error	$undefined	XPathEvalError
+products.html	error	'a' | 'b'	XPathEvalError
+products.html	error	count(1)	XPathEvalError
+structure.html	number	count(//*)	50
+structure.html	number	count(//div)	4
+structure.html	number	count(/html)	1
+structure.html	number	count(/)	1
+structure.html	number	count(/html/body)	1
+structure.html	number	count(//body/*)	9
+structure.html	number	count(//*/*)	49
+structure.html	number	count(.//*)	49
+structure.html	number	count(//comment())	0
+structure.html	number	count(//processing-instruction())	0
+structure.html	number	count(//text()[normalize-space()])	23
+structure.html	number	count(//@*)	44
+structure.html	number	count(//*[@id])	13
+structure.html	number	count(//*[@class])	14
+structure.html	string	name(/*)	html
+structure.html	string	local-name(/*)	html
+structure.html	string	name(//*[2])	meta
+structure.html	number	count(child::html)	0
+structure.html	number	count(descendant::div)	4
+structure.html	number	count(descendant-or-self::div)	4
+structure.html	number	count(//body/child::*)	9
+structure.html	number	count(//body/descendant::*)	44
+structure.html	number	count(//body/descendant-or-self::*)	45
+structure.html	number	count(//body//*)	44
+structure.html	number	count(//title/ancestor::*)	2
+structure.html	number	count(//title/ancestor-or-self::*)	3
+structure.html	number	count(//title/parent::*)	1
+structure.html	number	count(//title/..)	1
+structure.html	number	count(//body/preceding::*)	4
+structure.html	number	count(//body/preceding-sibling::*)	1
+structure.html	number	count(//head/following::*)	45
+structure.html	number	count(//head/following-sibling::*)	1
+structure.html	number	count(//body/self::*)	1
+structure.html	number	count(//body/self::body)	1
+structure.html	number	count(//body/self::head)	0
+structure.html	number	count(//html/attribute::*)	1
+structure.html	number	count(//body/namespace::*)	1
+structure.html	string	name(//body/namespace::*)	xml
+structure.html	number	count(//head/namespace::*)	1
+structure.html	string	name(//body/preceding-sibling::*[1])	head
+structure.html	number	count(//*[count(ancestor::*) = 2])	12
+structure.html	number	count(//*[count(ancestor::*) = 3])	20
+structure.html	number	count(//*[count(child::*) > 1])	16
+structure.html	number	count(//*[not(*)])	32
+structure.html	number	count(//*[not(parent::*)])	1
+structure.html	number	count(//*[last()])	19
+structure.html	number	count(//div[1])	1
+structure.html	number	count((//div)[1])	1
+structure.html	number	count((//div)[last()])	1
+structure.html	number	count(//div[position() = 1])	1
+structure.html	number	count(//div[position() > 1])	3
+structure.html	number	count(//div[position() mod 2 = 1])	2
+structure.html	number	count(//div[1][1])	1
+structure.html	number	count(//div[1][2])	0
+structure.html	number	count(//*[@id][2])	2
+structure.html	number	count((//*[@id])[2])	1
+structure.html	string	name((//*)[3])	title
+structure.html	string	name((//*)[last()])	div
+structure.html	number	count(//*[string-length(name()) = 1])	6
+structure.html	number	count(//*[starts-with(name(), 'd')])	4
+structure.html	string	string(//title)	Structure & axes
+structure.html	string	normalize-space(//title)	Structure & axes
+structure.html	string	concat(name(/*), '-', name((//*)[2]))	html-head
+structure.html	string	substring(string(//title), 2, 3)	tru
+structure.html	string	substring-before(string(//title), ' ')	Structure
+structure.html	string	substring-after(string(//title), ' ')	& axes
+structure.html	string	translate(string(//title), 'abcdefghij', 'ABCDEFGHIJ')	StruCturE & AxEs
+structure.html	boolean	contains(string(//title), 'e')	true
+structure.html	boolean	starts-with(string(//title), 'C')	false
+structure.html	string	string(count(//div))	4
+structure.html	string	string(//nothing)	
+structure.html	string	namespace-uri(//nothing)	
+structure.html	string	string(namespace-uri(//nothing))	
+structure.html	string	string(true())	true
+structure.html	string	string(1 div 3)	0.333333333333333
+structure.html	string	string(0 div 0)	NaN
+structure.html	string	string(1 div 0)	Infinity
+structure.html	string	string(-1 div 0)	-Infinity
+structure.html	string	string(100000 * 100000 * 100000)	1e+15
+structure.html	string	string(2147483647)	2.147483647e+09
+structure.html	string	string(1.0)	1
+structure.html	string	string(-0.0)	0
+structure.html	string	string(0.1 + 0.2)	0.3
+structure.html	string	string(1.5 + 1.5)	3
+structure.html	string	string(7 mod 3)	1
+structure.html	string	string(-7 mod 3)	-1
+structure.html	string	string(7 mod -3)	1
+structure.html	string	string(round(2.5))	3
+structure.html	string	string(round(-2.5))	-2
+structure.html	string	string(round(-0.5))	0
+structure.html	string	string(floor(-1.5))	-2
+structure.html	string	string(ceiling(-1.5))	-1
+structure.html	string	string(number('  42 '))	42
+structure.html	string	string(number('4.2e1'))	42
+structure.html	string	string(number('abc'))	NaN
+structure.html	string	string(sum(//nothing))	0
+structure.html	string	string(number(//nothing))	NaN
+structure.html	number	string-length('😀ab')	3
+structure.html	string	substring('😀ab', 2, 1)	a
+structure.html	number	count(//*[position() = 2])	16
+structure.html	number	count(//*[last() > 1])	47
+structure.html	number	count(//div[position() = last()])	1
+structure.html	number	count(//div[position() > 1][1])	1
+structure.html	number	count(//div[1][position() = 1])	1
+structure.html	number	count(//*/parent::*)	18
+structure.html	number	count(//*/..)	19
+structure.html	number	count(//*/ancestor::*)	18
+structure.html	number	count(//*/ancestor-or-self::*)	50
+structure.html	number	count(//*[preceding-sibling::*[1][self::div]])	3
+structure.html	number	count(//*[ancestor::*[2][self::body]])	20
+structure.html	number	count(//div/preceding::*[1])	4
+structure.html	number	count(//div[1]/following::*[last()])	1
+structure.html	number	count((//div | //p | //span)[position() < 3])	2
+structure.html	number	count(//*[self::div or self::p])	8
+structure.html	number	count(//*[not(self::div)])	46
+structure.html	number	count(//descendant::*[3])	13
+structure.html	number	count(//*[@id][position() != 1])	10
+structure.html	string	string((//*[@id])[1]/@id)	top
+structure.html	boolean	boolean(//div[@id][1])	true
+structure.html	number	count(descendant-or-self::div)	4
+structure.html	number	count(descendant-or-self::*[@id = 'products'])	0
+structure.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' product ')])	0
+structure.html	number	count(descendant-or-self::a[@href])	0
+structure.html	number	count(descendant-or-self::a[@href and contains(@href, 'e')])	0
+structure.html	number	count(descendant-or-self::a[@href and starts-with(@href, '/')])	0
+structure.html	number	count(descendant-or-self::a[@href and substring(@href, string-length(@href)-4) = '.html'])	0
+structure.html	number	count(descendant-or-self::div/descendant-or-self::*/p)	3
+structure.html	number	count(descendant-or-self::div/p/text()[normalize-space()])	2
+structure.html	number	count(descendant-or-self::p | descendant-or-self::span)	9
+structure.html	number	count(descendant-or-self::a/@href)	0
+structure.html	number	count(descendant-or-self::text()[normalize-space()])	23
+structure.html	number	count(descendant-or-self::h1[contains(., 'Phone')]/text())	0
+structure.html	number	count(descendant-or-self::div[not(@class and contains(concat(' ', normalize-space(@class), ' '), ' hidden '))])	4
+structure.html	number	count(descendant-or-self::div[count(preceding-sibling::*) = 0])	1
+structure.html	number	count(descendant-or-self::li[count(preceding-sibling::li) = 1])	1
+structure.html	number	count(descendant-or-self::li[count(preceding-sibling::*) mod 2 = 0])	2
+structure.html	number	count(descendant-or-self::*[1]/div/text())	0
+structure.html	number	count(descendant-or-self::input[(@selected and name(.) = 'option') or (@checked and (name(.) = 'input' or name(.) = 'command') and (@type = 'checkbox' or @type = 'radio'))])	1
+structure.html	number	count(descendant-or-self::*[not(parent::*)])	1
+structure.html	number	count(descendant-or-self::*[count(following-sibling::*) = 0])	19
+structure.html	number	count(descendant-or-self::*[count(parent::*/child::*) = 1])	2
+structure.html	number	count(descendant-or-self::*[@class and (@class = 'box' or starts-with(@class, 'box-'))])	1
+structure.html	number	count(ancestor-or-self::*[@lang][1][starts-with(concat(translate(@lang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '-'), 'en-')])	0
+structure.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' item ')][count(preceding-sibling::li) = 2])	1
+structure.html	nodes	//title	e:/html/head/title
+structure.html	nodes	//title/text()	t:Structure & axes
+structure.html	nodes	/html	e:/html
+structure.html	nodes	//body/*	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/table\ue:/html/body/ul\ue:/html/body/form\ue:/html/body/svg\ue:/html/body/div[3]\ue:/html/body/p\ue:/html/body/div[4]
+structure.html	nodes	//*[@id]	e:/html/body\ue:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/table\ue:/html/body/ul\ue:/html/body/form\ue:/html/body/form/input[1]\ue:/html/body/form/input[2]\ue:/html/body/form/textarea\ue:/html/body/svg\ue:/html/body/div[3]\ue:/html/body/p\ue:/html/body/div[4]
+structure.html	nodes	//*[@class]	e:/html/body\ue:/html/body/div[1]\ue:/html/body/div[1]/span[1]\ue:/html/body/div[1]/span[2]\ue:/html/body/div[2]\ue:/html/body/table/tbody/tr[1]\ue:/html/body/table/tbody/tr[2]\ue:/html/body/table/tbody/tr[3]\ue:/html/body/ul/li[1]\ue:/html/body/ul/li[2]\ue:/html/body/ul/li[3]\ue:/html/body/div[3]/span[1]\ue:/html/body/div[3]/span[2]\ue:/html/body/div[3]/span[3]
+structure.html	nodes	//@id	a:/html/body/@id=top\ua:/html/body/div[1]/@id=d1\ua:/html/body/div[2]/@id=d2\ua:/html/body/table/@id=grid\ua:/html/body/ul/@id=list\ua:/html/body/form/@id=form\ua:/html/body/form/input[1]/@id=c1\ua:/html/body/form/input[2]/@id=c2\ua:/html/body/form/textarea/@id=ta\ua:/html/body/svg/@id=drawing\ua:/html/body/div[3]/@id=prices\ua:/html/body/p/@id=unicode\ua:/html/body/div[4]/@id=empty
+structure.html	nodes	//@*	a:/html/@xml:lang=en-GB\ua:/html/head/meta/@charset=utf-8\ua:/html/head/base/@href=https://example.com/base/\ua:/html/body/@id=top\ua:/html/body/@class=page main\ua:/html/body/div[1]/@id=d1\ua:/html/body/div[1]/@class=box\ua:/html/body/div[1]/@data-n=1\ua:/html/body/div[1]/@data-flag=\ua:/html/body/div[1]/span[1]/@class=first\ua:/html/body/div[1]/span[2]/@class=second\ua:/html/body/div[2]/@id=d2\ua:/html/body/div[2]/@class=box wide\ua:/html/body/div[2]/@data-n=2\ua:/html/body/table/@id=grid\ua:/html/body/table/tbody/tr[1]/@class=row odd\ua:/html/body/table/tbody/tr[2]/@class=row even\ua:/html/body/table/tbody/tr[3]/@class=row odd\ua:/html/body/ul/@id=list\ua:/html/body/ul/li[1]/@class=item\ua:/html/body/ul/li[1]/@xml:lang=fr\ua:/html/body/ul/li[2]/@class=item\ua:/html/body/ul/li[3]/@class=item last\ua:/html/body/form/@id=form\ua:/html/body/form/input[1]/@type=checkbox\ua:/html/body/form/input[1]/@checked=checked\ua:/html/body/form/input[1]/@id=c1\ua:/html/body/form/input[2]/@type=text\ua:/html/body/form/input[2]/@value=typed\ua:/html/body/form/input[2]/@id=c2\ua:/html/body/form/select/option[1]/@selected=selected\ua:/html/body/form/textarea/@id=ta\ua:/html/body/svg/@xmlns=http://www.w3.org/2000/svg\ua:/html/body/svg/@id=drawing\ua:/html/body/svg/@width=10\ua:/html/body/svg/rect/@width=5\ua:/html/body/svg/rect/@height=5\ua:/html/body/svg/g/circle/@r=1\ua:/html/body/div[3]/@id=prices\ua:/html/body/div[3]/span[1]/@class=price\ua:/html/body/div[3]/span[2]/@class=price\ua:/html/body/div[3]/span[3]/@class=price\ua:/html/body/p/@id=unicode\ua:/html/body/div[4]/@id=empty
+structure.html	nodes	//div	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/div[3]\ue:/html/body/div[4]
+structure.html	nodes	//div[1]	e:/html/body/div[1]
+structure.html	nodes	(//div)[1]	e:/html/body/div[1]
+structure.html	nodes	(//div)[last()]	e:/html/body/div[4]
+structure.html	nodes	//div[@id]	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/div[3]\ue:/html/body/div[4]
+structure.html	nodes	//div | //p	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/div[2]/p[1]\ue:/html/body/div[2]/p[2]\ue:/html/body/div[2]/p[3]\ue:/html/body/div[3]\ue:/html/body/p\ue:/html/body/div[4]
+structure.html	nodes	//p | //div	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/div[2]/p[1]\ue:/html/body/div[2]/p[2]\ue:/html/body/div[2]/p[3]\ue:/html/body/div[3]\ue:/html/body/p\ue:/html/body/div[4]
+structure.html	nodes	//div | //div	e:/html/body/div[1]\ue:/html/body/div[2]\ue:/html/body/div[3]\ue:/html/body/div[4]
+structure.html	nodes	(//div | //p)[1]	e:/html/body/div[1]
+structure.html	nodes	//head/following::*[1]	e:/html/body
+structure.html	nodes	//body/descendant::*[3]	e:/html/body/div[1]/b
+structure.html	nodes	//*[last()]/text()	t:beta\ut:Line three & four\ut:Cell 2\ut:2.5\ut:-4\ut:trois\ut:two\ut:  keep   me  \ut:free
+structure.html	nodes	//*[@id][1]	e:/html/body\ue:/html/body/div[1]\ue:/html/body/form/input[1]
+structure.html	nodes	//title/ancestor::*	e:/html\ue:/html/head
+structure.html	nodes	//title/ancestor-or-self::*	e:/html\ue:/html/head\ue:/html/head/title
+structure.html	nodes	//body/child::*[2]	e:/html/body/div[2]
+structure.html	nodes	//text()[normalize-space()][1]	t:Structure & axes\ut:alpha\ut:bold\ut:beta\ut:Line one\ut:Line three & four\ut:Cell 1\ut:Cell 2\ut:1\ut:2.5\ut:3\ut:-4\ut:abc\ut:un\ut:deux\ut:trois\ut:one\ut:two\ut:  keep   me  \ut:$1,234.50\ut:$99.00\ut:free\ut:héllo 😀 — wörld
+structure.html	nodes	//*[not(*)][1]	e:/html/head/title\ue:/html/body/div[1]/span[1]\ue:/html/body/div[2]/p[1]\ue:/html/body/table/thead/tr/th[1]\ue:/html/body/table/tbody/tr[1]/td[1]\ue:/html/body/table/tbody/tr[2]/td[1]\ue:/html/body/table/tbody/tr[3]/td[1]\ue:/html/body/ul/li[1]\ue:/html/body/form/input[1]\ue:/html/body/form/select/option[1]\ue:/html/body/svg/rect\ue:/html/body/svg/g/circle\ue:/html/body/div[3]/span[1]\ue:/html/body/p
+structure.html	nodes	//*[@id]/@id	a:/html/body/@id=top\ua:/html/body/div[1]/@id=d1\ua:/html/body/div[2]/@id=d2\ua:/html/body/table/@id=grid\ua:/html/body/ul/@id=list\ua:/html/body/form/@id=form\ua:/html/body/form/input[1]/@id=c1\ua:/html/body/form/input[2]/@id=c2\ua:/html/body/form/textarea/@id=ta\ua:/html/body/svg/@id=drawing\ua:/html/body/div[3]/@id=prices\ua:/html/body/p/@id=unicode\ua:/html/body/div[4]/@id=empty
+structure.html	nodes	.//*[normalize-space(text())][1]	e:/html/head/title\ue:/html/body/div[1]/span[1]\ue:/html/body/div[2]/p[1]\ue:/html/body/table/thead/tr/th[1]\ue:/html/body/table/tbody/tr[1]/td[1]\ue:/html/body/table/tbody/tr[2]/td[1]\ue:/html/body/table/tbody/tr[3]/td[1]\ue:/html/body/ul/li[1]\ue:/html/body/form/select/option[1]\ue:/html/body/form/textarea\ue:/html/body/div[3]/span[1]\ue:/html/body/p
+structure.html	nodes	//*[position() = 1]	e:/html\ue:/html/head\ue:/html/head/title\ue:/html/body/div[1]\ue:/html/body/div[1]/span[1]\ue:/html/body/div[2]/p[1]\ue:/html/body/table/thead\ue:/html/body/table/thead/tr\ue:/html/body/table/thead/tr/th[1]\ue:/html/body/table/tbody/tr[1]\ue:/html/body/table/tbody/tr[1]/td[1]\ue:/html/body/table/tbody/tr[2]/td[1]\ue:/html/body/table/tbody/tr[3]/td[1]\ue:/html/body/ul/li[1]\ue:/html/body/form/input[1]\ue:/html/body/form/select/option[1]\ue:/html/body/svg/rect\ue:/html/body/svg/g/circle\ue:/html/body/div[3]/span[1]
+structure.html	boolean	boolean(//div)	true
+structure.html	boolean	boolean(//nothing)	false
+structure.html	boolean	not(//nothing)	true
+structure.html	boolean	count(//*) > 3	true
+structure.html	boolean	count(//*) = count(//*)	true
+structure.html	boolean	//div = //div	true
+structure.html	boolean	//div != //div	true
+structure.html	boolean	string(//title) = string(//title)	true
+structure.html	boolean	//*[@id] = //*[@id]	true
+structure.html	boolean	boolean(//*[@id] = 'nope')	false
+structure.html	boolean	true() and false()	false
+structure.html	boolean	true() or false()	true
+structure.html	boolean	1 = '1'	true
+structure.html	boolean	'a' < 'b'	false
+structure.html	boolean	number('x') = number('x')	false
+structure.html	number	count(//table//td)	6
+structure.html	number	count(//tr)	4
+structure.html	number	count(//tr[@class='row odd'])	2
+structure.html	string	string(//td[1])	1
+structure.html	string	string(sum(//td[number(.) = number(.)]))	2.5
+structure.html	number	count(//td[number(.) > 1])	2
+structure.html	number	count(//td[. = ''])	1
+structure.html	number	count(//th)	2
+structure.html	string	string(//th[1])	Cell 1
+structure.html	number	count(//li)	3
+structure.html	string	string(//li[2])	deux
+structure.html	string	string(//li[last()])	trois
+structure.html	number	count(//li[lang('fr')])	0
+structure.html	number	count(//li[lang('en')])	0
+structure.html	number	count(//*[lang('en-GB')])	0
+structure.html	number	count(//input)	2
+structure.html	number	count(//input[@checked])	1
+structure.html	string	string(//input[@id='c2']/@value)	typed
+structure.html	number	count(//option[@selected])	1
+structure.html	number	count(//svg/*)	2
+structure.html	string	name(//svg/*[1])	rect
+structure.html	number	count(//*[local-name() = 'rect'])	1
+structure.html	number	count(//svg//*)	3
+structure.html	string	string(//svg/@width)	10
+structure.html	number	count(id('d1'))	1
+structure.html	string	string(id('d1')/@data-n)	1
+structure.html	number	count(id('d1 d2'))	2
+structure.html	number	count(id('nope'))	0
+structure.html	string	string(//div[@id='d1']/span[@class='second'])	beta
+structure.html	number	count(//div[@id='d1']/b/preceding-sibling::*)	1
+structure.html	number	count(//div[@id='d1']/b/following-sibling::*)	1
+structure.html	string	name(//div[@id='d1']/b/preceding-sibling::*[1])	span
+structure.html	number	count(//div[@id='d2']/p[normalize-space()])	2
+structure.html	string	string(//div[@id='d2']/p[3])	Line three & four
+structure.html	string	string(//p[@id='unicode'])	héllo 😀 — wörld
+structure.html	number	string-length(//p[@id='unicode'])	15
+structure.html	number	count(//div[@id='empty']/node())	0
+structure.html	string	string(//div[@id='empty'])	
+structure.html	number	count(//*[@data-flag])	1
+structure.html	string	string(//*[@data-flag]/@data-flag)	
+structure.html	number	count(//*[@data-flag = ''])	1
+structure.html	number	number(translate(substring-after(//span[@class='price'][1], '$'), ',', ''))	1234.5
+structure.html	number	count(//span[@class='price'][number(translate(substring-after(., '$'), ',', '')) > 100])	1
+structure.html	string	string(//textarea)	  keep   me  
+structure.html	string	normalize-space(//textarea)	keep me
+structure.html	string	string(//base/@href)	https://example.com/base/
+structure.html	number	count(//meta)	1
+structure.html	number	count(//*[@id and @class])	3
+structure.html	string	string(//body/@class)	page main
+structure.html	number	count(//*[contains(@class, 'box')])	2
+structure.html	number	count(//tbody/tr[position() = last()])	1
+structure.html	string	string(//tbody/tr[2]/td[2])	-4
+structure.html	number	count(//table/descendant::*)	14
+structure.html	number	count(//table/descendant-or-self::node())	22
+structure.html	number	count(//td/ancestor::table)	1
+structure.html	number	count(//td[1]/ancestor::*)	7
+structure.html	number	count(//ul/following::*)	17
+structure.html	number	count(//ul/preceding::*)	27
+structure.html	number	count(//form/preceding-sibling::*)	4
+structure.html	number	count(//*[substring(@id, 1, 1) = 'd'])	3
+structure.html	nodes	//td	e:/html/body/table/tbody/tr[1]/td[1]\ue:/html/body/table/tbody/tr[1]/td[2]\ue:/html/body/table/tbody/tr[2]/td[1]\ue:/html/body/table/tbody/tr[2]/td[2]\ue:/html/body/table/tbody/tr[3]/td[1]\ue:/html/body/table/tbody/tr[3]/td[2]
+structure.html	nodes	//tr[2]/td	e:/html/body/table/tbody/tr[2]/td[1]\ue:/html/body/table/tbody/tr[2]/td[2]
+structure.html	nodes	//li	e:/html/body/ul/li[1]\ue:/html/body/ul/li[2]\ue:/html/body/ul/li[3]
+structure.html	nodes	//li[@class='item last']	e:/html/body/ul/li[3]
+structure.html	nodes	//li/text()	t:un\ut:deux\ut:trois
+structure.html	nodes	//svg/*	e:/html/body/svg/rect\ue:/html/body/svg/g
+structure.html	nodes	//svg//*	e:/html/body/svg/rect\ue:/html/body/svg/g\ue:/html/body/svg/g/circle
+structure.html	nodes	id('d1')	e:/html/body/div[1]
+structure.html	nodes	id('d1 d2')	e:/html/body/div[1]\ue:/html/body/div[2]
+structure.html	nodes	//div[@id='d1']/span	e:/html/body/div[1]/span[1]\ue:/html/body/div[1]/span[2]
+structure.html	nodes	//div[@id='d1']/b/preceding-sibling::*	e:/html/body/div[1]/span[1]
+structure.html	nodes	//div[@id='d1']/b/following-sibling::*	e:/html/body/div[1]/span[2]
+structure.html	nodes	//div[@id='d1']/b/preceding::*	e:/html/head\ue:/html/head/title\ue:/html/head/meta\ue:/html/head/base\ue:/html/body/div[1]/span[1]
+structure.html	nodes	//div[@id='d1']/b/following::*[3]	e:/html/body/div[2]/p[1]
+structure.html	nodes	//span[@class='price']	e:/html/body/div[3]/span[1]\ue:/html/body/div[3]/span[2]\ue:/html/body/div[3]/span[3]
+structure.html	nodes	//*[@xml:lang]	
+structure.html	nodes	//li[1]/@xml:lang	
+structure.html	nodes	//table/descendant::td[2]	e:/html/body/table/tbody/tr[1]/td[2]
+structure.html	nodes	//tbody/tr/td[last()]	e:/html/body/table/tbody/tr[1]/td[2]\ue:/html/body/table/tbody/tr[2]/td[2]\ue:/html/body/table/tbody/tr[3]/td[2]
+structure.html	nodes	//div[@id='d2']/p[normalize-space()]	e:/html/body/div[2]/p[1]\ue:/html/body/div[2]/p[3]
+structure.html	nodes	//p[@id='unicode']/text()	t:héllo 😀 — wörld
+links.html	number	count(//*)	20
+links.html	number	count(//div)	1
+links.html	number	count(/html)	1
+links.html	number	count(/)	1
+links.html	number	count(/html/body)	1
+links.html	number	count(//body/*)	3
+links.html	number	count(//*/*)	19
+links.html	number	count(.//*)	19
+links.html	number	count(//comment())	0
+links.html	number	count(//processing-instruction())	0
+links.html	number	count(//text()[normalize-space()])	11
+links.html	number	count(//@*)	24
+links.html	number	count(//*[@id])	3
+links.html	number	count(//*[@class])	2
+links.html	string	name(/*)	html
+links.html	string	local-name(/*)	html
+links.html	string	name(//*[2])	body
+links.html	number	count(child::html)	0
+links.html	number	count(descendant::div)	1
+links.html	number	count(descendant-or-self::div)	1
+links.html	number	count(//body/child::*)	3
+links.html	number	count(//body/descendant::*)	16
+links.html	number	count(//body/descendant-or-self::*)	17
+links.html	number	count(//body//*)	16
+links.html	number	count(//title/ancestor::*)	2
+links.html	number	count(//title/ancestor-or-self::*)	3
+links.html	number	count(//title/parent::*)	1
+links.html	number	count(//title/..)	1
+links.html	number	count(//body/preceding::*)	2
+links.html	number	count(//body/preceding-sibling::*)	1
+links.html	number	count(//head/following::*)	17
+links.html	number	count(//head/following-sibling::*)	1
+links.html	number	count(//body/self::*)	1
+links.html	number	count(//body/self::body)	1
+links.html	number	count(//body/self::head)	0
+links.html	number	count(//html/attribute::*)	0
+links.html	number	count(//body/namespace::*)	1
+links.html	string	name(//body/namespace::*)	xml
+links.html	number	count(//head/namespace::*)	1
+links.html	string	name(//body/preceding-sibling::*[1])	head
+links.html	number	count(//*[count(ancestor::*) = 2])	4
+links.html	number	count(//*[count(ancestor::*) = 3])	10
+links.html	number	count(//*[count(child::*) > 1])	6
+links.html	number	count(//*[not(*)])	12
+links.html	number	count(//*[not(parent::*)])	1
+links.html	number	count(//*[last()])	9
+links.html	number	count(//div[1])	1
+links.html	number	count((//div)[1])	1
+links.html	number	count((//div)[last()])	1
+links.html	number	count(//div[position() = 1])	1
+links.html	number	count(//div[position() > 1])	0
+links.html	number	count(//div[position() mod 2 = 1])	1
+links.html	number	count(//div[1][1])	1
+links.html	number	count(//div[1][2])	0
+links.html	number	count(//*[@id][2])	1
+links.html	number	count((//*[@id])[2])	1
+links.html	string	name((//*)[3])	title
+links.html	string	name((//*)[last()])	a
+links.html	number	count(//*[string-length(name()) = 1])	9
+links.html	number	count(//*[starts-with(name(), 'd')])	1
+links.html	string	string(//title)	Links
+links.html	string	normalize-space(//title)	Links
+links.html	string	concat(name(/*), '-', name((//*)[2]))	html-head
+links.html	string	substring(string(//title), 2, 3)	ink
+links.html	string	substring-before(string(//title), ' ')	
+links.html	string	substring-after(string(//title), ' ')	
+links.html	string	translate(string(//title), 'abcdefghij', 'ABCDEFGHIJ')	LInks
+links.html	boolean	contains(string(//title), 'e')	false
+links.html	boolean	starts-with(string(//title), 'C')	false
+links.html	string	string(count(//div))	1
+links.html	string	string(//nothing)	
+links.html	string	namespace-uri(//nothing)	
+links.html	string	string(namespace-uri(//nothing))	
+links.html	string	string(true())	true
+links.html	string	string(1 div 3)	0.333333333333333
+links.html	string	string(0 div 0)	NaN
+links.html	string	string(1 div 0)	Infinity
+links.html	string	string(-1 div 0)	-Infinity
+links.html	string	string(100000 * 100000 * 100000)	1e+15
+links.html	string	string(2147483647)	2.147483647e+09
+links.html	string	string(1.0)	1
+links.html	string	string(-0.0)	0
+links.html	string	string(0.1 + 0.2)	0.3
+links.html	string	string(1.5 + 1.5)	3
+links.html	string	string(7 mod 3)	1
+links.html	string	string(-7 mod 3)	-1
+links.html	string	string(7 mod -3)	1
+links.html	string	string(round(2.5))	3
+links.html	string	string(round(-2.5))	-2
+links.html	string	string(round(-0.5))	0
+links.html	string	string(floor(-1.5))	-2
+links.html	string	string(ceiling(-1.5))	-1
+links.html	string	string(number('  42 '))	42
+links.html	string	string(number('4.2e1'))	42
+links.html	string	string(number('abc'))	NaN
+links.html	string	string(sum(//nothing))	0
+links.html	string	string(number(//nothing))	NaN
+links.html	number	string-length('😀ab')	3
+links.html	string	substring('😀ab', 2, 1)	a
+links.html	number	count(//*[position() = 2])	6
+links.html	number	count(//*[last() > 1])	17
+links.html	number	count(//div[position() = last()])	1
+links.html	number	count(//div[position() > 1][1])	0
+links.html	number	count(//div[1][position() = 1])	1
+links.html	number	count(//*/parent::*)	8
+links.html	number	count(//*/..)	9
+links.html	number	count(//*/ancestor::*)	8
+links.html	number	count(//*/ancestor-or-self::*)	20
+links.html	number	count(//*[preceding-sibling::*[1][self::div]])	1
+links.html	number	count(//*[ancestor::*[2][self::body]])	10
+links.html	number	count(//div/preceding::*[1])	1
+links.html	number	count(//div[1]/following::*[last()])	1
+links.html	number	count((//div | //p | //span)[position() < 3])	2
+links.html	number	count(//*[self::div or self::p])	2
+links.html	number	count(//*[not(self::div)])	19
+links.html	number	count(//descendant::*[3])	5
+links.html	number	count(//*[@id][position() != 1])	2
+links.html	string	string((//*[@id])[1]/@id)	main-nav
+links.html	boolean	boolean(//div[@id][1])	true
+links.html	number	count(descendant-or-self::div)	1
+links.html	number	count(descendant-or-self::*[@id = 'products'])	0
+links.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' product ')])	0
+links.html	number	count(descendant-or-self::a[@href])	7
+links.html	number	count(descendant-or-self::a[@href and contains(@href, 'e')])	4
+links.html	number	count(descendant-or-self::a[@href and starts-with(@href, '/')])	5
+links.html	number	count(descendant-or-self::a[@href and substring(@href, string-length(@href)-4) = '.html'])	0
+links.html	number	count(descendant-or-self::div/descendant-or-self::*/p)	1
+links.html	number	count(descendant-or-self::div/p/text()[normalize-space()])	2
+links.html	number	count(descendant-or-self::p | descendant-or-self::span)	1
+links.html	number	count(descendant-or-self::a/@href)	7
+links.html	number	count(descendant-or-self::text()[normalize-space()])	11
+links.html	number	count(descendant-or-self::h1[contains(., 'Phone')]/text())	0
+links.html	number	count(descendant-or-self::div[not(@class and contains(concat(' ', normalize-space(@class), ' '), ' hidden '))])	1
+links.html	number	count(descendant-or-self::div[count(preceding-sibling::*) = 0])	0
+links.html	number	count(descendant-or-self::li[count(preceding-sibling::li) = 1])	0
+links.html	number	count(descendant-or-self::li[count(preceding-sibling::*) mod 2 = 0])	0
+links.html	number	count(descendant-or-self::*[1]/div/text())	0
+links.html	number	count(descendant-or-self::input[(@selected and name(.) = 'option') or (@checked and (name(.) = 'input' or name(.) = 'command') and (@type = 'checkbox' or @type = 'radio'))])	0
+links.html	number	count(descendant-or-self::*[not(parent::*)])	1
+links.html	number	count(descendant-or-self::*[count(following-sibling::*) = 0])	9
+links.html	number	count(descendant-or-self::*[count(parent::*/child::*) = 1])	2
+links.html	number	count(descendant-or-self::*[@class and (@class = 'box' or starts-with(@class, 'box-'))])	0
+links.html	number	count(ancestor-or-self::*[@lang][1][starts-with(concat(translate(@lang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), '-'), 'en-')])	0
+links.html	number	count(descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' item ')][count(preceding-sibling::li) = 2])	0
+links.html	nodes	//title	e:/html/head/title
+links.html	nodes	//title/text()	t:Links
+links.html	nodes	/html	e:/html
+links.html	nodes	//body/*	e:/html/body/nav\ue:/html/body/div\ue:/html/body/footer
+links.html	nodes	//*[@id]	e:/html/body/nav\ue:/html/body/div\ue:/html/body/footer
+links.html	nodes	//*[@class]	e:/html/body/nav/a[1]\ue:/html/body/nav/a[2]
+links.html	nodes	//@id	a:/html/body/nav/@id=main-nav\ua:/html/body/div/@id=content\ua:/html/body/footer/@id=foot
+links.html	nodes	//@*	a:/html/body/nav/@id=main-nav\ua:/html/body/nav/a[1]/@href=/one\ua:/html/body/nav/a[1]/@rel=next\ua:/html/body/nav/a[1]/@class=nav\ua:/html/body/nav/a[2]/@href=/two\ua:/html/body/nav/a[2]/@class=nav\ua:/html/body/nav/a[3]/@href=https://example.com/three\ua:/html/body/nav/a[4]/@name=anchor-only\ua:/html/body/nav/a[5]/@href=\ua:/html/body/div/@id=content\ua:/html/body/div/p/a/@href=/inline\ua:/html/body/div/p/a/@title=inline link\ua:/html/body/div/map/@name=m\ua:/html/body/div/map/area[1]/@href=/area-one\ua:/html/body/div/map/area[1]/@shape=rect\ua:/html/body/div/map/area[1]/@coords=0,0,1,1\ua:/html/body/div/map/area[2]/@href=/area-two\ua:/html/body/div/map/area[2]/@shape=rect\ua:/html/body/div/map/area[2]/@coords=1,1,2,2\ua:/html/body/div/img/@src=/img.png\ua:/html/body/div/img/@alt=An image\ua:/html/body/footer/@id=foot\ua:/html/body/footer/a[1]/@href=/foot-one\ua:/html/body/footer/a[2]/@href=/foot-two
+links.html	nodes	//div	e:/html/body/div
+links.html	nodes	//div[1]	e:/html/body/div
+links.html	nodes	(//div)[1]	e:/html/body/div
+links.html	nodes	(//div)[last()]	e:/html/body/div
+links.html	nodes	//div[@id]	e:/html/body/div
+links.html	nodes	//div | //p	e:/html/body/div\ue:/html/body/div/p
+links.html	nodes	//p | //div	e:/html/body/div\ue:/html/body/div/p
+links.html	nodes	//div | //div	e:/html/body/div
+links.html	nodes	(//div | //p)[1]	e:/html/body/div
+links.html	nodes	//head/following::*[1]	e:/html/body
+links.html	nodes	//body/descendant::*[3]	e:/html/body/nav/a[2]
+links.html	nodes	//*[last()]/text()	t:Links\ut:Empty\ut:an inline link\ut:Foot two
+links.html	nodes	//*[@id][1]	e:/html/body/nav
+links.html	nodes	//title/ancestor::*	e:/html\ue:/html/head
+links.html	nodes	//title/ancestor-or-self::*	e:/html\ue:/html/head\ue:/html/head/title
+links.html	nodes	//body/child::*[2]	e:/html/body/div
+links.html	nodes	//text()[normalize-space()][1]	t:Links\ut:One\ut:Two\ut:Three\ut:No href\ut:Empty\ut:Body text with \ut:an inline link\ut:Foot one\ut:Foot two
+links.html	nodes	//*[not(*)][1]	e:/html/head/title\ue:/html/body/nav/a[1]\ue:/html/body/div/p/a\ue:/html/body/div/map/area[1]\ue:/html/body/div/img\ue:/html/body/footer/a[1]
+links.html	nodes	//*[@id]/@id	a:/html/body/nav/@id=main-nav\ua:/html/body/div/@id=content\ua:/html/body/footer/@id=foot
+links.html	nodes	.//*[normalize-space(text())][1]	e:/html/head/title\ue:/html/body/nav/a[1]\ue:/html/body/div/p\ue:/html/body/div/p/a\ue:/html/body/footer/a[1]
+links.html	nodes	//*[position() = 1]	e:/html\ue:/html/head\ue:/html/head/title\ue:/html/body/nav\ue:/html/body/nav/a[1]\ue:/html/body/div/p\ue:/html/body/div/p/a\ue:/html/body/div/map/area[1]\ue:/html/body/footer/a[1]
+links.html	boolean	boolean(//div)	true
+links.html	boolean	boolean(//nothing)	false
+links.html	boolean	not(//nothing)	true
+links.html	boolean	count(//*) > 3	true
+links.html	boolean	count(//*) = count(//*)	true
+links.html	boolean	//div = //div	true
+links.html	boolean	//div != //div	false
+links.html	boolean	string(//title) = string(//title)	true
+links.html	boolean	//*[@id] = //*[@id]	true
+links.html	boolean	boolean(//*[@id] = 'nope')	false
+links.html	boolean	true() and false()	false
+links.html	boolean	true() or false()	true
+links.html	boolean	1 = '1'	true
+links.html	boolean	'a' < 'b'	false
+links.html	boolean	number('x') = number('x')	false
+links.html	number	count(//a)	8
+links.html	number	count(//a/@href)	7
+links.html	number	count(//a[@href])	7
+links.html	number	count(//a[not(@href)])	1
+links.html	number	count(//a[@href = ''])	1
+links.html	string	string(//a[1]/@href)	/one
+links.html	string	string(//a[last()]/@href)	
+links.html	number	count(.//a/@href | .//area/@href)	9
+links.html	number	count(//area/@href)	2
+links.html	string	string(//area[2]/@href)	/area-two
+links.html	number	count(//nav//a)	5
+links.html	number	count(//div[@id='content']//a)	1
+links.html	number	count(//footer/a)	2
+links.html	string	string(//a[@rel='next']/@href)	/one
+links.html	number	count(//a[starts-with(@href, '/')])	5
+links.html	number	count(//a[contains(@href, 'example.com')])	1
+links.html	string	string(//a[@title]/@title)	inline link
+links.html	string	string(//img/@src)	/img.png
+links.html	number	count(//*[@href])	9
+links.html	string	string(concat(//a[1]/@href, '|', //a[2]/@href))	/one|/two
+links.html	number	count(//a[string-length(@href) > 4])	4
+links.html	string	string(//p)	Body text with an inline link inside.
+links.html	string	normalize-space(//p)	Body text with an inline link inside.
+links.html	number	count(//p/a)	1
+links.html	number	count(//p/text())	2
+links.html	string	string(//p/text()[1])	Body text with 
+links.html	string	string(//p/a/@href)	/inline
+links.html	number	count(//a/parent::*)	3
+links.html	number	count(//a/@href/parent::*)	7
+links.html	number	count(//a/@href/..)	7
+links.html	string	name(//a/@href/..)	a
+links.html	number	count(//nav/a[position() <= 2])	2
+links.html	string	string(//nav/a[2])	Two
+links.html	nodes	.//a/@href | .//area/@href	a:/html/body/nav/a[1]/@href=/one\ua:/html/body/nav/a[2]/@href=/two\ua:/html/body/nav/a[3]/@href=https://example.com/three\ua:/html/body/nav/a[5]/@href=\ua:/html/body/div/p/a/@href=/inline\ua:/html/body/div/map/area[1]/@href=/area-one\ua:/html/body/div/map/area[2]/@href=/area-two\ua:/html/body/footer/a[1]/@href=/foot-one\ua:/html/body/footer/a[2]/@href=/foot-two
+links.html	nodes	//a/@href	a:/html/body/nav/a[1]/@href=/one\ua:/html/body/nav/a[2]/@href=/two\ua:/html/body/nav/a[3]/@href=https://example.com/three\ua:/html/body/nav/a[5]/@href=\ua:/html/body/div/p/a/@href=/inline\ua:/html/body/footer/a[1]/@href=/foot-one\ua:/html/body/footer/a[2]/@href=/foot-two
+links.html	nodes	//a[@href]	e:/html/body/nav/a[1]\ue:/html/body/nav/a[2]\ue:/html/body/nav/a[3]\ue:/html/body/nav/a[5]\ue:/html/body/div/p/a\ue:/html/body/footer/a[1]\ue:/html/body/footer/a[2]
+links.html	nodes	//area/@href	a:/html/body/div/map/area[1]/@href=/area-one\ua:/html/body/div/map/area[2]/@href=/area-two
+links.html	nodes	//a/text()	t:One\ut:Two\ut:Three\ut:No href\ut:Empty\ut:an inline link\ut:Foot one\ut:Foot two
+links.html	nodes	//nav/a	e:/html/body/nav/a[1]\ue:/html/body/nav/a[2]\ue:/html/body/nav/a[3]\ue:/html/body/nav/a[4]\ue:/html/body/nav/a[5]
+links.html	nodes	//a[@rel]	e:/html/body/nav/a[1]
+links.html	nodes	//a[contains(@href, 'foot')]	e:/html/body/footer/a[1]\ue:/html/body/footer/a[2]
+links.html	nodes	//p/node()	t:Body text with \ue:/html/body/div/p/a\ut: inside.
+links.html	nodes	//p/text()	t:Body text with \ut: inside.
+links.html	nodes	//img/@*	a:/html/body/div/img/@src=/img.png\ua:/html/body/div/img/@alt=An image

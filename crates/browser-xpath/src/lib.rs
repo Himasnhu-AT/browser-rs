@@ -17,3 +17,13 @@ pub mod lexer;
 pub mod model;
 pub mod parser;
 pub mod value;
+
+// The names every consumer reaches for. Unit 6 was not permitted to edit
+// `lib.rs`, so `API.md` documented these as "suggested"; the integration wave
+// applies them, so `browser_xpath::XPath` works alongside the module paths
+// (which stay valid). The set is exactly the one `API.md` §"Suggested crate-root
+// re-exports" names.
+pub use crate::error::{Result, XPathError};
+pub use crate::eval::{evaluate, select, Namespaces, Variable, Variables, XPath};
+pub use crate::model::{DomModel, NodeKind, TreeModel, XNode};
+pub use crate::value::Value;

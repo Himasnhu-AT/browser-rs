@@ -22,6 +22,18 @@ browser-templates = { workspace = true, optional = true }
 
 thiserror.workspace = true
 
+# The seam tests in `tests/integration.rs` reach past the façade on purpose: they
+# assert that the member crates unit 10 and unit 12 are about to be built on top
+# of actually compose with one another. They are dev-only; nothing in `src/`
+# depends on them.
+[dev-dependencies]
+browser-dom.workspace = true
+browser-selectors.workspace = true
+browser-xpath.workspace = true
+browser-storage.workspace = true
+browser-http.workspace = true
+indexmap.workspace = true
+
 [features]
 default = ["http", "parser"]
 parser = ["dep:browser-parser"]

@@ -1,0 +1,99 @@
+{"proxy": "http://h", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "http://h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "https://h:443", "ok": true, "result": {"server": "https://h:443", "username": "", "password": ""}}
+{"proxy": "socks4://h:1", "ok": true, "result": {"server": "socks4://h:1", "username": "", "password": ""}}
+{"proxy": "socks5://h:1080", "ok": true, "result": {"server": "socks5://h:1080", "username": "", "password": ""}}
+{"proxy": "http://user:pass@host:8080", "ok": true, "result": {"server": "http://host:8080", "username": "user", "password": "pass"}}
+{"proxy": "https://u@h:3128", "ok": true, "result": {"server": "https://h:3128", "username": "u", "password": ""}}
+{"proxy": "http://:p@h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": "p"}}
+{"proxy": "http://u:@h:1", "ok": true, "result": {"server": "http://h:1", "username": "u", "password": ""}}
+{"proxy": "http://@h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://u:p@ss@h:1", "ok": true, "result": {"server": "http://h:1", "username": "u", "password": "p@ss"}}
+{"proxy": "http://u%40a:p%3Ab@h:1", "ok": true, "result": {"server": "http://h:1", "username": "u%40a", "password": "p%3Ab"}}
+{"proxy": "HTTP://H:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "HtTpS://H:1", "ok": true, "result": {"server": "https://h:1", "username": "", "password": ""}}
+{"proxy": "SOCKS5://H:1", "ok": true, "result": {"server": "socks5://h:1", "username": "", "password": ""}}
+{"proxy": "ftp://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "socks5h://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "socks://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http+tls://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "h ttp://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "1http://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "://h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http:h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http:/h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http:///", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http://", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "//h:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "h", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "", "ok": true, "result": ""}
+{"proxy": "not a url", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid proxy string!"}
+{"proxy": "http://h/path?q=1#frag", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "socks5://h:1/p?x#y", "ok": true, "result": {"server": "socks5://h:1", "username": "", "password": ""}}
+{"proxy": "http://H.EXAMPLE.com:1", "ok": true, "result": {"server": "http://h.example.com:1", "username": "", "password": ""}}
+{"proxy": "http://h.:1", "ok": true, "result": {"server": "http://h.:1", "username": "", "password": ""}}
+{"proxy": "http://.:1", "ok": true, "result": {"server": "http://.:1", "username": "", "password": ""}}
+{"proxy": "http://..:1", "ok": true, "result": {"server": "http://..:1", "username": "", "password": ""}}
+{"proxy": "http://xn--80ak6aa92e.com:1", "ok": true, "result": {"server": "http://xn--80ak6aa92e.com:1", "username": "", "password": ""}}
+{"proxy": "http://\u00fcn\u00ef.example:1", "ok": true, "result": {"server": "http://\u00fcn\u00ef.example:1", "username": "", "password": ""}}
+{"proxy": "http://\u0130stanbul.example:1", "ok": true, "result": {"server": "http://i\u0307stanbul.example:1", "username": "", "password": ""}}
+{"proxy": "http://h_underscore:1", "ok": true, "result": {"server": "http://h_underscore:1", "username": "", "password": ""}}
+{"proxy": "http://h-dash:1", "ok": true, "result": {"server": "http://h-dash:1", "username": "", "password": ""}}
+{"proxy": "http://h%20space:1", "ok": true, "result": {"server": "http://h%20space:1", "username": "", "password": ""}}
+{"proxy": "http://[::1]", "ok": true, "result": {"server": "http://::1", "username": "", "password": ""}}
+{"proxy": "http://[::1]:8080", "ok": true, "result": {"server": "http://::1:8080", "username": "", "password": ""}}
+{"proxy": "http://[FE80::1]:1", "ok": true, "result": {"server": "http://fe80::1:1", "username": "", "password": ""}}
+{"proxy": "http://[fe80::1%25eth0]:1", "ok": true, "result": {"server": "http://fe80::1%25eth0:1", "username": "", "password": ""}}
+{"proxy": "http://[fe80::1%eth0]:1", "ok": true, "result": {"server": "http://fe80::1%eth0:1", "username": "", "password": ""}}
+{"proxy": "http://[::1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid IPv6 URL"}
+{"proxy": "http://::1]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid IPv6 URL"}
+{"proxy": "http://[notanip]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: 'notanip' does not appear to be an IPv4 or IPv6 address"}
+{"proxy": "http://[127.0.0.1]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: An IPv4 address cannot be in brackets"}
+{"proxy": "http://[v1.fe80::a+en1]:1", "ok": true, "result": {"server": "http://v1.fe80::a+en1:1", "username": "", "password": ""}}
+{"proxy": "http://[vZ.junk]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: IPvFuture address is invalid"}
+{"proxy": "http://[]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: '' does not appear to be an IPv4 or IPv6 address"}
+{"proxy": "http://u@[::1]:1", "ok": true, "result": {"server": "http://::1:1", "username": "u", "password": ""}}
+{"proxy": "http://h:", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "http://h:0", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "http://h:00", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "http://h:080", "ok": true, "result": {"server": "http://h:80", "username": "", "password": ""}}
+{"proxy": "http://h:65535", "ok": true, "result": {"server": "http://h:65535", "username": "", "password": ""}}
+{"proxy": "http://h:65536", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:99999", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:-1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:+1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h: 1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:1 ", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:notaport", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:1.0", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:1_0", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:\u0661\u0662", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:\u00b2", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:999999999999999999999999", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "http://h:0x10", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "  http://h:1  ", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "\thttp://h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://h:1\n", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "ht\ttp://h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://h\r\n:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "\u0000http://h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://h:1\u0000", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: The proxy argument's string is in invalid format!"}
+{"proxy": "\u001fhttp://h:1", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://ho\nst:1", "ok": true, "result": {"server": "http://host:1", "username": "", "password": ""}}
+{"proxy": "http://[fe80::1%ETH0]:1", "ok": true, "result": {"server": "http://fe80::1%ETH0:1", "username": "", "password": ""}}
+{"proxy": "http://[::FFFF:1.2.3.4]:1", "ok": true, "result": {"server": "http://::ffff:1.2.3.4:1", "username": "", "password": ""}}
+{"proxy": "http://x[::1]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid IPv6 URL"}
+{"proxy": "http://[::1]x:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid IPv6 URL"}
+{"proxy": "http://[::1]:1@h:2", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: 'h' does not appear to be an IPv4 or IPv6 address"}
+{"proxy": "http://u@h[::1]:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: Invalid IPv6 URL"}
+{"proxy": "http://[::1]/p", "ok": true, "result": {"server": "http://::1", "username": "", "password": ""}}
+{"proxy": "http://[::1]?q", "ok": true, "result": {"server": "http://::1", "username": "", "password": ""}}
+{"proxy": "http://[::1]#f", "ok": true, "result": {"server": "http://::1", "username": "", "password": ""}}
+{"proxy": "http://\u2100.com:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: netloc '\u2100.com:1' contains invalid characters under NFKC normalization"}
+{"proxy": "http://\ufe13x:1", "ok": false, "exc": "TypeError", "msg": "Invalid argument type: netloc '\ufe13x:1' contains invalid characters under NFKC normalization"}
+{"proxy": "http://\u00fc.com:1", "ok": true, "result": {"server": "http://\u00fc.com:1", "username": "", "password": ""}}
+{"proxy": "http://h:1/", "ok": true, "result": {"server": "http://h:1", "username": "", "password": ""}}
+{"proxy": "http://h?q", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "http://h#f", "ok": true, "result": {"server": "http://h", "username": "", "password": ""}}
+{"proxy": "HTTP://U:P@H.EXAMPLE:0080/x", "ok": true, "result": {"server": "http://h.example:80", "username": "U", "password": "P"}}
+{"proxy": "socks5://\u00dc:\u00df@H:1", "ok": true, "result": {"server": "socks5://h:1", "username": "\u00dc", "password": "\u00df"}}

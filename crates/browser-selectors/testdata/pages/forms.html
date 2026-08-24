@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head><title>Forms</title></head>
+<body>
+<form id="f" action="/go" method="post" class="form main">
+  <fieldset id="fs1" class="set"><legend>On</legend>
+    <input id="cb" type="checkbox" name="cb" checked class="ctl">
+    <input id="rb" type="radio" name="r" value="1" class="ctl">
+    <input id="rb2" type="radio" name="r" value="2" checked class="ctl">
+    <input id="bare" checked class="ctl">
+    <input id="hid" type="hidden" name="h" value="z">
+    <input id="txt" type="text" name="q" value="hi" placeholder="search" class="ctl wide">
+    <input id="dis" type="text" name="d" disabled class="ctl">
+  </fieldset>
+  <fieldset id="fs2" disabled class="set off"><input id="fsi" type="text" class="ctl"><button id="fsb" class="btn">Go</button></fieldset>
+  <select id="sel" name="s" class="ctl"><option id="o1" value="a" selected>A</option><option id="o2" value="b" disabled>B</option><optgroup id="og" label="g"><option id="o3" value="c">C</option></optgroup></select>
+  <select id="sel2" name="s2" disabled class="ctl off"><option id="o4">D</option></select>
+  <textarea id="ta" name="t" class="ctl"></textarea>
+  <textarea id="ta2" name="t2" disabled></textarea>
+  <button id="b1" type="submit" class="btn primary">Send</button>
+  <button id="b2" type="button" disabled class="btn">Nope</button>
+  <a id="anchor" href="#f" class="jump">jump</a>
+  <a id="noanchor" class="jump">no href</a>
+</form>
+</body>
+</html>

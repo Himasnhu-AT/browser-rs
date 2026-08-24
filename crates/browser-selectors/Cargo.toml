@@ -20,5 +20,22 @@ markup5ever.workspace = true
 selectors.workspace = true
 thiserror.workspace = true
 
+# `selectors::SelectorImpl` requires `Identifier`/`LocalName`/`NamespaceUrl` to
+# implement BOTH `cssparser::ToCss` and `precomputed_hash::PrecomputedHash`. The
+# orphan rule forbids implementing `ToCss` for `markup5ever::LocalName`, so we
+# must newtype it — and a newtype needs its own `PrecomputedHash` impl, which
+# needs this crate in scope. `selectors` does not re-export the trait.
+#
+# NOTE for the integrator: the workspace pins every third-party version in the
+# root `[workspace.dependencies]`. This one is a literal only because that table
+# is owned by another unit; please move it there (it is already in Cargo.lock at
+# 0.1.1, pulled in by `selectors` and `string_cache`).
+precomputed-hash = "0.1.1"
+
+[dev-dependencies]
+# `tests/css_selection.rs` replays a golden corpus generated from the reference
+# Python implementation (see `tools/gen_selection_corpus.py`).
+serde_json.workspace = true
+
 [features]
 default = []

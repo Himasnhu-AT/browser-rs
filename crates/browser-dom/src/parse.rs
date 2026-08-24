@@ -151,7 +151,19 @@ pub fn parse_bytes_with(bytes: &[u8], options: &ParseOptions) -> Document {
 }
 
 fn tokenize(html: &str) -> Tree<NodeData> {
-    html5ever::parse_document(DomSink::new(), html5ever::ParseOpts::default()).one(html)
+    // `scripting_enabled: false` is the one non-default: with scripting on,
+    // html5ever tokenises `<noscript>` as RAWTEXT and its markup becomes a
+    // single text node. libxml2 (and Python's `html.parser`) always parse
+    // `<noscript>` children as elements, and matching lxml is the contract, so
+    // the tree builder has to be told the page is not scripted.
+    let options = html5ever::ParseOpts {
+        tree_builder: html5ever::tree_builder::TreeBuilderOpts {
+            scripting_enabled: false,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    html5ever::parse_document(DomSink::new(), options).one(html)
 }
 
 fn finish(mut tree: Tree<NodeData>, options: &ParseOptions) -> Document {

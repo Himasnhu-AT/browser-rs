@@ -14,3 +14,16 @@ pub mod impl_selector;
 pub mod matching;
 pub mod parse;
 pub mod pseudo;
+
+// The names every consumer reaches for, hoisted to the crate root so
+// `browser_selectors::SelectorGroup` works alongside the module paths (which
+// stay valid). Unit 5 was not permitted to edit `lib.rs`; the integration wave
+// applies what `API.md`'s "one `use` is enough" table already documents, and
+// brings this crate into line with `browser-core`, `browser-dom` and
+// `browser-storage`, all of which re-export from their roots.
+pub use crate::error::{Result, SelectorError};
+pub use crate::matching::{Match, MatchValue, TextRole};
+pub use crate::parse::{
+    canonical_parts, parse_selector, CssSelector, SelectorGroup, SelectorParser, SubSelector,
+};
+pub use crate::pseudo::{BrowserPseudoClass, BrowserPseudoElement, Tail};

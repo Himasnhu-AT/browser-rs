@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Shop &amp; Co</title>
+  <link rel="stylesheet" href="/s.css">
+</head>
+<body class="page shop">
+<header id="top" class="bar wide" data-role="header">
+  <h1 class="title">Shop</h1>
+  <nav id="nav" class="menu">
+    <ul class="links">
+      <li class="item first"><a href="/" class="link home">Home</a></li>
+      <li class="item"><a href="/p/1" class="link" data-id="1">One</a></li>
+      <li class="item"><a href="/p/2.html" class="link buy" data-id="2" rel="nofollow noopener">Two</a></li>
+      <li class="item last"><a href="https://example.com/out.html" class="link ext" target="_blank">Out</a></li>
+    </ul>
+  </nav>
+</header>
+<main id="products" class="Main container" data-role="box">
+  <div class="product-list list" data-count="3">
+    <article class="product" data-id="1" data-sku="AB-100"><span class="price">$10.99</span><a href="/p/1" class="link buy">One</a><p class="desc">First item</p></article>
+    <article class="product featured" data-id="2" data-sku="AB-200"><span class="price">$20.99</span><a href="/p/2" class="link">Two</a><p class="desc">Second item</p></article>
+    <article class="product out" data-id="3" data-sku="CD-300"><span class="price">Out of stock</span><a class="link">Three</a><p class="desc">Third item</p></article>
+  </div>
+  <div class="empty"></div>
+  <div class="notes" title="">alpha<b id="b1">bold</b>beta<i>ital</i>gamma</div>
+  <div id="wrapper"><div id="inner"><span class="deep" data-x>deep</span></div></div>
+</main>
+<section id="reviews" lang="FR-ca" class="reviews">
+  <div class="review" data-rating="5"><p>Great</p><span class="who">ann</span></div>
+  <div class="review hidden" data-rating="2"><p>Meh</p><span class="who">bob</span></div>
+  <p id="only" title="t1">solo</p>
+</section>
+<footer><p id="p1" title="t1">para one</p><p id="p2" title="">para two</p><span id="lang1" lang="de">deutsch</span></footer>
+</body>
+</html>

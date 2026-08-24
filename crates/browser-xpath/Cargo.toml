@@ -18,5 +18,8 @@ browser-dom.workspace = true
 indexmap.workspace = true
 thiserror.workspace = true
 
+[dev-dependencies]
+serde_json.workspace = true
+
 [features]
 default = []

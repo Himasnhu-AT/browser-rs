@@ -1,0 +1,41 @@
+<html lang="en">
+<head><title>Fixture</title></head>
+<body>
+<main id="products" class="Main wide" data-role="box">
+  <div class="product-list list">
+    <article class="product" data-id="1" data-sku="AB-100"><span class="price">$10.99</span><a href="/p/1" class="link buy">One</a></article>
+    <article class="product featured" data-id="2" data-sku="AB-200"><span class="price">$20.99</span><a href="/p/2" class="link">Two</a></article>
+    <article class="product out" data-id="3" data-sku="CD-300"><span class="price">Out of stock</span><a class="link">Three</a></article>
+  </div>
+  <div class="empty"></div>
+  <div class="notes">alpha<b id="b1">bold</b>beta<i>ital</i>gamma</div>
+</main>
+<section id="reviews" lang="FR-ca">
+  <div class="review" data-rating="5"><p>Great</p></div>
+  <div class="review hidden" data-rating="2"><p>Meh</p></div>
+  <p id="only">solo</p>
+</section>
+<form id="f" action="/go">
+  <input id="cb" type="checkbox" checked>
+  <input id="rb" type="radio">
+  <input id="bare" checked>
+  <input id="hid" type="hidden">
+  <select id="sel" disabled><option id="o1" selected>A</option><option id="o2" disabled>B</option></select>
+  <fieldset id="fs" disabled><input id="fsi" type="text"><button id="fsb">Go</button></fieldset>
+  <textarea id="ta"></textarea>
+</form>
+<ul id="nav">
+  <li class="item first">a</li>
+  <li class="item">b</li>
+  <li class="item">c</li>
+  <li class="item last">d</li>
+</ul>
+<p id="p1" title="t1">para one</p>
+<p id="p2" title="">para two</p>
+<a id="ext" href="https://example.com/x.html" hreflang="en-GB" rel="nofollow noopener">ext</a>
+<a id="rel" href="/p/deep/page.html">rel</a>
+<a id="nohref">nohref</a>
+<span id="lang1" lang="de">deutsch</span>
+<div id="wrapper"><div id="inner"><span class="deep">deep</span></div></div>
+</body>
+</html>

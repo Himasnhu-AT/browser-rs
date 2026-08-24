@@ -1,0 +1,7598 @@
+Fuzz
+
+|  |  |  |
+| --- | --- | --- |
+| "*back`tick*" `verticaltabform` **`amp & lt <`** | | double``tick`a*b`double``tick |
+| word⁠joiner᠎vowel | | "`amp & lt <`" |
+
+cap
+
+![]()
+
+|  |  |
+| --- | --- |
+| ****- dashed**** pipe | char amp & lt < | tabs and spaces ~~double``tick~~ |
+| https://example.comcafé naïve | c\_d |---
+
+```
+plain
+  code
+```> > ```
+> > plain
+> >   code
+> > ```
+
+```
+one
+
+two
+```
+
+1. c\_d
+2. `trailing` a\*b`multi
+   line`
+3. tabs and spaces
+   ![]()
+   ![](a.png)
+
+   ### [Alt](https://example.com)###### `c_d`
+
+| controlcharshere- dashed | multi line | | `1. numbered`*joiner‍and﻿bom**c\_d* | |
+| --- | --- | --- | --- | --- |
+| **https://example.com**  **leading** joiner‍and﻿bom | Alt | pipe | char *`word⁠joiner᠎vowel`* |
+| `café naïve` back`tick |  | `café naïve`[a\*b](https://example.com) |
+
+none> word⁠joiner᠎vowel
+> :   verticaltabform
+>     multi
+>     line
+>
+> word⁠joiner᠎vowel pipe | char
+> :   verticaltabform 1. numbered
+>
+> ```
+> one
+>
+> two
+> ``````
+one
+
+two
+```
+
+```
+plain
+  code
+```
+
+no js##### double``tick ***zero​width‌space***word⁠joiner᠎vowel
+
+|  |
+| --- |
+| ~~[c\_d](https://example.com)~~  `leading` double``tick |
+| 1. numbered `"multi line"` |* `https://example.com`[c\_d](https://example.com)
+
+  | c\_d a\*b | | controlcharshere café naïve zero​width‌space | |
+  | --- | --- | --- | --- |
+  | verticaltabform | c\_dpipe | charmulti line |
+* ![](a.png)
+
+  *trailing*  `café naïve` c\_d
+
+  | *café naïve* verticaltabform | double``tick # hashed | | # hashed " " café naïve |
+  | --- | --- | --- | --- |
+  | ~~joiner‍and﻿bom~~[# hashed](/rel)~~# hashed~~ | | tabs and spaces verticaltabform | "# hashed" | |
+  | controlcharshere |  | café naïveverticaltabform |" leading"
+:   *multi
+    line*
+
+**invisible** payload
+
+*![Alt](a.png)*""![only alt]()
+:   back`tick
+
+*double``tick* *https://example.com* multi line
+:   leading
+    c\_dcontrolcharshere [zero​width‌space](https://example.com) ![only alt]()> #####https://example.com
+
+| hello world | | c\_d https://example.com ~~controlcharshere~~ |
+| --- | --- | --- |
+| [zero​width‌space](https://example.com "T") leading | 1. numberedhttps://example.comtrailing |Fuzz
+> *back`tick* 1. numbered
+
+> *amp & lt <*
+> `café naïve`
+> ~~pipe | char~~
+
+![Alt](a.png)
+
+| https://example.com | |
+| --- | --- |
+| joiner‍and﻿bom |
+
+1. numbered
+===========
+
+### **- dashed**
+
+`leading` `1. numbered`---
+
+ 
+
+
+### controlcharshere *a\*b*
+
+ 
+
+---
+
+ Fuzz
+
+
+templated prompt
+
+back`tickdouble``tick[multi
+line](https://example.com)
+
+0. zero​width‌spacetabs and spaces
+1. word⁠joiner᠎vowel
+
+   |  |
+   | --- |
+2. zero​width‌space
+
+   > café naïve
+
+[child](s.mp4) Fuzz
+
+| zero​width‌space | | a\*b |
+| --- | --- | --- |
+| leading leading | amp & lt < | |
+| # hashed | `a*b` |
+
+```
+a_b*c
+```
+
+`leading`
+
+| - dashed |
+| --- |
+| `joiner‍and﻿bom` |
+
+> 1. *back`tick*
+> 2. a\*b
+
+zero​width‌space
+:   café naïve
+
+`c_d` controlcharshere
+:   **1. numbered**Fuzz
+
+**double``tick**
+================
+
+*- dashed*
+
+~~`c_d`~~* hello worldverticaltabform
+
+café naïvezero​width‌space# hashed
+
+~~**verticaltabform**~~
+~~controlcharshere~~
+
+```
+![A](a.png "T")
+```
+
+c\_d
+**verticaltabform**
+*back`tick*
+
+| double``tick | zero​width‌space trailing |
+| --- | --- |
+| double``tick | `# hashed`word⁠joiner᠎vowel | 
+
+###### ~~zero​width‌space~~
+
+| *pipe | char* | ~~word⁠joiner᠎vowel~~ `1. numbered` **multi line** | |  | |
+| --- | --- | --- | --- | --- |
+| `https://example.com` | pipe | char ~~café naïve~~ | [tabs and spaces](/rel)tabs and spaces[double``tick](/rel) |
+| # hashed | double``tick | | ~~double``tick~~ amp & lt < [double``tick](/rel) |Fuzz
+
+|  |
+| --- |
+| `word⁠joiner᠎vowel` [*double``tick*](/rel) |
+| c\_dmulti line | |
+
+multi
+line
+==========
+
+> ### zero​width‌space
+
+[child](s.mp4)
+
+###### leading café naïveFuzz
+
+zero​width‌spacedouble``tick
+:   `amp & lt <`*café naïve*
+
+café naïve **[verticaltabform](https://example.com)**
+:   zero​width‌space `c_d`
+
+* hello world
+
+  ~~**zero​width‌space**~~
+  ========================
+
+0. multi
+   lineback`tick  
+
+   ###### way beyond
+1. `word⁠joiner᠎vowel`
+   1. numbered
+   `controlcharshere`
+2. *a\*b* verticaltabform
+
+   | a\*bcafé naïve | tabs and spaces | |
+   | --- | --- | --- |
+   | joiner‍and﻿bom zero​width‌space tabs and spaces | trailing |
+
+``` double``tick ```#### controlcharshere ~~only alt~~
+
+a\*b| joiner‍and﻿bom trailing |
+| --- |
+| **~~1. numbered~~** tabs and spaces |```
+a_b*c
+```
+
+| word⁠joiner᠎vowel ~~- dashed~~ | |
+| --- | --- |
+| `hello world` ||  | | hello world pipe | char | *joiner‍and﻿bom*[*trailing*](https://example.com) |
+| --- | --- | --- | --- |
+| leading `controlcharshere` back`tick | | multi line# hashed**hello world** | `- dashed` *only alt* a\*b |
+
+* [word⁠joiner᠎vowel](https://example.com)
+  ``` double``tick ```
+  1. numbered#####
+
+#### back`tick
+
+pipe | char
+===========
+
+| fallback |
+| --- |Fuzz
+
+
+double``tick double``tick
+
+
+****leading**** - dashed
+:   *zero​width‌space*`controlcharshere`
+
+``` double``tick ``` multi line `café naïve`
+:   double``tick
+    joiner‍and﻿bom
+
+**~~joiner‍and﻿bom~~** leading```
+"trailing "
+```
+
+- ~~tabs and spaces~~
+  **café naïve**
+
+```
+plain
+  code
+```1. numbered
+:   ``` double``tick ```
+
+controlcharshere ~~![]()~~ word⁠joiner᠎vowel
+:   **back`tick**
+    - dashed
+
+|  |  |  |
+| --- | --- | --- |
+| c\_d | ~~tabs and spaces~~ |  |
+| hello world  `leading` *joiner‍and﻿bom* | leading | café naïve https://example.com multi line |
+
+* [tabs and spaces](https://example.com "T")
+* leading
+
+  ~~a\*b~~
+
+  > trailing
+
+|  |  |
+| --- | --- |
+| " " | back`tick |
+| `- dashed` | | amp & lt < `hello world` |
+|  |  |  |
+| --- | --- | --- |
+| joiner‍and﻿bom | |  |
+
+:   double``tickleading
+
+`hello world` ~~word⁠joiner᠎vowel~~ **1. numbered**
+:   https://example.com
+
+- collides with convert\_list| # hashed# hashed | **https://example.com** | | *double``tick* |
+| --- | --- | --- | --- |
+| zero​width‌space  "amp & lt <" |  | joiner‍and﻿bom *[word⁠joiner᠎vowel](https://example.com)* |
+| word⁠joiner᠎vowel ~~trailing~~  1. numbered |  | - dashedhello world |
+
+```
+one
+
+two
+```> - café naïve `https://example.com`
+
+| café naïve amp & lt < |  | verticaltabformtrailing a\*b | |
+| --- | --- | --- | --- |
+| double``tick | | 1. numbered | hello world | |
+| trailing controlcharshere | https://example.com back`tick controlcharshere | joiner‍and﻿bom https://example.com zero​width‌space | |
+
+`c_d`c\_d1. numbered
+====================Fuzz
+
+
+```
+one
+
+two
+```
+
+3. double``tick
+   back`tick
+   tabs and spaces
+4. "``` double``tick ```"
+5. double``tick###### `c_d`
+
+```
+a_b*c
+```
+
+###### back`tick###### zero​width‌space # hashed zero​width‌space
+
+|  | `a*b` | | ~~*zero​width‌space*~~ |
+| --- | --- | --- | --- |
+| verticaltabform `zero​width‌space` | | ~~- dashed~~Alt | | *a\*b* trailing [hello world](https://example.com) |
+| ***double``tick*** |  | `word⁠joiner᠎vowel` |Fuzz
+
+* c\_d
+* ![A](a.png "T")
+* c\_d
+* hello world`controlcharshere`
+
+> ```
+> a_b*c
+> ```
+
+`# hashed`
+:   **https://example.com**
+
+joiner‍and﻿boma\*b
+
+|  |  |  |
+| --- | --- | --- |
+| `tabs and spaces` *https://example.com* - dashed | 1. numbered | |
+| `# hashed` | `` back`tick `` |> ---
+
+> `hello world`![]()controlcharshere
+>
+> | back`tick 1. numbered **multi line** | | " " a\*b **zero​width‌space** | |
+> | --- | --- | --- | --- |
+> | multi line | controlcharshere verticaltabform |
+> | https://example.com | - dashed pipe | char | |Fuzz
+> - word⁠joiner᠎vowel
+
+---
+
+ Fuzz
+
+| **double``tick** `a*b` | c\_d[a\*b](/rel) | | ~~double``tick~~ |
+| --- | --- | --- | --- |
+| ***leading***`# hashed` | # hashed amp & lt < | pipe | char back`tick | |
+| `A``https://example.com`amp & lt < | c\_d **trailing** | | [c\_d](https://example.com) |
+
+café naïveamp & lt <
+
+* leading
+  + - * trailing
+        + zero​width‌spacea\*b```
+1. numbered
+```amp & lt <*café naïve*
+
+```
+one
+
+two
+```
+
+```
+a_b*c
+```---
+
+* joiner‍and﻿bom
+  + c\_d
+    - leading
+      * https://example.com
+        pipe | charFuzz
+
+~~- dashed~~ 1. numbered
+
+zero​width‌space
+:   hello world back`tick *hello world*
+
+word⁠joiner᠎vowel~~back`tick~~
+:   "double``tick" leading*a\*b*|  |
+| --- |
+| https://example.com |### `1. numbered`
+
+```
+a_b*c
+```
+
+* https://example.com
+  pipe | char
+
+  > c\_d
+  > ====
+* `# hashed`c\_d`verticaltabform`
+
+3. `![Alt](a.png)`
+   *[c\_d](https://example.com "T")*
+4. hello world `hello world`
+5. [trailing](https://example.com "T") 
+   `` back`tick ``|  | `https://example.com`multi line | | **joiner‍and﻿bom** |
+| --- | --- | --- | --- |
+| `verticaltabform``verticaltabform` | | back`tick**joiner‍and﻿bom** | ~~pipe | char~~ |tabs and spaces *" "* zero​width‌space
+:   # hashed  `a*b`
+
+https://example.com
+:   `https://example.com`
+
+`c_d`
+
+* ![A](a.png "T")
+
+  | `leading` | | controlcharshere | |
+  | --- | --- | --- | --- |
+  | multi line hello world | `multi line` ~~verticaltabform~~ A |
+  | c\_d | joiner‍and﻿bom |
+* "`1. numbered`"
+
+[word⁠joiner᠎vowel](https://example.com "T")`a*b`Fuzz
+
+* ``` double``tick ```
+* `- dashed` amp & lt <> pipe | char double``tick
+> :   `joiner‍and﻿bom`
+>
+> - dashed a\*b
+> :   back`tickpipe | char
+
+- dashed
+back`tick
+pipe | char
+==============================
+
+--- 
+
+zero​width‌space zero​width‌space
+
+* ~~tabs and spaces~~
+* back`tick
+  `` back`tick ``
+* 1. numbered
+  ![only alt]()
+  `c_d`3. ~~word⁠joiner᠎vowel~~ *zero​width‌space* https://example.com
+4. **double``tick** a\*b a\*b
+
+   ##### joiner‍and﻿bom
+5. pipe | char**hello world** leading
+
+|  |
+| --- |
+
+* ![](a.png)
+  https://example.com
+  **https://example.com**
+
+0. word⁠joiner᠎vowel
+
+   | hello worldhello world | zero​width‌space tabs and spaces tabs and spaces | | pipe | charhello world |
+   | --- | --- | --- | --- |
+   | joiner‍and﻿bomjoiner‍and﻿bom | | leadinghello world | - dashed# hashedtrailing |
+   | leading controlcharshere trailing | zero​width‌space | pipe | char |
+ ### ""
+
+**# hashed***joiner‍and﻿bom*
+
+| multi linemulti line | | amp & lt < | |
+| --- | --- | --- | --- |
+| multi lineamp & lt < | trailing c\_d |
+
+c\_d
+:   ![]() [joiner‍and﻿bom](/rel) ![Alt](a.png)
+
+multi line
+:   - dashed*controlcharshere*##### amp & lt < tabs and spaces c\_dFuzz
+
+**`c_d`** c\_d
+:   **amp & lt <** pipe | char `verticaltabform`
+
+multi line leading
+:   multi
+    line # hashed
+
+> hello world
+>   
+> ~~controlcharshere~~
+>
+> | [a\*b](https://example.com)trailing word⁠joiner᠎vowel | |
+> | --- | --- |
+> | # hashed hello world |
+> | - dashed controlcharshere |Fuzz
+
+```
+a_b*c
+```
+
+|  |  |  |
+| --- | --- | --- |
+|  | leading1. numbered | verticaltabform  leading café naïve |
+| **https://example.com** | | double``tick | "back`tick" |
+
+```
+# hashed  
+    1. numbered
+```Fuzz
+
+
+#### double``tick
+
+> ```
+>   indented
+> ```
+
+ ---Fuzz
+
+### 
+
+*`café naïve`*   
+ verticaltabform
+
+```
+plain
+  code
+```| "trailing " | | verticaltabform | |
+| --- | --- | --- | --- |
+| *"hello world"* *verticaltabform* controlcharshere | trailing [**# hashed**](https://example.com) |
+
+```
+verticaltabform
+```
+
+##### 
+
+### **pipe | char**---
+
+##### - dashed `# hashed`
+
+1. | https://example.com | |
+   | --- | --- |
+   | back`tick |
+   | café naïve | |
+2. *café naïve*
+     
+   `a*b`"quoted"> a\*b word⁠joiner᠎vowel
+> :   café naïve
+>
+> trailing https://example.com
+> :   leadingcontrolcharshere
+>
+> a\*b`zero​width‌space`> * tabs and spaces`# hashed`
+>
+>   ```
+>   a_b*c
+>   ```
+> * *tabs and spaces*
+>   `joiner‍and﻿bom`
+
+##### controlcharshere *"https://example.com"*
+
+"word⁠joiner᠎vowel" leading back`tick
+:   1. numbered
+
+[zero​width‌space](https://example.com)
+# hashed
+zero​width‌space* *~~double``tick~~*
+  1. numbered
+
+  ```
+  plain
+    code
+  ```
+* ![Alt](a.png)
+  `- dashed````
+one
+
+two
+```
+
+**amp & lt <**
+
+|  |
+| --- |
+|  |
+| joiner‍and﻿bom back`tick `hello world` |
+|  |  |
+| --- | --- |
+| `amp & lt <` `a*b` | |---
+
+* double``tick
+  `# hashed`
+
+|  |  |  |
+| --- | --- | --- |
+| 1. numbered**~~controlcharshere~~** | tabs and spaces | |
+| `"zero​width‌space"` | | joiner‍and﻿bom tabs and spaces | |
+|  |  |  |
+| --- | --- | --- |
+| c\_d | | ~~trailing~~  - dashed |
+
+---> ```
+> one
+>
+> two
+> ```---
+
+https://example.com
+
+| double``tick tabs and spaces | |
+| --- | --- |
+| amp & lt < hello world |
+
+### **c\_d** a\*b pipe | char##### multi line
+
+---
+
+```
+"tabs	and  spaces"  multi
+line
+```
+
+|  |
+| --- |
+| word⁠joiner᠎vowel |joiner‍and﻿bom
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+|  | | "multi line" | |
+| ~~zero​width‌space~~ | `- dashed` |
+
+back`tick
+double``tick
+
+| trailing |  |
+| --- | --- |
+| controlcharshere | A double``tick | |
+| `trailing` | | café naïveamp & lt < |
+
+:   # hashed a\*b
+
+word⁠joiner᠎vowel multi line
+:   controlcharshere
+    <https://example.com>
+    a\*b* **![A](a.png "T")**  **~~leading~~**
+* *`leading`*
+
+****multi line**** leading `a*b`
+:   pipe | char
+
+https://example.com
+
+| `hello world` `pipe | char` c\_d | |
+| --- | --- |
+| `- dashed` |Fuzz
+
+* [trailing](/rel)Fuzz 
+
+---
+
+**invisible** payload
+
+`multi line`
+:   *joiner‍and﻿bom*
+    hello world
+    `` back`tick ``---
+
+> café naïve> |  |  |  |
+> | --- | --- | --- |
+> | pipe | char | | # hashed multi line zero​width‌space |
+> | - dashed word⁠joiner᠎vowel | leading # hashed |
+> |  |  |
+> | --- | --- |
+> | back`tick# hashed | tabs and spaces 1. numbered trailing |
+
+https://example.com controlcharshere
+
+```
+a_b*c
+```* back`tickverticaltabform
+* 1. numbered - dashed back`tick
+
+#### a\*b **double``tick** ~~`multi line`~~
+
+###### amp & lt < verticaltabform
+
+> |  |
+> | --- |
+> | **hello world** trailing  trailing |
+
+| ~~https://example.com~~hello world | | `amp & lt <` zero​width‌space trailing | | joiner‍and﻿bom verticaltabform https://example.com |
+| --- | --- | --- | --- | --- |
+| ~~joiner‍and﻿bom~~[double``tick](https://example.com "T") | ~~https://example.com~~  `leading` | ****verticaltabform**** A |##### leading verticaltabform `joiner‍and﻿bom`
+
+---
+
+**# hashed**
+
+| only alt | `- dashed` | ~~# hashed~~only alt leading |
+| --- | --- | --- |
+|  | `- dashed` `tabs and spaces` verticaltabform | | 1. numbered trailing [a\*b](https://example.com "T") |
+| "*pipe | char*"amp & lt < | zero​width‌space | pipe | char | |
+
+double``tick  `leading`Fuzz
+
+---
+
+ c\_d`joiner‍and﻿bom````
+one
+
+two
+```
+
+```
+a_b*c
+```Fuzz
+
+multi
+line **word⁠joiner᠎vowel** word⁠joiner᠎vowel
+
+|  |  |
+| --- | --- |
+| controlcharshere | zero​width‌space |
+| c\_d | ~~1. numbered~~ |
+|  |  |
+| --- | --- |
+|  | multi line `café naïve` |
+
+`- dashed`
+==========
+
+> verticaltabform- dashed `multi
+line` A
+-----------------------
+
+word⁠joiner᠎vowel
+`zero​width‌space`
+[1. numbered](/rel)
+
+|  |
+| --- |
+| joiner‍and﻿bom |
+| https://example.com trailing | |
+|  |
+| --- |
+| https://example.com **verticaltabform** |
+
+**1. numbered** ~~- dashed~~
+:   "**a\*b**" `1. numbered` zero​width‌space
+
+~~double``tick~~ multi line [![](a.png)](https://example.com "T")
+:   " leading"---```
+plain
+  code
+```Fuzz 
+
+##### - dashedzero​width‌space
+
+![A](a.png "T") leading# hashed
+
+```
+a_b*c
+```
+
+> amp & lt < ~~`hello world`~~ zero​width‌space
+> =============================================
+
+| only alt | | "word⁠joiner᠎vowel" | |
+| --- | --- | --- | --- |
+| - dashed **`https://example.com`** | *back`tick* multi line |0. double``tick leading`verticaltabform`
+   * "tabs and spaces"
+   * leading
+   * trailing 
+     + https://example.com
+       - verticaltabform
+         * zero​width‌space
+           + multi
+             line
+             - verticaltabform leading **multi
+               line**
+1. joiner‍and﻿bom amp & lt <
+   * joiner‍and﻿bom
+     + word⁠joiner᠎vowel
+       - - dashed
+         * 1. numbered
+           + amp & lt <![](a.png)
+2. ~~leading~~
+   ![only alt]()
+
+```
+plain
+  code
+```
+
+```
+  indented
+```Fuzz
+> ***pipe | char***
+
+> ~~zero​width‌space~~ double``tick
+> :   ~~pipe | char~~
+
+* amp & lt <
+  + word⁠joiner᠎vowel
+    - word⁠joiner᠎vowel
+      * hello world
+        + tabs and spaceszero​width‌space
+          word⁠joiner᠎vowel#### pipe | char `trailing`
+
+```
+a_b*c
+```
+
+| café naïve | | café naïvec\_dcontrolcharshere |
+| --- | --- | --- |
+| multi line | | amp & lt | |
+| verticaltabform | - dashed verticaltabform |> > 1. numbered
+
+café naïve
+
+https://example.com
+:   - dashed
+
+leading
+:   double``tick
+
+> [https://example.com](https://example.com "T")
+> back`tick
+> ========================================================```
+  indented
+```
+
+* hello world
+  + - multi
+      lineword⁠joiner᠎vowel
+> |  |  |  |  |
+> | --- | --- | --- | --- |
+> | `verticaltabform` zero​width‌space | - dashed1. numbered- dashed | | amp & lt < |
+> |  | *c\_d* | a\*b - dashed |
+> |  |  |  |
+> | --- | --- | --- |
+> | - dashed | `pipe | char`~~https://example.com~~ | word⁠joiner᠎vowel |Fuzz
+
+`c_d`
+
+"joiner‍and﻿bom"
+
+| - dashed | verticaltabform ~~https://example.com~~ c\_d | `https://example.com` | |
+| --- | --- | --- | --- |
+| zero​width‌space ~~hello world~~ |  | pipe | char[pipe | char](https://example.com) |
+
+back`tick
+=========Fuzz
+> ---
+
+```
+one
+
+two
+```
+
+cap| ""verticaltabform"" |
+| --- |
+|  |
+| ~~leading~~joiner‍and﻿bom |
+
+* ![](a.png)*[pipe | char](https://example.com "T")*``` double``tick ```> > | word⁠joiner᠎vowel verticaltabform leading | |
+> > | --- | --- |
+> > | back`tick pipe | char controlcharshere |
+
+tabs and spaces verticaltabform controlcharshere
+
+none```
+plain
+  code
+```
+
+---
+
+- leading
+  ![]()
+
+* **zero​width‌space**
+* café naïveFuzz
+
+| - dashed | amp & lt < | `# hashed` |
+| --- | --- | --- |
+| leading | ~~leading~~ double``tick *- dashed* | https://example.com |
+| A controlcharshere [word⁠joiner᠎vowel](/rel) | `café naïve` | `# hashed` `A` |
+
+|  |
+| --- |
+| `multi line` controlcharshere https://example.com |
+
+###### only alt"**controlcharshere**"
+
+zero​width‌space~~https://example.com~~
+
+```
+
+```### **back`tick**| [tabs and spaces](/rel) | |  | |
+| --- | --- | --- | --- |
+| # hashedhello world |  |
+| trailing https://example.com | ~~double``tick~~ only alt |
+
+| joiner‍and﻿bom multi line |
+| --- |
+| word⁠joiner᠎voweltabs and spaces |
+| joiner‍and﻿bom |Fuzz
+
+`` back`tick ``  hello world* `- dashed`
+  trailing
+* ~~pipe | char~~- dashed
+* **c\_d**
+
+* **hello world**
+* # hashed 1. numbered
+
+> - collides with convert\_list# hashed hello world
+
+![poster](p.png)* # hashed
+  word⁠joiner᠎vowelFuzz
+
+0. *pipe | char*  
+   `https://example.com`
+1. back`tick
+
+   |  |
+   | --- |
+   | ``` one  two ``` |
+
+```
+hello world
+```
+
+[amp & lt <](/rel) zero​width‌space
+:   "controlcharshere" ~~`c_d`~~
+
+c\_dFuzz
+
+```
+a_b*c
+```
+
+---
+
+| 1. verticaltabform double``tick |
+| --- |
+
+[https://example.com](/rel)`a*b`
+:   leading café naïve> | [amp & lt <](https://example.com)hello worldmulti line | café naïve `pipe | char` | |
+> | --- | --- | --- |
+> | café naïve hello world | `café naïve` |
+
+```
+a_b*c
+```
+
+word⁠joiner᠎vowel ![](a.png)
+
+# hashed `café naïve` `word⁠joiner᠎vowel`
+
+1. numbered
+:   leadingFuzz
+
+pipe | char
+:   ""word⁠joiner᠎vowel""`pipe | char`hello world1. `hello world`
+   ![only alt]()
+2. tabs and spaces
+
+   `c_d`
+   :   `verticaltabform``` back`tick ``
+3. multi
+   line
+   * multi
+     line
+     + 1. numbered
+       - * 1. numbered
+           + leading
+             - tabs and spaces![A](a.png "T")verticaltabformtrailing
+
+---
+
+ Fuzz
+
+`verticaltabform` ~~![]()~~
+
+> controlcharshere- dashed
+
+|  |  |  |
+| --- | --- | --- |
+| pipe | char | | hello world [zero​width‌space](https://example.com "T") |
+| a\*b pipe | char | **joiner‍and﻿bom** | |
+|  |  |  |  |
+| --- | --- | --- | --- |
+| `multi line` | | `word⁠joiner᠎vowel` | |
+
+---> > **multi
+> > line**
+
+joiner‍and﻿bom
+
+| `1. numbered` "# hashed" `tabs and spaces` | zero​width‌space | | `multi line` | |
+| --- | --- | --- | --- | --- |
+| only alt | "https://example.com" | ~~`amp & lt <`~~ leading |
+| 1. numbered `trailing` | | tabs and spaces trailing | | # hashed |
+
+###### `a*b`- dashed   
+ **pipe | char**
+
+```
+one
+
+two
+```
+
+1. *# hashed*
+2. https://example.comtrailing![]()
+
+`c_d`
+:   `word⁠joiner᠎vowel`double``tick
+:   c\_d
+    ****a\*b****zero​width‌space
+
+[child](s.mp4)
+
+café naïve
+~~1. numbered~~
+
+*`a*b`*
+*https://example.com*
+controlcharshere```
+word⁠joiner᠎vowel
+  controlcharshere
+```
+
+"*multi
+line*"
+
+zero​width‌space`` back`tick `` leading
+---------------------------------------##### *`controlcharshere`*pipe | char**only alt**
+
+```
+one
+
+two
+```
+
+~~zero​width‌space~~
+leading
+
+`pipe | char`
+
+### `a*b`---
+
+> **a\*b**
+
+~~**zero​width‌space**~~
+:   trailing
+
+back`tick `trailing`Fuzz
+
+~~café naïve~~trailing `hello world`
+
+
+double``tickc\_d
+:   leading
+
+> "  
+> "
+
+> ```
+> plain
+>   code
+> ```Fuzz
+
+
+---
+
+#### **`` back`tick ``**Fuzz
+
+a\*b [verticaltabform](https://example.com) a\*b
+
+|  | ``` double``tick ```"pipe | char" | `zero​width‌space` pipe | char A |
+| --- | --- | --- |
+| verticaltabform café naïve | - dashed | ***- dashed*** *~~- dashed~~* |
+
+> * https://example.com
+> * tabs and spaces
+> * pipe | char
+
+##### https://example.comcontrolcharshere> ### [trailing](https://example.com)
+>
+> ![only alt]()
+> `café naïve`
+
+- dashedFuzz
+
+***joiner‍and﻿bom***
+--------------------
+
+```
+one
+
+two
+```
+
+3. double``tick
+4. "zero​width‌space"Fuzz 
+
+![only alt]()
+
+###### ~~# hashed~~
+
+###### *1. numbered* a\*bFuzz
+
+| "1. numbered" | |
+| --- | --- |
+| controlcharshere word⁠joiner᠎vowel controlcharshere |
+
+```
+  indented
+```
+
+------
+
+---
+
+```
+a_b*c
+```
+
+> c\_d ![]()
+>
+> | word⁠joiner᠎vowel # hashed |
+> | --- |
+> | verticaltabform https://example.com |
+> |  | |Fuzz
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| `"joiner‍and﻿bom"` **[hello world](/rel)** | ~~https://example.com~~ | pipe | charA | |
+| **~~multi line~~**[``` double``tick ```](https://example.com)double``tick | `1. numbered` verticaltabform |  |
+
+- verticaltabform
+
+**a\*b**
+![Alt](a.png)
+
+```
+  indented
+```Fuzz
+
+1. ![]()
+   "**# hashed**"
+   ![]()
+
+   |  |  |  |
+   | --- | --- | --- |
+   | hello worldamp & lt < | multi line leading word⁠joiner᠎vowel | c\_d controlcharshere zero​width‌space |
+   | - dashed | zero​width‌space leading | | # hashed back`tick | |
+   |  |  |  |
+   | --- | --- | --- |
+   |  | zero​width‌space | tabs and spacesverticaltabform |
+2. **zero​width‌space** # hashed pipe | char
+
+* [*amp & lt <*](https://example.com "T")
+
+  ```
+  plain
+    code
+  ```
+* c\_d
+  ![]()
+* ![](a.png)
+  `amp & lt <`
+
+  ~~c\_d~~
+  tabs and spaces
+  double``tick
+
+> ~~joiner‍and﻿bom~~
+> :   word⁠joiner᠎vowel
+
+![Alt](a.png)
+https://example.com
+**multi
+line**Fuzz 
+
+
+
+
+[child](s.mp4)
+
+~~café naïve~~
+:   leading
+    trailing
+
+"c\_d"`multi line`amp & lt <
+:   # hashed
+
+> 3. hello world 
+>
+>    ###### beyond six
+> 4. joiner‍and﻿bom
+>
+>    multi line
+>    :   verticaltabform| "trailing " |
+| --- |
+| - dashed ~~controlcharshere~~ **`amp & lt <`** |
+
+| only alt amp & lt < hello world |
+| --- |
+| tabs and spaces | |
+| café naïve |
+
+```
+one
+
+two
+```
+
+```
+- dashed
+  # hashed
+```> **invisible** payload
+
+***c\_d*** **~~- dashed~~**
+:   leading
+
+> * ![](a.png)![A](a.png "T")|  | |
+| --- | --- |
+| ~~[leading](/rel)~~**multi line** |
+
+> > ##### `trailing`
+
+capFuzz
+
+1. back`tick
+   > c\_d
+   > :   c\_d
+   >
+   > zero​width‌space
+
+0. `amp & lt <`*trailing* *word⁠joiner᠎vowel*
+1. **multi
+   line**`1. numbered`
+
+   ---
+2. verticaltabform pipe | char
+
+##### word⁠joiner᠎voweljoiner‍and﻿bom| café naïve | |
+| --- | --- |
+| `pipe | char` `tabs and spaces` | |
+| tabs and spaces |![A](a.png "T")multi line
+:   leading*a\*b**`- dashed`*
+
+joiner‍and﻿bom
+:   trailing
+
+|  |  |  |
+| --- | --- | --- |
+| ~~`https://example.com`~~ tabs and spaces https://example.com | joiner‍and﻿bom | |
+| zero​width‌space | `"- dashed"` |
+|  |  |
+| --- | --- |
+| double``tick c\_d | ~~trailing~~  pipe | char A |
+
+a\*b
+:   pipe | char
+
+zero​width‌space
+================|  |
+| --- |
+| --- ||  |
+| --- |
+| multi line trailing |
+| leading https://example.com |
+|  |  |
+| --- | --- |
+| zero​width‌spacecontrolcharshere | |
+
+only alt
+`c_d`
+~~1. numbered~~
+------------------------------
+
+#### `1. numbered` *verticaltabform*
+
+café naïve
+
+|  |
+| --- |
+| *# hashed* |
+| Alt# hashed**c\_d** | |
+
+[double``tick](https://example.com "T")"joiner‍and﻿bom"[pipe | char](https://example.com)
+:   # hashed
+    `1. numbered`
+    1. numbered
+
+1. `café naïve`verticaltabformhttps://example.com
+
+   none
+   ====Fuzz
+
+* café naïve `tabs and spaces`
+
+  ![A](a.png "T") double``tick
+
+
+  a\*b
+  :   multi
+      line café naïve
+* ![](a.png) https://example.com
+* ![A](a.png "T")
+  + *verticaltabform*
+    **back`tick**
+
+
+
+    - dashed
+    **pipe | char**
+    café naïve
+
+multi
+line
+hello world
+----------------------Fuzz
+
+~~https://example.com~~
+:   hello world[1. numbered](https://example.com)
+
+- `café naïve`
+
+`` back`tick ``
+amp & lt <
+==========================
+
+* pipe | charhello worldmulti
+  line
+  > ![]()
+  > **double``tick**
+  > *![Alt](a.png)*```
+  indented
+```
+
+café naïve
+*multi
+line*
+=======================
+
+|  | | `- dashed` | - dashed |
+| --- | --- | --- | --- |
+| [amp & lt <](https://example.com "T") | `amp & lt <` `# hashed` | multi linehello worldzero​width‌space |
+| multi line [- dashed](https://example.com) | tabs and spacestrailing | | `multi line` |
+
+``` double``tick ``` *tabs and spaces*
+--------------------------------------
+
+```
+plain
+  code
+```> ---
+
+- 1. numbered
+
+```
+a_b*c
+```
+
+leading
+=======#### hello world[hello world](https://example.com "T")
+
+---
+
+|  |
+| --- |
+| controlcharshere tabs and spaces - dashed  verticaltabform 1. numbered  joiner‍and﻿bom  controlcharshere |Fuzz
+
+1. amp & lt <*café naïve***"zero​width‌space"**
+2. trailing 
+
+   "`pipe | char`"verticaltabform
+3. ``` double``tick ```   1. numbered
+
+```
+plain
+  code
+```
+
+> > café naïve
+> > tabs and spaces
+
+|  |  |  |
+| --- | --- | --- |
+|  |  | ~~double``tick~~ back`tick ~~zero​width‌space~~ |
+|  | ~~zero​width‌space~~ [# hashed](https://example.com) controlcharshere | | # hashedcafé naïve |
+|  |  |  |
+| --- | --- | --- |
+| **`café naïve`** | https://example.com | Altback`tick |* `controlcharshere` verticaltabform zero​width‌spaceFuzz
+
+```
+one
+
+two
+```
+
+> only alt
+> ========
+
+zero​width‌spacec\_dc\_d
+
+café naïvetabs and spaces1. numbered
+====================================multi linetrailing
+:   [1. numbered](/rel)
+
+- dashed
+
+| café naïve zero​width‌space | | - dashed Alt |
+| --- | --- | --- |
+| https://example.com "double``tick" | - dashed *[- dashed](https://example.com "T")* | |
+| **~~hello world~~** Alt | | - dashed |
+
+##### *controlcharshere*
+
+- # hashed
+
+* `amp & lt <` [# hashed](/rel)
+
+  ### A joiner‍and﻿bom café naïve
+* `- dashed`
+
+  ```
+  plain
+    code
+  ``` 
+
+---
+
+###### `c_d`> ~~zero​width‌space~~
+
+[amp & lt <](/rel)
+**café naïve** 
+[child](s.mp4)
+
+* `` back`tick ``# hashed`c_d`
+  3. a\*b
+     zero​width‌space
+  4. amp & lt <
+  5. trailing
+* 1. numbered
+  [joiner‍and﻿bom](https://example.com)
+  [back`tick](/rel)
+
+0. `1. numbered`
+
+   **tabs and spaces** # hashed
+
+   cap
+1. ![only alt]()
+
+
+   back`tick
+   =========
+
+   **# hashed**![]()
+2. https://example.com
+    ~~leading~~
+
+> `controlcharshere`
+
+[multi line](https://example.com) ~~double``tick~~
+:   ![]()
+
+back`tick![A](a.png "T")back`tick
+:   trailing  ~~café naïve~~ tabs and spaces
+
+| café naïve **https://example.com** "verticaltabform" |
+| --- |
+| pipe | charhttps://example.com |```
+one
+
+two
+```
+
+### `Alt` joiner‍and﻿bom c\_d
+
+`tabs and spaces` leading
+
+### hello world [leading](https://example.com)
+
+###### [tabs and spaces](https://example.com "T")[1. numbered](https://example.com)joiner‍and﻿bom# hashed
+:   joiner‍and﻿bom
+    **tabs and spaces**
+    "amp & lt <"
+
+trailing
+:   `- dashed`*tabs and spaces*
+
+> `` back`tick ``
+
+2. ![]()
+
+   [# hashed](/rel)controlcharshere
+
+   | joiner‍and﻿bom |
+   | --- |
+   | `word⁠joiner᠎vowel` - dashed | |`verticaltabform`
+===================
+
+```
+one
+
+two
+```
+
+|  |  |  |
+| --- | --- | --- |
+| `word⁠joiner᠎vowel`[https://example.com](/rel)"controlcharshere" | word⁠joiner᠎vowel | |
+| [only alt](https://example.com "T")~~controlcharshere~~ | `trailing`  leading |
+|  |  |
+| --- | --- |
+| `a*b` verticaltabform | [double``tick](https://example.com "T") |
+
+---1. café naïve `zero​width‌space` ![Alt](a.png)
+2. `amp & lt <` trailing
+
+`pipe | char`
+
+`hello world`
+:   `a*b`
+
+> ```
+> plain
+>   code
+> ```none
+> ```
+>   indented
+> ```
+>
+> leading
+> :   back`tickhttps://example.com- dashed
+>
+> pipe | char 1. numbered
+> :   hello world- verticaltabform`joiner‍and﻿bom`
+
+### 
+
+#### ~~multi line~~ # hashedFuzz
+
+* trailing
+    
+  ``` double``tick ``````
+plain
+  code
+```
+
+# hashed~~trailing~~
+--------------------
+
+hello world
+-----------
+
+https://example.com c\_d
+:   verticaltabformFuzz
+
+0. `leading`
+
+   `pipe | char`
+1. "café naïve" joiner‍and﻿bom ![Alt](a.png)
+2. `verticaltabform` c\_d`leading`pipe | char![](a.png)
+:   verticaltabform
+
+" leading"amp & lt <
+:   amp & lt <
+
+"quoted"
+
+---
+
+amp & lt <
+----------* a\*b
+* amp & lt <
+
+* # hashed
+* zero​width‌space
+  trailing
+  tabs and spaces
+
+> > `https://example.com`
+> > [back`tick](/rel)
+> > ![]()
+
+* - dashed
+  + amp & lt <
+    - verticaltabform
+      * controlcharshere
+        + c\_dc\_d[amp & lt <](https://example.com)hello world```
+  indented
+```
+
+* 1. numbered
+* word⁠joiner᠎vowelback`tick# hashed
+
+  `zero​width‌space`**- dashed**
+
+---
+
+* 1. numbered
+  https://example.com
+* trailing
+  1. numbered
+* tabs and spacesFuzz
+
+```
+  indented
+```
+
+---
+
+ 0. # hashed
+   ~~1. numbered~~
+1. zero​width‌space
+   trailing
+2. back`tick- dashed
+
+```
+![only alt]()
+  ![]()
+```
+
+a\*b
+zero​width‌space### tabs and spaces ~~# hashed~~ a\*b
+
+```
+ leading
+```
+
+[a\*b](https://example.com) tabs and spaces [pipe | char](https://example.com)
+:   *- dashed*
+
+~~back`tick~~ # hashed ***double``tick***
+:   ~~controlcharshere~~---
+
+* trailing
+  + leading
+    - hello world
+      * amp & lt <
+        + zero​width‌space
+          - a\*b"zero​width‌space"
+
+**joiner‍and﻿bom**
+
+> [child](s.mp4)Fuzz
+
+```
+  indented
+```
+
+> back`tickFuzzFuzz
+
+
+---
+
+### https://example.com
+
+###### **double``tick** ~~joiner‍and﻿bom~~
+
+```
+a_b*c
+```word⁠joiner᠎vowel a\*b **amp & lt <**
+:   word⁠joiner᠎vowel pipe | char
+
+---
+
+0. verticaltabformcontrolcharshere
+1. tabs and spaces
+   a\*b
+
+`hello world`
+
+```
+double``ticktabs	and  spacespipe | char
+```
+
+templated prompt![]()
+:   ![]()
+
+pipe | char double``tick
+:   pipe | char
+    `1. numbered`
+    `trailing`controlcharshere controlcharshere ![A](a.png "T")
+:   `# hashed`
+
+c\_d
+:   https://example.com back`tick
+
+~~trailing~~ `A`amp & lt <
+==========================
+
+#### tabs and spaces
+
+:   a\*b
+
+trailing word⁠joiner᠎vowel
+:   `verticaltabform`#### pipe | char https://example.com
+
+3. controlcharshere
+4. c\_d
+
+[word⁠joiner᠎vowel](/rel)#### 
+
+|  |  |
+| --- | --- |
+| `- dashed` controlcharshere | zero​width‌space ~~`` back`tick ``~~ `tabs and spaces` |
+| 1. numbered multi line *1. numbered* | joiner‍and﻿bom"# hashed" |
+|  |  |  |
+| --- | --- | --- |
+| Ajoiner‍and﻿bom | | multi line |
+
+| c\_d |
+| --- |* zero​width‌space
+  + verticaltabform
+    - trailing
+
+```
+![](a.png)zero​width‌spacejoiner‍and﻿bom
+```
+
+> ```
+> one
+>
+> two
+> ```---
+
+```
+plain
+  code
+```
+
+###### beyond six
+
+* back`tick
+* zero​width‌spaceFuzz
+
+**- dashed**
+============
+
+``` double``tick ```
+
+| [double``tick](https://example.com "T") | | 1. numbered |
+| --- | --- | --- |
+| https://example.com `multi line` | `- dashed` |
+| *c\_d* `https://example.com` leading | tabs and spaces |
+
+[https://example.com](https://example.com "T") trailing
+:   *leading*Fuzz
+
+~~# hashed~~
+leading
+
+---1. numbered
+:   word⁠joiner᠎vowel *# hashed*  ~~leading~~
+
+``` double``tick ```
+:   café naïve
+    `pipe | char`
+    pipe | char
+
+**`# hashed`**tabs and spaces
+
+`amp & lt <`
+============```
+back`tick
+```
+
+`tabs and spaces` [`trailing`](https://example.com "T")  leading
+
+```
+a_b*c
+```Fuzz
+
+joiner‍and﻿bom `a*b`
+:   `café naïve`hello world![]()
+
+# hashed
+:   ![Alt](a.png)
+
+~~https://example.com~~
+
+trailing> ```
+> plain
+>   code
+> ```
+
+3. https://example.comjoiner‍and﻿bom
+
+#### ***hello world***
+
+```
+one
+
+two
+```
+
+```
+- dashedcontrolcharshere
+```* [multi
+  line](/rel)
+
+  verticaltabform~~word⁠joiner᠎vowel~~verticaltabform
+  :   café naïve trailing
+
+  a\*b ![Alt](a.png) [zero​width‌space](https://example.com)
+  :   back`tick trailing "double``tick"
+* c\_d**joiner‍and﻿bom**
+* screen reader onlyFuzz
+
+~~https://example.com~~
+:   **joiner‍and﻿bom**~~hello world~~
+
+**leading** *zero​width‌space*
+:   ![A](a.png "T")> ### `amp & lt <` "1. numbered"Fuzz
+
+amp & lt <
+amp & lt <
+`joiner‍and﻿bom`
+
+* ~~a\*b~~
+
+  ```
+    indented
+  ```
+* `trailing`  joiner‍and﻿bom https://example.com`pipe | char` `c_d`
+
+> ![]()Fuzz 
+
+```
+plain
+  code
+```
+
+![A](a.png "T") "verticaltabform"
+:   multi
+    line **café naïve** [café naïve](/rel)
+
+joiner‍and﻿bom![](a.png)1. numbered
+:   # hashed"c\_d"
+
+  [![fallback](p.png)](v.mp4)
+
+|  |  |  |
+| --- | --- | --- |
+| 1. numbered 1. numbered | `verticaltabform` | word⁠joiner᠎vowel word⁠joiner᠎vowel |
+| `` back`tick `` tabs and spaces | only alt | **back`tick**joiner‍and﻿bom | |
+|  |  |  |  |
+| --- | --- | --- | --- |
+| `leading` | | `https://example.com` `pipe | char` | tabs and spaces **double``tick** joiner‍and﻿bom |
+
+> ---
+
+back`tick *controlcharshere*
+:   trailing - dashed1. numbered
+
+**~~1. numbered~~**
+:   `controlcharshere`|  |
+| --- |
+| ```   indented ``` |
+
+* + back`tick
+    - zero​width‌space
+      * pipe | char
+        + back`tick
+          - 1. numbered *leading*
+            ~~zero​width‌space~~
+            "https://example.com"Fuzz
+
+* hello world  `leading` **`trailing`**
+
+```
+hello world leading
+```
+
+##### pipe | char> * **double``tick**  
+>    
+>
+>
+>   *~~tabs and spaces~~* verticaltabform
+
+3. back`tick`1. numbered`
+4. amp & lt <
+   https://example.com
+   **pipe | char**
+
+   amp & lt < pipe | char
+   :   [zero​width‌space](https://example.com)
+
+| **`café naïve`****https://example.com** |
+| --- |
+
+#### [tabs and spaces](https://example.com "T")```
+double``tick tabs	and  spaces amp & lt <
+```
+
+```
+plain
+  code
+```
+
+`trailing` 
+`café naïve`
+
+"tabs and spaces"Fuzz
+
+
+* `hello world`
+   [![fallback](p.png)](v.mp4)
+* ~~verticaltabform~~
+
+  ```
+  plain
+    code
+  ```
+* `leading` double``tickFuzz
+> ####
+
+> ##### https://example.com**tabs and spaces***`https://example.com`*##### *amp & lt <*`verticaltabform`
+
+### **`leading`**"`tabs and spaces`"multi
+line *café naïve***back`tick**café naïve
+
+|  |  |
+| --- | --- |
+| leading | `amp & lt <` |
+| Alt café naïve | `verticaltabform` |
+
+|  |
+| --- |
+| --- |
+
+```
+plain
+  code
+```
+
+- **# hashed**Fuzz 
+
+- collides with convert\_list> > c\_d hello world pipe | char
+
+[**controlcharshere**](/rel)a\*bamp & lt <Fuzz
+> > [tabs and spaces](https://example.com) `multi
+> > line`Fuzz
+> ~~![only alt]()~~zero​width‌space
+
+~~café naïve~~
+:   ![Alt](a.png)
+
+`leading` controlcharshere
+:   multi
+    lineword⁠joiner᠎vowel
+:   tabs and spaces **back`tick** *hello world*![Alt](a.png)
+tabs and spaces> 3. c\_d
+>
+>    |  |  |  |
+>    | --- | --- | --- |
+>    | 1. numbered # hashed | | hello world 1. numbered |
+>    | a\*b a\*b | double``tick café naïve hello world |
+>    |  |  |
+>    | --- | --- |
+>    | verticaltabformback`tick | a\*b - dashed https://example.com |
+
+##### zero​width‌space "back`tick"
+
+### `- dashed`
+
+![poster](p.png)
+> c\_d
+> - dashed
+> **zero​width‌space**Fuzz
+
+###### `leading`
+
+> double``tick
+> :   pipe | char
+>     amp & lt <
+>     multi
+>     line
+>
+> multi line
+> :   # hashed
+>
+> #### [pipe | char](https://example.com)
+>
+> ```
+> pipe | char
+> ```
+
+[`a*b`](https://example.com "T")##### [leading](https://example.com)Fuzz
+> ![](a.png)c\_d
+
+##### zero​width‌space
+
+---
+
+ 
+
+--- 
+
+
+---
+
+> 0. multi
+>    line ![A](a.png "T") hello world
+
+---
+
+0. ![only alt]()
+1. leading
+   c\_dFuzz
+
+
+---
+
+ > 0. 1. numbered
+> 1. `` back`tick ``
+> 2. `- dashed` 
+>
+>    tabs and spaces
+>    café naïve
+>    ==========================
+>
+>    café naïve
+
+> hello world 
+
+cap#### hello worlda\*b
+
+verticaltabform *- dashed*
+
+```
+a_b*c
+```> * + trailing
+>     - a\*b
+>       * controlcharshere
+>         + trailing
+>           - café naïvejoiner‍and﻿bom
+>             `c_d`
+
+> 1. controlcharshere
+>
+>    ##### - controlcharshere amp & lt < `- dashed`
+> 2. back`tick
+
+multi
+line
+
+| tabs and spaces | https://example.com hello world `https://example.com` | | a\*b ["trailing "](https://example.com) hello world | |
+| --- | --- | --- | --- | --- |
+| only alt `leading` | leading *1. numbered* joiner‍and﻿bom | double``tick only alt |```
+  indented
+```
+
+1. word⁠joiner᠎vowel*~~multi
+   line~~*pipe | char
+2. joiner‍and﻿bom
+
+   controlcharshere
+   ------------------
+3. ~~1. numbered~~a\*b`"hello world"`
+
+> tabs and spacesFuzz
+
+```
+trailing
+```
+
+| zero​width‌space |
+| --- |
+| amp & lt < |
+
+0. leadingverticaltabform"amp & lt <"
+1. c\_d
+2. zero​width‌space
+   0. double``tickjoiner‍and﻿bom
+   1. amp & lt
+   2. multi
+      line https://example.com multi
+      line
+
+> ###### 
+>
+> **a\*b**# hashed# hashed
+>
+> **leading**`joiner‍and﻿bom`
+> ---------------------------
+>
+> *amp & lt <*amp & lt < ![](a.png)
+:   **pipe | char**zero​width‌space
+
+café naïve *zero​width‌space* `zero​width‌space`
+:   `amp & lt <`Fuzz
+
+###### "zero​width‌space"Fuzz
+> ### `joiner‍and﻿bom`
+>
+> > ![Alt](a.png)
+> > ~~double``tick~~
+>
+> **a\*b**
+>
+> | controlcharshere | https://example.com controlcharshere | | - dashed c\_d joiner‍and﻿bom | |
+> | --- | --- | --- | --- | --- |
+> | back`ticktrailing back`tick | tabs and spaces leading leading | | controlcharshere - dashed |
+> | leading joiner‍and﻿bom | https://example.com c\_d | | 1. numbered |
+
+```
+  indented
+```word⁠joiner᠎vowel
+
+hidden instructions
+
+> leading c\_d leading
+> :   ~~pipe | char~~amp & lt <`amp & lt <`![only alt]() double``tick
+
+1. `amp & lt <`
+   `` back`tick ``
+
+> > * word⁠joiner᠎vowel
+
+2. ##### ~~[word⁠joiner᠎vowel](/rel)~~
+3. verticaltabform
+   tabs and spaces
+   3. `a*b`
+   4. *pipe | char*
+   5. ~~double``tick~~
+      `multi
+      line`
+
+      ```
+      plain
+        code
+      ```
+
+# hashed
+:   `café naïve` https://example.com leadingFuzz
+
+| hello world ~~word⁠joiner᠎vowel~~ | café naïve | |
+| --- | --- | --- |
+| amp & lt < | `joiner‍and﻿bom`1. numbered`hello world` |hello world
+:   `- dashed`# hashed
+
+##### `c_d`
+
+> word⁠joiner᠎vowel
+>
+> *only alt*hello world
+> =====================
+
+1. `trailing`
+2. hello world https://example.com amp & lt <
+
+- collides with convert\_list
+ ![](a.png)
+
+| controlcharshere joiner‍and﻿bom hello world | `tabs and spaces` only alt | | c\_d `` back`tick `` |
+| --- | --- | --- | --- |
+| tabs and spaces word⁠joiner᠎vowel | verticaltabform zero​width‌space https://example.com | | a\*b | |
+
+templated prompt
+
+*- dashed*![Alt](a.png)
+
+`1. numbered`
+:   c\_d  `leading`Fuzz
+
+"café naïve"
+`tabs and spaces`
+verticaltabform
+
+| `word⁠joiner᠎vowel` zero​width‌space | # hashed multi line | |
+| --- | --- | --- |
+| "`` back`tick ``" | verticaltabform double``tick | |
+| zero​width‌space`a*b`joiner‍and﻿bom | pipe | char | |---
+
+|  |
+| --- |
+| ~~double``tick~~ |Fuzz
+
+###### `joiner‍and﻿bom` # hashed
+
+#### pipe | char controlcharshere
+
+tabs and spacesjoiner‍and﻿bomcafé naïvehello world""*1. numbered*
+:   - dashed**`joiner‍and﻿bom`**
+
+* verticaltabform
+* **[c\_d](/rel)** multi
+  line
+
+  > 1. c\_d
+  > 2. ![Alt](a.png)
+
+#### controlcharshere
+
+c\_d### 1. numbered
+
+~~https://example.com~~
+=======================#### [zero​width‌space](/rel) *`c_d`*
+
+> 3. zero​width‌space controlcharshere
+>
+>    pipe | char
+>    :   joiner‍and﻿bom
+> 4. **controlcharshere**
+> 5. verticaltabformamp & lt1. numbered
+:   pipe | char
+
+```
+one
+
+two
+```
+
+```
+  indented
+```Fuzz
+
+c\_d![Alt](a.png)`c_d`
+:   ![](a.png)
+     **leading**
+
+a\*b a\*b ~~hello world~~
+:   `` back`tick `` leading leading
+
+|  |  |
+| --- | --- |
+| 1. numbered | - dashedpipe | char |
+| # hashed | - dashed[~~c\_d~~](/rel)[café naïve](https://example.com) |---
+
+ 
+
+---
+
+##### A"pipe | char"
+:   ![](a.png)**[verticaltabform](https://example.com)**
+
+a\*b
+:   ``` double``tick ```
+    [zero​width‌space](/rel)
+
+`` back`tick `` double``tick https://example.com
+:   **- dashed**
+    joiner‍and﻿bom
+    word⁠joiner᠎vowel
+
+[![only alt]()](/rel) 1. numbered
+:   verticaltabform![](a.png)
+
+* café naïve  trailing
+
+  `multi
+  line`
+  1. numbered
+  "verticaltabform"
+  ============================================
+
+  ![poster](p.png)
+* ~~`multi
+  line`~~- dashed`a*b`
+
+  > *trailing* 
+  > ***double``tick***
+
+  trailing
+
+  zero​width‌spacezero​width‌spaceverticaltabform
+
+
+  hello world
+  :   tabs and spaces amp & lt <---Fuzz
+
+- ~~- dashed~~
+
+**`trailing`** [controlcharshere](https://example.com)
+:   `trailing`
+
+* controlcharshere
+  + word⁠joiner᠎vowel  
+    amp & lt <
+* - dashed
+
+###### amp & lt < `joiner‍and﻿bom`|  |
+| --- |
+| A |
+| `amp & lt <` "back`tick" 1. numbered |
+
+https://example.com
+
+![A](a.png "T")
+:   leading> ~~"
+> "~~
+
+| amp & lt <Altback`tick |
+| --- |
+| `a*b`~~a\*b~~ | |
+
+###### back`tick**c\_d**[leading](https://example.com "T")
+# hashed
+`hello world`
+
+|  |  |
+| --- | --- |
+| zero​width‌space leading double``tick | word⁠joiner᠎vowel |
+| word⁠joiner᠎vowel |  |* # hashed
+  `word⁠joiner᠎vowel`
+   `leading`
+* https://example.com
+  1. word⁠joiner᠎vowel
+* `tabs and spaces`
+  - dashed
+  `"hello world"`* leading
+  `https://example.com`
+
+- dashed
+--------
+
+> - `leading`
+>
+> double``tick
+> *# hashed*
+> **# hashed**
+> ------------------------------------`verticaltabform`
+:   c\_d
+
+1. numberedFuzz
+
+> back`tick`word⁠joiner᠎vowel`café naïve 
+
+---
+
+multi
+linejoiner‍and﻿bom**1. numbered**
+
+| trailing | [``` double``tick ```](https://example.com "T")controlcharshere |
+| --- | --- |
+| `zero​width‌space`  *verticaltabform* | | pipe | char | |
+
+1. ![]()controlcharshere
+
+![A](a.png "T")
+:   *back`tick*
+
+![](a.png) - dashed
+
+0. `a*b`
+   double``tick
+   a\*b
+
+> * hello world
+>   c\_d
+>   café naïve
+> * zero​width‌space amp & lt <
+> * café naïve
+>   café naïve
+>   c\_d- `# hashed`
+
+joiner‍and﻿bom| tabs and spaces  `leading` | | `amp & lt <` # hashed | | https://example.com `hello world` | |
+| --- | --- | --- | --- | --- | --- |
+| tabs and spaces |  | `leading` |
+| word⁠joiner᠎vowel | *A* `hello world` pipe | char | leadingmulti line |
+
+> ###### amp & lt <
+
+### 
+
+```
+- dashed
+```
+
+~~café naïve~~ A
+----------------| **~~tabs and spaces~~** *word⁠joiner᠎vowel* |
+| --- |
+
+* joiner‍and﻿bom
+  + zero​width‌space
+    - - dashedmulti
+      line
+      **amp & lt <**
+
+###### - dashed
+
+double``tickcafé naïve
+:   trailing
+    1. numbered[https://example.com](https://example.com "T") *"
+"*
+----------------------------------------------------
+
+- *verticaltabform**amp & lt <*https://example.com![](a.png)
+controlcharshere
+- dashed```
+a_b*c
+```Fuzz
+
+| ``` a_b*c ``` |
+| --- |Fuzz
+
+* back`tick
+* tabs and spaces
+* tabs and spaces
+  tabs and spaces
+
+---> ![Alt](a.png) a\*b
+
+![Alt](a.png)joiner‍and﻿bomhttps://example.com
+:   hello world1. numbered*word⁠joiner᠎vowel*
+
+tabs and spaces**" leading"**
+:   double``tickword⁠joiner᠎vowel
+-----------------
+
+---```
+a_b*c
+```
+
+### joiner‍and﻿bom `café naïve`
+
+---
+
+> #### "only alt" amp & lt < ~~tabs and spaces~~
+>
+> ![A](a.png "T")
+>
+> **~~hello world~~**`https://example.com`
+:   *1. numbered*
+
+**double``tick**
+
+| https://example.com | | - dashed | | verticaltabform |
+| --- | --- | --- | --- | --- |
+| leading | joiner‍and﻿bomc\_d | controlcharshere café naïve |
+| hello world | 1. numbered | tabs and spaces controlcharshere |
+
+```
+one
+
+two
+```
+
+|  |
+| --- |
+| controlcharshere |
+
+> * pipe | char [https://example.com](/rel) *c\_d*
+> * controlcharshere
+>   ![A](a.png "T")
+> * joiner‍and﻿bom *word⁠joiner᠎vowel* a\*ba\*b`hello world`
+
+> `"trailing "`word⁠joiner᠎vowel
+
+##### tabs and spaces
+
+> ###### joiner‍and﻿bom leading# hashed - dashed
+
+> café naïve
+>
+> | *word⁠joiner᠎vowel* "1. numbered" | 1. numbered# hashed*- dashed* | `# hashed`only alt`1. numbered` |
+> | --- | --- | --- |
+> | tabs and spaces*word⁠joiner᠎vowel* | 1. numbered a\*b | amp & lt < |
+
+|  |
+| --- |
+| 1. c\_d |Fuzz
+
+double``tick café naïve tabs and spaces
+---------------------------------------
+
+|  |  |
+| --- | --- |
+| - dashed | ~~verticaltabform~~ |
+| `leading` | - dashed |
+
+#### ~~- dashed~~ amp & lt < amp & lt <zero​width‌space
+# hashed
+
+1. leading
+    *leading*
+
+   ~~zero​width‌space~~
+   # hashed
+2. trailing 
+   leading
+   > `joiner‍and﻿bom`amp & lt <double``tick
+
+```
+"multi
+line"
+```Fuzz
+
+* + back`tick
+    - word⁠joiner᠎vowel"verticaltabform"
+      tabs and spaces
+
+A amp & lt < ~~a\*b~~
+---------------------Fuzz 
+
+```
+one
+
+two
+```
+
+> 3. double``tickhttps://example.comback`tick
+
+"c\_d"
+
+```
+plain
+  code
+```
+
+#### zero​width‌space---> hidden instructions
+
+> | joiner‍and﻿bom | ~~- dashed~~ | | `pipe | char` | |
+> | --- | --- | --- | --- | --- |
+> | `c_d` | hello world | *# hashed*   *a\*b* | |
+> | `c_d` | | `https://example.com` | [verticaltabform](https://example.com "T") |
+
+##### `` back`tick `` café naïve
+
+|  |  |  |
+| --- | --- | --- |
+| trailingword⁠joiner᠎vowel |  | café naïveverticaltabform |
+| `pipe | char` |  | | `amp & lt <` leading |
+|  |  |  |  |
+| --- | --- | --- | --- |
+| `amp & lt <`only altword⁠joiner᠎vowel | ~~controlcharshere~~ `pipe | char` word⁠joiner᠎vowel | | `https://example.com`[controlcharshere](https://example.com) |* pipe | char ~~multi
+  line~~ **amp & lt <**
+* pipe | char
+  leading
+* multi
+  line   
+   [- dashed](/rel)
+
+leading
+-------
+
+> - dashed  ~~verticaltabform~~0. verticaltabform amp & lt <hidden instructions```
+plain
+  code
+```
+
+pipe | char
+`café naïve`> c\_d
+
+### double``tick
+
+- c\_dhttps://example.compipe | char
+
+pipe | char ~~`a*b`~~
+
+0. *"zero​width‌space"* [![Alt](a.png)](/rel)
+1. `# hashed`zero​width‌spacejoiner‍and﻿bom
+
+   leading
+
+   |  |  |
+   | --- | --- |
+   | leading# hashed | |
+   | hello world leading zero​width‌space | |
+   |  |
+   | --- |
+   | verticaltabformcontrolcharsherehttps://example.com |
+2. c\_dhello world0. ~~~~- dashed~~~~![A](a.png "T")###### **controlcharshere** [**leading**](https://example.com "T")
+
+> 1. numberedback`tickword⁠joiner᠎vowel
+
+---
+
+
+
+---
+
+ * "back`tick"
+  1. numbered
+
+  #### amp & lt <`controlcharshere`
+* ***- dashed*** **zero​width‌space**
+* pipe | char
+
+```
+verticaltabform trailing
+```
+
+#### Fuzz
+
+`word⁠joiner᠎vowel``tabs and spaces`
+:   double``tick *leading*trailing
+
+```
+plain
+  code
+```
+
+---
+
+ ```
+plain
+  code
+```
+
+> trailing
+> :   **double``tick**
+>     leading
+>
+> [zero​width‌space](https://example.com)amp & lt <
+> :   `café naïve`
+>     pipe | char
+
+###### multi line
+
+#### > leading ![]() amp & lt <
+
+```
+  indented
+```
+
+---
+
+0. https://example.com ![Alt](a.png)~~![only alt]()~~ pipe | char c\_d
+:   `pipe | char`
+    leading
+
+###### `joiner‍and﻿bom`> [child](s.mp4)---Fuzz
+> | controlcharshere | | tabs and spaces `amp & lt <` | |
+> | --- | --- | --- | --- |
+> |  | | [double``tick](/rel)pipe | char |Fuzz
+
+controlcharshere
+:   [`trailing`](/rel)  leading
+
+**café naïve**
+
+```
+plain
+  code
+```
+
+> [`hello world`](/rel)
+> *# hashed*
+> `verticaltabform`Fuzz
+
+amp & lt < `# hashed`
+:   **verticaltabform**~~amp & lt <~~
+
+*back`tick*
+:   **a\*b**trailingjoiner‍and﻿bom
+
+```
+  indented
+```
+
+| café naïvedouble``tickmulti line  c\_dzero​width‌spacemulti line |
+| --- |
+
+1. `1. numbered``multi
+   line`1. numbered
+2. `# hashed`* https://example.com ~~back`tick~~ word⁠joiner᠎vowel
+
+a\*b
+:   *pipe | char*a\*b
+
+> 0. `verticaltabform`
+> 1. ![](a.png)
+>
+>    hello world# hashed1. numbered
+>
+>    [joiner‍and﻿bom](/rel)
+> 2. multi
+>    line
+>    > #### ***joiner‍and﻿bom***
+
+```
+controlcharshere
+```---
+
+###### back`tick pipe | char
+
+> multi
+> line zero​width‌space
+
+multi
+line
+==========Fuzz
+
+* ~~verticaltabform~~
+* c\_d
+  a\*b
+
+`tabs and spaces`
+`amp & lt <`
+![]()
+
+| back`tick | | `word⁠joiner᠎vowel` | | word⁠joiner᠎vowel |
+| --- | --- | --- | --- | --- |
+| café naïve | [zero​width‌space](https://example.com)`verticaltabform` | zero​width‌space |
+| `a*b` | `a*b` Alt | "# hashed"tabs and spaces |1. numbered
+-----------
+
+```
+  indented
+```
+
+---
+
+###### *""* leading pipe | char| ~~word⁠joiner᠎vowel~~ | trailing 1. numberedback`tick | | 1. numbered | |
+| --- | --- | --- | --- | --- |
+| https://example.com`zero​width‌space` | [zero​width‌space](https://example.com) 1. numbered | hello worldc\_d1. numbered |
+| a\*b `controlcharshere` | | amp & lt <word⁠joiner᠎vowel | leading amp & lt < |
+
+* multi
+  line
+* a\*b**word⁠joiner᠎vowel**
+* `trailing` 
+  pipe | char
+
+  ### ***verticaltabform*** ***hello world***
+
+- `pipe | char`
+
+#### hello world pipe | charFuzz
+
+---
+
+| * a\*b |
+| --- |
+
+---
+
+[child](s.mp4)> ---
+
+> *tabs and spaces*
+>
+> | - dashed multi line | `zero​width‌space` |
+> | --- | --- |
+> |  | | **1. numbered** https://example.com 1. numbered |
+> | verticaltabform [back`tick](https://example.com "T") | - dashedtrailing |
+
+* leading
+  + double``tick
+    - tabs and spaces
+      * multi
+        line
+        + double``tickverticaltabform
+          1. numbered
+
+c\_d
+====| ~~*back`tick*~~ | |
+| --- | --- |
+| controlcharshere verticaltabform |
+|  |
+
+#### pipe | char```
+a_b*c
+```
+
+* https://example.com
+  + - c\_d
+      * café naïve- dashed
+
+![]() `multi
+line`trailing
+
+| trailing | |
+| --- | --- |
+| ~~controlcharshere~~*verticaltabform* | |
+
+##### [**pipe | char**](https://example.com) leading
+
+#### back`tick
+
+back`tick tabs and spaces ![A](a.png "T")
+:   `https://example.com` c\_d
+
+`c_d`~~café naïve~~
+:   verticaltabform
+
+ > verticaltabform
+
+> [multi
+> line](https://example.com)hello world
+>
+> |  |
+> | --- |
+> | amp & lt <1. numberedamp & lt < |
+> | a\*btabs and spaces |
+
+controlcharshere joiner‍and﻿bom
+
+### a\*b only alt> controlcharshere  
+> # hashed* word⁠joiner᠎vowel
+  + hello world
+    - - dasheddouble``tickFuzz
+> **invisible** payload| controlcharshere | | *`` back`tick ``* pipe | char | |
+| --- | --- | --- | --- |
+| "`` back`tick ``" `only alt` verticaltabform | [**leading**](/rel) *[café naïve](https://example.com "T")* | |
+| https://example.com [verticaltabform](/rel) | | `- dashed` double``tick "amp & lt <" |
+
+verticaltabform ~~multi
+line~~ *joiner‍and﻿bom*---##### [verticaltabform](https://example.com) *a\*b* ~~hello world~~
+
+> ###### ~~pipe | char~~ Alt `joiner‍and﻿bom`
+>
+> ### controlcharshere pipe | char
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| joiner‍and﻿bom | | `trailing` | [*zero​width‌space*](https://example.com "T") |
+| 1. numbered | Alt multi line verticaltabform | | `a*b` multi line back`tick |
+|  |  |  |
+| --- | --- | --- |
+| amp & lt < | verticaltabform`controlcharshere` | 1. numbered café naïve 1. numbered |
+
+|  |
+| --- |
+| c\_d |
+| `hello world` 1. numbered |
+|  |
+| --- |
+| tabs and spaces |**![A](a.png "T")**
+zero​width‌space
+
+| trailing | `trailing`  # hashed | |
+| --- | --- | --- |
+| [joiner‍and﻿bom](https://example.com "T") | zero​width‌space |
+| # hashed | *back`tick* | |
+
+```
+  indented
+```
+
+> > * word⁠joiner᠎vowel
+> > * `c_d`pipe | char**# hashed**
+> >   > ![A](a.png "T")
+> > * back`tick> ```
+>   café naïve
+> ```
+
+[child](s.mp4)Fuzz
+
+```
+a*b
+  
+
+"
+  "
+```
+
+* `hello world` [pipe | char](/rel)
+  :   [hello world](https://example.com) ![]() trailing
+* `"
+  "````
+  indented
+```
+
+amp & lt <
+amp & lt <
+
+> ![A](a.png "T") *zero​width‌space* [a\*b](https://example.com "T")
+
+##### pipe | char back`tick
+
+```
+a_b*c
+```* multi
+  line"café naïve"![A](a.png "T")
+
+#### back`tick
+
+hello world ~~controlcharshere~~ ~~word⁠joiner᠎vowel~~
+:   https://example.com café naïve leading
+
+```
+plain
+  code
+```
+
+word⁠joiner᠎vowel [`# hashed`](/rel)Fuzz
+
+|  |  |
+| --- | --- |
+| c\_d | hello world |
+| ***leading*** trailing ~~zero​width‌space~~ | | `trailing`  `zero​width‌space` |
+|  |  |
+| --- | --- |
+| **~~café naïve~~** | https://example.commulti line |```
+- dashed
+```~~tabs and spaces~~
+
+|  |  |  |
+| --- | --- | --- |
+| leading | zero​width‌space `multi line` | Alt  `café naïve` |
+| zero​width‌space `pipe | char` | double``tick | word⁠joiner᠎vowel |
+
+* leading
+  + trailing
+    - * amp & lt <
+
+leadingmulti line
+:   joiner‍and﻿bom
+    # hashed
+    back`tickFuzz
+
+| `controlcharshere` *multi line* | hello world |
+| --- | --- |
+| - dashed~~word⁠joiner᠎vowel~~ | verticaltabform |
+| - dashed **tabs and spaces** | | ~~[back`tick](https://example.com "T")~~ ~~tabs and spaces~~ zero​width‌space | |
+
+###### 
+
+back`tick
+:   a\*bFuzz 
+
+c\_d
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| word⁠joiner᠎vowel | ~~multi line~~ | | tabs and spaces | |
+| verticaltabform a\*b | [pipe | char](/rel) | | trailing verticaltabform | |
+
+
+
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| |  |  |  | | --- | --- | --- | | back`tick | café naïve | | | hello world | | https://example.com | |
+
+| a\*b |
+| --- |
+
+ > > ##### *controlcharshere* amp & lt <
+
+0. [verticaltabform](/rel)
+   leading
+   hello world
+
+* word⁠joiner᠎vowel
+  tabs and spaces
+  1. numberedFuzz
+
+back`tick hello world word⁠joiner᠎vowel
+
+> > *pipe | char*
+> > ![A](a.png "T")
+> > word⁠joiner᠎vowel
+>
+> > https://example.com "tabs and spaces"
+
+ | verticaltabform | |
+| --- | --- |
+| word⁠joiner᠎vowel | |
+
+* joiner‍and﻿bom
+
+| amp & lt < trailing |
+| --- |
+| ~~back`tick~~ |
+| joiner‍and﻿bom **a\*b** double``tick |
+
+> controlcharshere
+> :   a\*b tabs and spaces
+>
+> a\*b controlcharshere a\*b
+> :   tabs and spaces
+
+~~multi
+line~~   
+ [c\_d](https://example.com "T")
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| https://example.com | | pipe | char | tabs and spaces |
+| tabs and spaces | back`tick | # hashed pipe | char multi line ||  |
+| --- |
+| c\_d joiner‍and﻿bom |
+|  |
+
+---> ---
+
+~~"1. numbered"~~ only alt ****multi
+line****
+============================================= 
+
+leadingzero​width‌space
+:   hello world
+
+`leading`
+
+| **a\*b** |
+| --- |
+| pipe | char back`tick [amp & lt <](https://example.com "T") |
+
+```
+  indented
+```
+
+1. amp & lt <
+   tabs and spaces
+   * 1. numbered
+     controlcharshere
+   * back`tick
+2. zero​width‌space- joiner‍and﻿bom
+
+" " c\_d
+
+"quoted"
+
+# hashed
+
+*Alt*
+"~~amp & lt <~~"
+======================---
+
+ 
+
+
+- collides with convert\_list* leading
+    
+  ![A](a.png "T")
+* zero​width‌space
+  double``tick
+
+`tabs and spaces`
+
+|  |  |
+| --- | --- |
+| amp & lt controlcharshere | `a*b` |
+| https://example.com hello world | | word⁠joiner᠎vowel |> 0. - dashedzero​width‌space
+> 1. multi
+>    line
+
+café naïve verticaltabform
+:   - dashed
+    # hashed
+
+> 0. **café naïve**
+>
+>    ```
+>    plain
+>      code
+>    ```
+
+#### screen reader only
+
+### leading café naïveFuzz
+
+|  |
+| --- |
+| double``tick [back`tick](https://example.com) |
+| café naïve |
+
+```
+a_b*c
+```
+
+#### joiner‍and﻿bom hello world
+
+leading
+-------Fuzz
+
+[hello world](/rel) multi line leading
+
+
+- dashed
+:   `word⁠joiner᠎vowel` word⁠joiner᠎vowel
+
+> ##### a\*b - dashed
+
+---
+
+##### a\*b double``tick verticaltabform
+
+# hashedmulti
+line
+==================
+
+- tabs and spaces
+  leading1. *zero​width‌space*
+
+
+   |  |  |  |
+   | --- | --- | --- |
+   | back`tick café naïve hello world | https://example.com verticaltabform [back`tick](https://example.com "T") | *back`tick* hello world |
+   |  | *trailing*  `controlcharshere` # hashed | - dashed |
+   |  |  |  |
+   | --- | --- | --- |
+   | " " `joiner‍and﻿bom` | `` back`tick ``# hashed*joiner‍and﻿bom* | `zero​width‌space` A |
+2. ![only alt]()
+3. - dashed
+
+back`tick
+controlcharshere
+
+> pipe | char leading `tabs and spaces`
+> :   *café naïve*c\_d
+>
+> ~~hello world~~
+> :   1. numbered`hello world`**word⁠joiner᠎vowel**zero​width‌space
+:   - dasheddouble``tick
+
+![A](a.png "T") **`multi line`** word⁠joiner᠎vowel
+:   verticaltabform `c_d` "multi
+    line"
+
+none
+
+```
+controlcharshere pipe | char
+```hidden instructions
+
+templated prompt
+
+```
+a_b*c
+```
+
+![]()
+
+`# hashed`https://example.com
+:   word⁠joiner᠎vowel### Fuzz
+
+**A**- dashed
+=============Fuzz
+
+zero​width‌space
+----------------
+
+```
+plain
+  code
+```
+
+###### **1. numbered** "1. numbered"
+
+café naïve `amp & lt <`Fuzz![poster](p.png) 
+
+---### `c_d` *zero​width‌space*
+
+![Alt](a.png) leading*pipe | char*
+
+```
+a_b*c
+```
+
+| *hello world* |
+| --- |https://example.com
+only alt
+============================
+
+```
+a_b*c
+```Fuzz
+
+1. *1. numbered* `# hashed` *amp & lt <*
+   > zero​width‌space
+   >
+   > |  |
+   > | --- |
+   > | verticaltabformtrailing |
+   > | 1. numbered amp & lt < |
+2. pipe | char
+   hello world
+   *"joiner‍and﻿bom"*
+
+   1. pipe | char
+   2. a\*b trailing
+   3. joiner‍and﻿bomback`tick
+
+   back`tickcontrolcharsherecafé naïve
+   :   a\*b
+       word⁠joiner᠎vowel
+
+   back`tick
+   :   controlcharshere
+3. joiner‍and﻿bom a\*b> ---
+
+```
+  indented
+```Fuzz
+
+##### `1. numbered`- dashed
+
+##### Alt tabs and spaces
+
+~~`word⁠joiner᠎vowel`~~ pipe | char
+
+* multi
+  line
+  c\_d
+  tabs and spaces
+
+  controlcharshere
+  ![]()
+* 1. numbered   *leading*
+
+|  |  |  |
+| --- | --- | --- |
+| `1. numbered`~~tabs and spaces~~ | | trailing *word⁠joiner᠎vowel* |
+| [pipe | char](https://example.com "T") tabs and spaces ~~# hashed~~ | ~~double``tick~~ | |joiner‍and﻿bom**1. numbered**tabs and spaces
+============================================trailing a\*bhello world
+
+![poster](p.png) #### **amp & lt <** [zero​width‌space](/rel)leading
+"Alt"
+trailing
+----------------------
+
+1. café naïve
+2. zero​width‌space
+   `controlcharshere`
+
+   hello worlddouble``tickFuzz
+> ```
+> plain
+>   code
+> ```* multi
+  line
+  + c\_d
+    - word⁠joiner᠎vowel
+      * + double``tick`1. numbered`Fuzz
+
+```
+one
+
+two
+```
+
+#### amp & lt < tabs and spaces multi line
+
+> 0. double``tickhttps://example.comhello worldword⁠joiner᠎vowel
+
+| c\_d controlcharshere "multi line" |  | |
+| --- | --- | --- |
+| back`tick | hello world pipe | char |
+
+- multi
+  line
+  `hello world`
+  multi
+  lineFuzz
+
+`trailing` c\_d
+---------------word⁠joiner᠎vowel back`tick
+
+---
+
+0. double``tickzero​width‌spaceback`tick
+1. amp & lt <> ------
+
+```
+one
+
+two
+```
+
+c\_d c\_d - dashed
+:   ~~café naïve~~ ![A](a.png "T") a\*b
+
+- dashedhello world*joiner‍and﻿bom*
+:   `pipe | char````
+plain
+  code
+```
+
+c\_dzero​width‌space**amp & lt <**![](a.png)tabs and spaces
+:   c\_d amp & lt < [trailing](https://example.com "T")
+
+*café naïve* a\*b ![]()
+:   **zero​width‌space**
+
+### controlcharshere
+
+- controlcharshere `trailing`  pipe | char
+
+leading```
+     https://example.com   leading
+```
+
+* https://example.com
+  + café naïve
+    - back`ticka\*b
+
+> controlcharshere leading
+
+- controlcharshereFuzz
+
+~~controlcharshere~~
+----------------------|  |
+| --- |
+| tabs and spaces |
+| https://example.com | |
+
+* double``tick~~café naïve~~
+* [c\_d](/rel) ~~word⁠joiner᠎vowel~~
+
+  café naïve
+* word⁠joiner᠎vowel`amp & lt <`
+
+  - dashed amp & lt <
+  :   back`tick controlcharshere controlcharshere
+
+##### https://example.com ~~pipe | char~~
+
+controlcharshere`word⁠joiner᠎vowel``- dashed`
+
+- https://example.com
+
+##### back`tickpipe | char
+
+###### verticaltabform
+
+cap
+
+> a\*b ![A](a.png "T") `https://example.com`###### - dashed
+
+* `tabs and spaces` joiner‍and﻿bom
+  > 1. zero​width‌space
+  >    pipe | char
+  > 2. hello world controlcharshere - dashed
+  > 3. amp & lt <
+  >    https://example.com
+* https://example.com   
+   double``tick
+* "[# hashed](https://example.com)" 1. numbered
+
+---
+
+* back`tick
+  + - joiner‍and﻿bom
+      * amp & lt <
+        + - dashed`joiner‍and﻿bom` ``` double``tick ``````
+  indented
+```
+
+#### 
+
+zero​width‌space
+----------------
+
+| 1. numbered Alt |
+| --- |
+| tabs and spaces |
+
+```
+a_b*c
+```
+
+ zero​width‌spaceverticaltabform*`c_d`*
+----------------------------------------
+
+---
+
+1. https://example.coma\*btabs and spaces
+2. 1. numbered
+
+"``` double``tick ```"trailing
+:   controlcharshere
+
+1. ![A](a.png "T")  `leading`
+2. `café naïve`
+3. c\_d
+   pipe | charFuzz
+
+**1. numbered**![A](a.png "T")
+:   ~~~~https://example.com~~~~
+
+`word⁠joiner᠎vowel`
+===================
+
+|  |  |
+| --- | --- |
+| `verticaltabform```` double``tick ``` | [c\_d](https://example.com "T") c\_d verticaltabform |
+|  | pipe | char `a*b` controlcharshere |
+|  |  |  |  |
+| --- | --- | --- | --- |
+| c\_d | | - dashedjoiner‍and﻿bom | |
+
+![]()
+:   a\*b
+
+`verticaltabform`
+:   word⁠joiner᠎voweltabs and spaces**hello world**```
+one
+
+two
+```
+
+###### way beyondFuzz
+> ### ~~back`tick~~ ***word⁠joiner᠎vowel*** # hashed
+
+1. numbered
+
+|  |  |  |
+| --- | --- | --- |
+| "pipe | char"`- dashed` | `leading` | "joiner‍and﻿bom" |
+| multi line | `` back`tick `` | | café naïve |
+
+**![only alt]()** amp & lt < a\*b| **https://example.com** | |
+| --- | --- |
+| ~~a\*b~~ `hello world` |
+
+multi
+line zero​width‌space `1. numbered`
+
+https://example.com `café naïve`  leading
+
+|  |
+| --- |
+| word⁠joiner᠎vowel |
+|  | |
+
+pipe | char
+`a*b`
+
+| ~~a\*b~~ |  |
+| --- | --- |
+| https://example.com | | 1. numbered `pipe | char` only alt | |
+| ~~c\_d~~pipe | char | | tabs and spaces   **https://example.com** |Fuzz
+
+[multi
+line](https://example.com)
+controlcharshere
+----------------------------------------------------
+
+```
+a_b*c
+```##### `word⁠joiner᠎vowel` [café naïve](https://example.com "T")
+
+> 1. pipe | char~~café naïve~~multi
+>    line
+
+---
+
+#### **trailing**
+
+| c\_d - dashed | |
+| --- | --- |
+| c\_d leading | |
+| hello world`hello world` |Fuzz 
+
+|  |
+| --- |
+| leading |
+| controlcharshere |
+|  |
+| --- |
+| `- dashed` ~~multi line~~ |
+
+> **a\*b**
+
+*pipe | char**[amp & lt <](/rel)*[trailing](/rel)
+:   https://example.com
+
+1. numbered [leading](/rel)`a*b`
+:   hello world joiner‍and﻿bom ![](a.png)
+
+> 1. `a*b`
+>    *joiner‍and﻿bom*
+> 2. `multi
+>    line`---
+
+| A | | # hashed[back`tick](https://example.com) |
+| --- | --- | --- |
+| double``tick | Alt  `# hashed` |
+| - dashed  **leading** A | | controlcharsherecontrolcharshere |
+
+```
+
+```
+
+multi
+linejoiner‍and﻿bom*`joiner‍and﻿bom`*
+------------------------------------------multi
+line [joiner‍and﻿bom](https://example.com) ""café naïve""
+---------------------------------------------------------------
+
+- dashed
+========
+
+| zero​width‌space  zero​width‌spaceamp & lt  double``tick - dashed  1. numbered |
+| --- |
+
+1. tabs and spaces
+    `leading`
+
+---###### https://example.com back`tick
+
+`amp & lt <` **~~back`tick~~** joiner‍and﻿bom
+:   word⁠joiner᠎vowel `# hashed`
+
+**word⁠joiner᠎vowel**
+---------------------```
+one
+
+two
+```
+
+> #### tabs and spaces 1. numbered "https://example.com"
+
+```
+a_b*c
+```
+
+---
+
+*word⁠joiner᠎vowel*
+===================
+
+*multi
+line* `amp & lt <` ~~controlcharshere~~
+================================================
+
+"quoted"1. café naïve
+     
+   1. `café naïve`tabs and spacesverticaltabform
+
+      ```
+      plain
+        code
+      ```
+   2. ![only alt]() `amp & lt <` **amp & lt <**
+
+`tabs and spaces`back`tick*"zero​width‌space"*
+==============================================```
+plain
+  code
+```
+
+joiner‍and﻿bom trailing
+=======================
+
+```
+  indented
+```Fuzz
+
+hidden instructions
+
+###### - leadingamp & lt <
+
+> ```
+> a_b*c
+> ```
+
+| # hashed **hello world** |
+| --- |
+|  |
+
+1. back`tick
+   `hello world`
+
+
+   café naïve
+   :   multi
+       line leading back`tick
+2. "- dashed""1. numbered"
+3. double``tick
+
+   pipe | char
+   amp & lt <
+
+   `https://example.com`
+   word⁠joiner᠎vowel
+   ![A](a.png "T")Fuzz
+
+|  |
+| --- |
+| **# hashed** joiner‍and﻿bom  A pipe | char  `leading` |> multi
+> line*verticaltabform*
+
+no js
+> > "quoted"> `- dashed` `- dashed`
+
+| joiner‍and﻿bomdouble``tickdouble``tick | back`tick `joiner‍and﻿bom` hello world | amp & lt < - dashed |
+| --- | --- | --- |
+| café naïve `word⁠joiner᠎vowel` | | ~~hello world~~*pipe | char* | "double``tick" back`tick # hashed | |#### A "`amp & lt <`"
+
+#### 
+
+#### *1. numbered*
+
+café naïve
+:   [# hashed](/rel)
+    word⁠joiner᠎vowel
+    verticaltabform- ![Alt](a.png)
+  trailing
+  back`ticka\*bword⁠joiner᠎vowel
+:   https://example.com
+
+![]()
+:   - dashed
+
+* `" leading"`leadinghttps://example.com
+==========================
+
+|  |
+| --- |
+| café naïve back`tick |
+
+0. "1. numbered"amp & lt <
+1. verticaltabform
+   * *leading*
+     > ![Alt](a.png)
+2. `zero​width‌space`#### 
+
+" "
+---
+
+leading
+**tabs and spaces**
+**multi
+line**
+
+---|  |  |
+| --- | --- |
+| c\_d |  |
+| *back`tick* zero​width‌space | pipe | char1. numbered~~café naïve~~ |
+
+### *multi line* *"c\_d"* `A`
+
+templated prompt
+
+ Fuzz
+
+**leading**
+![only alt]()
+amp & lt <
+
+`` back`tick ``
+A
+pipe | char
+-----------------------------
+
+### *controlcharshere* back`tick
+
+###### Fuzz
+
+---> > :   hello world
+
+- `amp & lt <`
+   leading
+
+joiner‍and﻿bom word⁠joiner᠎vowel
+
+|  |  |
+| --- | --- |
+| - dashed | ***leading*** ~~back`tick~~ *Alt* |
+| 1. numbered | | c\_d |
+
+> ---> ****double``tick****
+
+back`tick[*- dashed*](/rel)
+:   `zero​width‌space`
+    [- dashed](https://example.com)
+    a\*b
+
+multi line
+:   double``tick
+
+> amp & lt <
+
+---hidden instructions
+
+amp & lt <
+
+|  |  |
+| --- | --- |
+| pipe | char | |
+| `leading` |
+
+`1. numbered`
+-------------
+
+zero​width‌space ![Alt](a.png)
+:   joiner‍and﻿bom
+
+**pipe | char** joiner‍and﻿bom
+:   joiner‍and﻿bom
+    controlcharshere
+    leading> https://example.com
+
+> hello world café naïve
+> :   café naïve
+>     controlcharshere
+>
+> word⁠joiner᠎vowel # hashed
+> :   double``ticktrailing1. [*back`tick*](https://example.com)
+   trailing
+
+"hello world" ![](a.png)Fuzz
+
+1. tabs and spaces
+   a\*b
+2. 1. numbered
+   hello world
+3. ~~multi
+   line~~
+
+   multi
+   linejoiner‍and﻿bom
+
+   |  | | controlcharshere |
+   | --- | --- | --- |
+   | `a*b` pipe | char | | ~~café naïve~~https://example.com |
+   | zero​width‌space | - dashed ~~tabs and spaces~~ |
+
+* "tabs and spaces"![](a.png)
+  > ###### A `c_d`
+
+none#### [# hashed](https://example.com "T") leading
+
+`hello world`
+
+double``tickword⁠joiner᠎vowel`# hashed`
+:   # hashed
+    tabs and spaces
+
+`amp & lt <`
+:   `- dashed`
+    verticaltabform
+
+![A](a.png "T")~~zero​width‌space~~
+
+| *zero​width‌space* a\*b | |
+| --- | --- |
+| # hashed ~~controlcharshere~~ `# hashed` |
+| c\_d |![only alt]()
+:   *`verticaltabform`* hello world
+
+- dashed
+:   `- dashed`
+
+`joiner‍and﻿bom`
+================Fuzz
+> 0. ![](a.png)controlcharshere
+>
+>    | back`tickpipe | charverticaltabform | |
+>    | --- | --- |
+>    | zero​width‌space |
+>    |  | |
+> 1. café naïve ~~back`tick~~a\*bpipe | charhello world
+:   **joiner‍and﻿bom**
+    `"tabs and spaces"`
+    *double``tick*
+
+~~hello world~~ ![only alt]() ![]()
+:   [https://example.com](/rel)"`` back`tick ``"
+
+templated prompt
+
+> ### **amp & lt <****a\*b** leading
+
+---Fuzz
+
+| `pipe | char` `tabs and spaces` | verticaltabform | |
+| --- | --- | --- |
+| double``tick | joiner‍and﻿bom*back`tick* | |
+| - dashed | *c\_d* ***double``tick*** | |### trailing
+
+* a\*b
+* - dashed
+* joiner‍and﻿bom
+  + back`tick
+    - verticaltabform
+      * a\*b
+        + pipe | char
+          - joiner‍and﻿bom*zero​width‌space*back`tick leading
+
+---
+
+|  |
+| --- |
+| * hello world - dashed |Fuzz
+
+```
+one
+
+two
+```
+
+|  |  |  |
+| --- | --- | --- |
+| |  | | --- | | a\*b | | 1. numbered word⁠joiner᠎vowel café naïve | |
+
+#### tabs and spaceszero​width‌space***tabs and spaces***
+
+```
+  indented
+```
+
+> back`tickpipe | char pipe | char
+
+back`ticktrailing
+
+1. ~~c\_d~~"tabs and spaces"`multi
+   line`
+2. "café naïve" ![only alt]() "verticaltabform"
+
+   > ~~Alt~~
+   > -------
+3. double``tick
+
+"[café naïve](https://example.com)"
+===================================
+
+> "back`tick"
+> **# hashed**
+
+ ---
+
+> * amp & lt <
+>   + - * café naïve
+>         + amp & lt <
+>           - hello worldc\_dFuzz
+
+trailing leading
+
+back`tick
+
+![Alt](a.png)
+**hello world**
+
+> ##### amp & lt <zero​width‌space
+>
+> https://example.com
+>
+> *verticaltabform*joiner‍and﻿bom**a\*b**> :   zero​width‌space
+>     [controlcharshere](https://example.com "T")
+>
+> controlcharshere amp & lt <
+> :   controlcharshere joiner‍and﻿bom
+
+> * `word⁠joiner᠎vowel`
+> * zero​width‌space
+>   1. numbered
+
+---
+
+> multi
+> line
+
+double``tick
+:   ![]() - dashed a\*b
+
+**tabs and spaces** c\_d
+:   [pipe | char](/rel)> `hello world` tabs and spaces ~~pipe | char~~Fuzz
+
+[double``tick](/rel)
+:   pipe | char
+
+![A](a.png "T")
+:   *café naïve*
+
+```
+tabs	and  spaces
+  amp & lt <
+  a*b
+```
+
+> ---
+
+##### amp & lt < word⁠joiner᠎vowel
+:   https://example.com
+
+amp & lt <
+:   ![Alt](a.png)
+
+##### hello world
+
+#### `controlcharshere`---
+
+ ```
+one
+
+two
+```Fuzz 
+
+```
+one
+
+two
+```
+
+> `` back`tick ``~~trailing~~
+
+| joiner‍and﻿bom |
+| --- |
+| tabs and spaces A hello world |
+| controlcharshere | |Fuzz
+
+##### trailing
+
+|  |  |  |
+| --- | --- | --- |
+| "" | `1. numbered`" leading" | café naïvemulti lineonly alt |
+| `verticaltabform`Alt | amp & lt < café naïve café naïve | controlcharshereamp & lt <tabs and spaces |
+|  |  |  |
+| --- | --- | --- |
+| joiner‍and﻿bom  leading | **[amp & lt <](https://example.com)** leading | `amp & lt <`~~verticaltabform~~ |"verticaltabform"
+
+> ```
+> one
+>
+> two
+> ``` 
+
+###### |  |
+| --- |
+|  |
+
+```
+  indented
+```
+
+# hashed
+:   1. numbered
+
+café naïve joiner‍and﻿bom
+:   ![]() **# hashed**
+
+|  |  |
+| --- | --- |
+| `tabs and spaces` | a\*b |
+| amp & lt < only alt | "café naïve""tabs and spaces"`- dashed` |
+|  |  |  |
+| --- | --- | --- |
+| "- dashed" verticaltabform |  | |
+
+##### café naïve
+
+3. `joiner‍and﻿bom`> ```
+> a_b*c
+> ```no js
+> :   c\_ddouble``tick
+
+---
+
+|  | |  | `hello world` |
+| --- | --- | --- | --- |
+| `only alt` | | a\*bverticaltabformtabs and spaces | `leading` A `amp & lt <` |
+
+|  |  |
+| --- | --- |
+| double``tick `amp & lt <` | |
+| # hashed | |
+
+---
+
+```
+plain
+  code
+```> * controlcharshere  `leading` [- dashed](/rel)
+
+**hello world**
+https://example.com
+
+| `amp & lt <` **[double``tick](https://example.com)** |  | | [zero​width‌space](https://example.com) ~~verticaltabform~~ | |
+| --- | --- | --- | --- | --- |
+| 1. numbered `"a*b"` | | hello world c\_d | leading https://example.com |
+
+`https://example.com` amp & lt < a\*b
+:   [verticaltabform](https://example.com)multi
+    line
+
+a\*ba\*b
+:   "# hashed"
+
+- word⁠joiner᠎vowel multi
+  line
+
+### ~~https://example.com~~ AltFuzz
+
+word⁠joiner᠎vowel https://example.com
+
+1. zero​width‌space
+2. a\*b # hashed
+
+| trailing back`tick | | # hashed tabs and spaces hello world | |
+| --- | --- | --- | --- |
+| tabs and spaces # hashed | zero​width‌space - dashed |
+| trailing c\_d leading | |  |Fuzz 
+
+tabs and spaces pipe | char
+
+##### 
+
+* `leading`* # hashed
+  + tabs and spaces
+    - double``tick
+      * 1. numbered**hello world**![only alt]()
+
+##### *"zero​width‌space"*![]()
+
+1. `tabs and spaces`pipe | char
+2. ****leading****
+
+|  |
+| --- |
+| c\_d |> > ###### trailing c\_d
+
+* verticaltabform
+  + # hashed
+    - a\*b
+      * double``tick*controlcharshere*
+
+![poster](p.png)Fuzz
+
+zero​width‌space> * *- dashed*
+>   + - dashed
+>     # hashed
+>   + a\*b
+
+4. |  |
+   | --- |
+   | verticaltabform double``tick |
+   | double``tick c\_d zero​width‌space |
+
+   1. trailing amp & lt <
+
+word⁠joiner᠎vowel
+"controlcharshere"
+
+> `controlcharshere` **pipe | char**
+
+### "amp & lt <"1. **multi
+   line**
+   `verticaltabform`
+2. `c_d`
+
+* tabs and spaces 1. numbered
+* 1. numberedamp & lt <
+
+* "back`tick" "1. numbered" c\_d
+* a\*b
+    
+  hello world
+* word⁠joiner᠎vowel
+  `a*b`tabs and spaces`pipe | char`
+:   **tabs and spaces**
+
+`https://example.com` [café naïve](/rel) a\*b
+:   joiner‍and﻿bom
+
+---
+
+joiner‍and﻿bomFuzz
+
+#### word⁠joiner᠎vowel- leading verticaltabform~~multi
+line~~
+  
+**word⁠joiner᠎vowel**| zero​width‌space *leading* | | multi line | ~~leading~~ |
+| --- | --- | --- | --- |
+| "" | controlcharshere 1. numbered | `pipe | char`~~~~joiner‍and﻿bom~~~~~~double``tick~~ |
+|  | trailing café naïve hello world | [joiner‍and﻿bom](https://example.com) **a\*b** |
+
+`word⁠joiner᠎vowel``café naïve`
+===============================> cap
+
+zero​width‌spacedouble``tick1. numbered verticaltabform
+:   # hashed
+     ~~leading~~
+
+*double``tick* ![]() back`tick
+:   ![Alt](a.png) `- dashed`
+
+**back`tick** "https://example.com" ![only alt]()
+:   ""amp & lt <""
+    tabs and spaces
+    ![A](a.png "T")
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+|  | **1. numbered** c\_d | *word⁠joiner᠎vowel* | |
+| **tabs and spaces** | word⁠joiner᠎vowel joiner‍and﻿bom | leading | |
+
+> verticaltabform
+> [1. numbered](https://example.com)
+> 1. numbered 
+
+---
+
+> > amp & lt < tabs and spaces - dashedFuzznone Fuzz
+
+| ~~**trailing**~~ |
+| --- | 
+
+---
+
+tabs and spaces
+:   `zero​width‌space` [# hashed](/rel)> > ![A](a.png "T")
+
+> "`café naïve`"
+
+*"- dashed"*
+https://example.com
+a\*b
+
+- `zero​width‌space`a\*b
+
+ "word⁠joiner᠎vowel"
+:   c\_d [back`tick](https://example.com "T")
+
+~~# hashed~~
+
+|  |  |
+| --- | --- |
+| joiner‍and﻿bom | amp & lt < c\_d "joiner‍and﻿bom" |
+| café naïve 1. numbered  `leading` | | leading | |* joiner‍and﻿bom
+  + pipe | char
+    - * c\_d
+        + https://example.compipe | char verticaltabform`verticaltabform`[café naïve](https://example.com "T")`hello world`
+=====================================================================
+
+| `https://example.com` controlcharshere  *leading* | |
+| --- | --- |
+| "- dashed" ~~1. numbered~~ |
+
+---
+
+ trailing
+controlcharshere
+
+|  |
+| --- |
+| `hello world` **https://example.com** |
+| ~~*zero​width‌space*~~ |
+
+3. - dashed
+   https://example.com
+   1. [a\*b](https://example.com)https://example.com**controlcharshere**
+      * trailing
+        + word⁠joiner᠎vowel
+          - pipe | char
+            * 1. numbered
+              + # hashedback`tick> * a\*b
+>   + verticaltabform
+>     - * multi
+>         line[controlcharshere](/rel)
+
+3. "a\*b"
+4. hello world "controlcharshere"
+5. "  
+   "
+
+   ###### verticaltabformtrailing### ``` double``tick ``` double``tick
+
+multi lineverticaltabformmulti line
+:   `verticaltabform````
+plain
+  code
+```
+
+pipe | char
+back`tick
+pipe | char
+
+- [joiner‍and﻿bom](/rel)double``tickdouble``tick
+leading
+~~multi
+line~~
+-----------------------------------
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| controlcharshere | **back`tick** | double``tick | |
+| verticaltabform [- dashed](/rel) **café naïve** | verticaltabform multi line | joiner‍and﻿bom controlcharshere || trailing`c_d` | https://example.com *trailing* |
+| --- | --- |
+| https://example.com double``tick | | verticaltabform****hello world****Alt |
+
+### ~~controlcharshere~~
+
+> > pipe | char c\_d
+>
+> verticaltabform
+> pipe | char
+> -----------------------------word⁠joiner᠎voweljoiner‍and﻿bomFuzz
+
+| [controlcharshere](/rel) | | "# hashed"https://example.com | | # hashed | |
+| --- | --- | --- | --- | --- | --- |
+| hello world | | *`amp & lt <`* controlcharshere only alt | `c_d` | |
+| double``tick word⁠joiner᠎vowel 1. numbered | ~~1. numbered~~ |  |
+
+###### amp & lt < *multi line*
+
+### *a\*b*zero​width‌space leading
+
+*c\_d* pipe | char
+------------------- amp & lt <
+  amp & lt <
+  *trailing*![only alt]()amp & lt <*joiner‍and﻿bom*
+
+|  |
+| --- |
+| [- dashed](https://example.com) |
+| `word⁠joiner᠎vowel` |
+
+###### `trailing`
+
+> * hello world
+>
+>   zero​width‌space trailing
+>   :   a\*b
+>
+>   pipe | charhttps://example.comhttps://example.com
+>   :   double``tick controlcharshere
+> * `verticaltabform`café naïve 
+>
+>   ###### `trailing` ~~~~c\_d~~~~ leading
+> * multi
+>   line
+>   ![only alt]():   back`tick
+
+tabs and spacesa\*b
+:   *https://example.com*
+    **[amp & lt <](https://example.com)**
+    `café naïve`0. **leading**
+
+> café naïve
+
+| "double``tick" | c\_d `joiner‍and﻿bom` double``tick |
+| --- | --- |
+| 1. numbered | ~~https://example.com~~ |Fuzz
+
+hello worldpipe | char"tabs and spaces"
+=======================================
+
+1. c\_d**leading**
+
+```
+  indented
+```
+
+:   pipe | char
+
+verticaltabform joiner‍and﻿bom
+:   # hashed  
+    [*- dashed*](https://example.com)Fuzz
+
+| trailing zero​width‌space hello world  ~~controlcharshere~~ |
+| --- || --- |
+| --- |Fuzz
+
+|  |
+| --- |
+| # hashed hello world `hello world` |
+| ~~trailing~~ |###### `tabs and spaces` - dashed
+
+|  |  |  |
+| --- | --- | --- |
+| [pipe | char](https://example.com "T")*trailing* leading | `leading`~~https://example.com~~amp & lt < | |
+| leading | [trailing](https://example.com) **back`tick**trailing |
+
+`word⁠joiner᠎vowel`
+
+> back`tick
+> `joiner‍and﻿bom`
+> word⁠joiner᠎vowel| https://example.com`trailing` zero​width‌space | back`tick only alt multi line | |
+| --- | --- | --- |
+|  | | "*multi line*" https://example.com c\_d |screen reader only
+
+--- 
+> `controlcharshere`   
+>  ~~`zero​width‌space`~~
+
+*controlcharshere*[joiner‍and﻿bom](/rel)Fuzz
+
+* `1. numbered` **- dashed** hello world
+
+  |  |  |  |  |
+  | --- | --- | --- | --- |
+  | **double``tick** tabs and spaces | zero​width‌space A hello world | c\_d   back`tick | |
+  | [# hashed](https://example.com) `amp & lt <` |  | joiner‍and﻿bom  ~~verticaltabform~~ |
+* [c\_d](https://example.com)https://example.comword⁠joiner᠎vowel
+* *1. numbered*
+  back`tick
+  a\*b
+
+> ```
+>   indented
+> ```
+
+### [hello world](https://example.com)
+
+```
+multi
+line café naïve
+```multi
+line![Alt](a.png)
+
+| leading | | [trailing](/rel) verticaltabformc\_d |
+| --- | --- | --- |
+|  | controlcharshere# hashed |
+| `verticaltabform` `word⁠joiner᠎vowel` "# hashed" | | A |
+
+---
+
+zero​width‌space"**pipe | char**" controlcharshere* 1. numbered
+* *zero​width‌space*
+  `# hashed`
+
+  ```
+  a_b*c
+  ```
+
+  - dashedcafé naïve
+  ==================
+* pipe | char~~1. numbered~~
+
+`verticaltabform`###### `` back`tick ``---
+
+> amp & lt <
+> :   back`ticktrailing
+>
+> trailing double``tick
+> :   1. numberedback`tick> 1. `verticaltabform`a\*b[controlcharshere](https://example.com)
+> 2. [- dashed](https://example.com)  
+>    - dashed
+> 3. ### multi line # hashed
+
+none
+
+|  |
+| --- |
+| pipe | char ~~tabs and spaces~~ |
+| **[café naïve](https://example.com "T")** |
+
+> > * `joiner‍and﻿bom`
+> > * ``` double``tick ``` 1. numbered
+> >
+> >   tabs and spaces
+> >   :   leading controlcharshere a\*b
+
+[![fallback](p.png)](v.mp4)Fuzz
+![poster](p.png)Fuzz
+
+
+[A](/rel)
+*word⁠joiner᠎vowel*
+pipe | char
+=========================================
+
+```
+  indented
+```
+
+> ---![poster](p.png)
+
+0. "**- dashed**"
+
+   `word⁠joiner᠎vowel`
+
+   pipe | char
+
+   |  |  |
+   | --- | --- |
+   | leading | a\*b |
+   | only alt  hello world | pipe | char Alt |
+1. word⁠joiner᠎vowel ""
+
+```
+  indented
+````controlcharshere` `Alt`
+==========================
+
+*zero​width‌space* **tabs and spaces** a\*b
+
+| c\_d | | `- dashed` # hashed | |
+| --- | --- | --- | --- |
+|  | ***https://example.com*** |
+|  | `- dashed` |
+
+0. verticaltabform
+
+   ---back`tick
+
+|  |  |
+| --- | --- |
+| `leading`1. numbered[`pipe | char`](https://example.com) | café naïve |
+| c\_d | controlcharshere a\*b |
+|  |  |
+| --- | --- |
+| Alt a\*b | ~~café naïve~~ |
+
+###### 
+
+tabs and spaces
+===============
+
+> "word⁠joiner᠎vowel"
+
+#### fallback
+
+ > ```
+>   indented
+> ```
+
+* ~~*a\*b*~~
+
+verticaltabformdouble``tick
+=============================
+
+cap
+
+> `leading`"back`tick"c\_d "a\*b"
+
+| *# hashed* ~~trailing~~ | verticaltabform |
+| --- | --- |
+| tabs and spaces | `# hashed` pipe | char |> "word⁠joiner᠎vowel""https://example.com"
+:   `hello world` **c\_d** ![]()Fuzz
+
+****https://example.com**** leading
+:   c\_d
+
+`` back`tick `` **joiner‍and﻿bom**
+:   word⁠joiner᠎vowel# hashed~~multi
+    line~~
+
+> [# hashed](https://example.com)`https://example.com`*controlcharshere*
+>
+> | 1. numbered `1. numbered` # hashed | *1. numbered* a\*b | | *hello world* c\_d |
+> | --- | --- | --- | --- |
+> | a\*b | ~~https://example.com~~ | `1. numbered` controlcharshere |
+
+> ```
+> plain
+>   code
+> ```---
+
+ 
+
+`word⁠joiner᠎vowel`
+
+##### ~~tabs and spaces~~pipe | char
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| https://example.comc\_dtabs and spaces | zero​width‌space`a*b` | | ~~multi line~~ |
+| amp & lt < ~~café naïve~~ | | [pipe | char](https://example.com) | | amp & lt < | |Fuzz
+
+```
+a_b*c
+```
+
+:   zero​width‌space
+    multi
+    line
+
+~~**café naïve**~~
+:   [controlcharshere](https://example.com)cap
+
+[hello world](https://example.com "T")
+`- dashed`
+=================================================
+
+---
+
+1. *https://example.com*
+   `multi
+   line`
+   * café naïve
+     https://example.com
+   * # hashed
+     double``tick
+
+| `multi line` |
+| --- |
+
+|  |
+| --- |
+| word⁠joiner᠎vowel- dashed |###### "hello world"
+
+| multi line | |
+| --- | --- |
+|  |
+| amp & lt < zero​width‌space |
+
+> 3. `multi
+>    line`
+>    # hashed
+> 4. café naïve
+>    # hashed
+>    word⁠joiner᠎vowel
+>
+>    `trailing` 
+>    café naïve
+>    ![A](a.png "T")
+>
+>    |  |
+>    | --- |
+>    | word⁠joiner᠎vowel leading |
+>    | 1. numbereda\*bzero​width‌space | |
+
+---``` double``tick ``` `trailing`
+:   ~~controlcharshere~~- collides with convert\_listFuzz
+
+controlcharshere[![]()](https://example.com)
+:   `leading`back`tickamp & lt[word⁠joiner᠎vowel](https://example.com "T")
+`"zero​width‌space"`
+`controlcharshere`
+--------------------------------------------------------------------------------------tabs and spaces
+back`tick
+
+* zero​width‌space
+  + pipe | char
+    - 1. numbered
+      * multi
+        line
+        + - amp & lt 1. numbered
+
+> ###### way beyond* amp & lt back`tick
+
+> | tabs and spaces | |
+> | --- | --- |
+> | 1. numbered | |
+
+* [verticaltabform](/rel)
+
+  ###### back`tick 1. numbered
+* back`tickhello world
+
+  #### `multi line`
+
+```
+https://example.com- dashed- dashed
+``````
+plain
+  code
+```
+
+- collides with convert\_list
+
+|  |  |  |
+| --- | --- | --- |
+| ~~"1. numbered"~~double``tickword⁠joiner᠎vowel | | joiner‍and﻿bom *`tabs and spaces`* |
+| amp & lt - dashed | ~~leading~~ `leading`word⁠joiner᠎vowel |
+|  |  |
+| --- | --- |
+| **leading** |  |
+
+| multi line trailing multi line | |
+| --- | --- |
+| multi line verticaltabform a\*b |
+| # hashed 1. numbered multi line |
+
+[https://example.com](/rel) ![Alt](a.png)
+
+multi
+line
+
+**invisible** payload
+=====================#### amp & lt < [Alt](/rel)Fuzz
+
+#### 
+
+### multi line~~verticaltabform~~
+
+> **invisible** payload### hello world`zero​width‌space`
+
+#### *a\*b* joiner‍and﻿bom
+
+verticaltabform
+:   1. numbered
+    word⁠joiner᠎vowel
+    multi
+    line
+
+[zero​width‌space](https://example.com)
+
+ 1. numbered
+:   multi
+    line
+
+back`tick zero​width‌space
+:   word⁠joiner᠎vowel1. numbered
+
+> ![A](a.png "T") zero​width‌space `café naïve`
+
+leading `tabs and spaces` ****controlcharshere****
+
+* `verticaltabform` https://example.com multi
+  line
+
+  ```
+  verticaltabformhttps://example.comverticaltabform
+  ```### ~~1. numbered~~
+
+> * **1. numbered**`café naïve`
+> * café naïve
+
+|  |  |
+| --- | --- |
+|  | ***1. numbered*** |
+| `word⁠joiner᠎vowel` leading back`tick | 1. numbered |
+|  |  |  |
+| --- | --- | --- |
+| *hello world* | | *word⁠joiner᠎vowel* |
+
+```
+joiner‍and﻿bom word⁠joiner᠎vowel
+```
+
+| `zero​width‌space`verticaltabform | [back`tick](https://example.com) double``tick tabs and spaces | | ~~back`tick~~ | |
+| --- | --- | --- | --- | --- |
+| verticaltabform | controlcharshere | hello world https://example.com Alt | 
+
+---
+
+###### zero​width‌space **back`tick**
+
+#### back`tick~~1. numbered~~
+café naïve
+==========================
+
+---
+
+ ###### leading # hashedFuzz
+
+hello world
+
+**café naïve** controlcharshere [word⁠joiner᠎vowel](https://example.com)
+:   controlcharshere
+     `leading`
+
+**pipe | char**joiner‍and﻿bomtabs and spaces
+:   ![](a.png)
+    `` back`tick ``
+
+---
+
+1. numbered ~~zero​width‌space~~ `a*b`
+:   joiner‍and﻿bom
+    c\_d
+
+hello world
+:   tabs and spacesdouble``tick```
+a_b*c
+```
+
+| **tabs and spaces** | |
+| --- | --- |
+|  |  
+
+
+---
+
+| controlcharshere tabs and spaces | # hashed``` double``tick ``` | |
+| --- | --- | --- |
+| [~~multi line~~](/rel) ***zero​width‌space*** | 1. numbered | |### 
+
+### "pipe | char"**word⁠joiner᠎vowel**
+
+---
+
+> 3. word⁠joiner᠎vowel`a*b`https://example.com
+> 4. verticaltabform**trailing** [- dashed](https://example.com)trailing
+
+| ~~multi line~~ `trailing` | | [a\*b](https://example.com) | |
+| --- | --- | --- | --- |
+| c\_d | verticaltabformamp & lt <pipe | char | |
+| `a*b` https://example.com |  |
+
+| `c_d` `joiner‍and﻿bom` | | `verticaltabform` | - dashed |
+| --- | --- | --- | --- |
+| leading[`c_d`](https://example.com "T") | A | ~~only alt~~ |
+| `controlcharshere` | `zero​width‌space` |  | |```
+  indented
+```Fuzz
+
+- collides with convert\_list
+
+```
+plain
+  code
+```
+
+###### only alt
+
+* c\_d**multi
+  line**
+
+  ```
+  a_b*c
+  ```3. [leading](https://example.com "T")
+   hello world
+
+   ~~double``tick~~ leading
+
+`c_d`
+
+ Fuzz
+
+---
+
+> ##### controlcharshere multi line leading
+
+###### 
+
+~~1. numbered~~
+===============
+
+---#### café naïve trailing ~~`https://example.com`~~![](a.png)![]()
+:   `verticaltabform`
+
+1. numbered
+
+| double``tick |  | | ~~multi line~~ |
+| --- | --- | --- | --- |
+| # hashed | `trailing` | ~~[c\_d](/rel)~~ # hashed |
+| multi line | `- dashed``joiner‍and﻿bom` | `pipe | char``` back`tick `` |Fuzz
+
+
+*`1. numbered`* `https://example.com` trailing
+
+| multi line | |
+| --- | --- |
+| joiner‍and﻿bom |
+| a\*b https://example.com |> ---
+
+- ~~pipe | char~~
+  verticaltabform
+  controlcharshereFuzz
+
+trailing
+:   `controlcharshere`
+
+`# hashed`
+:   joiner‍and﻿bom
+
+> ![poster](p.png)
+
+`café naïve`
+joiner‍and﻿bom
+
+1. amp & lt <Fuzz
+
+~~**# hashed**~~`café naïve``a*b`
+
+```
+one
+
+two
+```
+
+|  |
+| --- |
+| *word⁠joiner᠎vowel* |
+
+#### leading **tabs and spaces**|  | | tabs and spaces   `a*b` | |  | |
+| --- | --- | --- | --- | --- | --- |
+| trailing  ~~`controlcharshere`~~ https://example.com | *`café naïve`* | | ~~double``tick~~ |
+| ``` double``tick ```amp & lt | *zero​width‌space*a\*b1. numbered | A |
+
+~~~~zero​width‌space~~~~
+:   # hashed
+    *`# hashed`*
+
+"joiner‍and﻿bom"
+:   pipe | char![only alt]()
+
+> | back`tick double``tick word⁠joiner᠎vowel | |
+> | --- | --- |
+> | controlcharshere multi line double``tick |
+>
+> | c\_d | | hello world joiner‍and﻿bom |
+> | --- | --- | --- |
+> | c\_damp & lt <1. numbered | https://example.com double``tick | |
+> | trailing | https://example.com ||  |
+| --- |
+| ``` a_b*c ``` |---
+
+joiner‍and﻿bom amp & lt <
+:   *`word⁠joiner᠎vowel`*
+    leading
+
+[![A](a.png "T")](https://example.com) *café naïve*
+
+|  |  |
+| --- | --- |
+|  | `amp & lt <` |
+| tabs and spaces | ~~`1. numbered`~~ https://example.com `` back`tick `` |Fuzz
+
+back`tick 1. numbered https://example.com
+-----------------------------------------
+
+---
+
+### zero​width‌space `trailing`[**word⁠joiner᠎vowel**](https://example.com)
+controlcharshere
+word⁠joiner᠎vowel
+==================================================================================
+
+3. pipe | char
+   ![Alt](a.png)
+   "c\_d"
+4. hello world a\*b
+
+   a\*b
+   :   multi
+       line
+
+   back`tickback`tick
+   :   *c\_d*
+
+```
+plain
+  code
+```> > **`multi
+> > line`**
+> > ![only alt]()
+> > ![only alt]()
+
+> a\*b
+> joiner‍and﻿bom
+
+*1. numbered* leading `multi
+line`
+==================================
+
+#### *tabs and spaces*
+
+word⁠joiner᠎vowel
+:   tabs and spaces joiner‍and﻿bom
+
+|  |
+| --- |
+| [`leading`](/rel)`c_d` |https://example.com[1. numbered](https://example.com "T")
+:   amp & lt <**café naïve** " leading"
+-------------------------
+
+##### hello world> ---```
+one
+
+two
+```
+
+### café naïvejoiner‍and﻿bom**café naïve**
+
+> * https://example.com back`tick
+>
+>   `word⁠joiner᠎vowel`# hashedcontrolcharshere
+
+|  |  |  |
+| --- | --- | --- |
+| 1. numbered | zero​width‌space | |
+| café naïve *`https://example.com`* amp & lt < | **trailing**  `pipe | char` |
+
+###### amp & lt <
+
+* tabs and spaces
+  + amp & lt <
+    - amp & lt tabs and spaceszero​width‌spaceback`tickback`tick##### *trailing*
+:   tabs and spaces
+
+#### verticaltabform
+
+zero​width‌space
+----------------##### - dashed
+
+| **leading** multi line | |
+| --- | --- |
+| tabs and spaces pipe | char | |
+| joiner‍and﻿bom |Fuzz
+
+| *back`tick* |
+| --- |
+| verticaltabform |
+| ~~controlcharshere~~ |
+
+verticaltabform # hashed
+:   tabs and spaces
+
+verticaltabform
+:   # hashed
+
+3. c\_d [~~https://example.com~~](/rel) pipe | char
+
+   |  |
+   | --- |
+   | tabs and spaces **back`tick** `trailing` |
+   | [c\_d](/rel)trailing |
+4. leading
+
+:   https://example.com> 3. *trailing* hello worldhttps://example.com
+> 4. > ##### double``tick
+> 5. double``tick
+>    c\_d
+>    > *`hello world`*
+>    > ---------------> ##### *leading*
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| double``tick | | back`tick~~1. numbered~~ | controlcharshere |
+| joiner‍and﻿bomAlt | ""joiner‍and﻿bom | c\_d |joiner‍and﻿bom[**trailing**](https://example.com)
+:   `leading`
+    ~~**a\*b**~~
+    `pipe | char`3. * 1. numbered
+     + - verticaltabform
+         * back`tick`trailing`
+
+   ###### **c\_d****- dashed**
+
+**joiner‍and﻿bom**
+:   `trailing` pipe | char leading
+
+```
+one
+
+two
+```Fuzz
+
+###### `multi line``pipe | char`
+
+**amp & lt <**Fuzz
+
+`1. numbered` ![](a.png) **café naïve**
+:   zero​width‌space  [~~leading~~](https://example.com "T")controlcharshere~~![]()~~joiner‍and﻿bom
+:   `- dashed` **tabs and spaces** double``tick
+
+double``tick
+:   ~~`a*b`~~
+    - dashed
+
+---Fuzz 
+
+0. ~~café naïve~~ `1. numbered` ~~double``tick~~
+
+   multi
+   line `multi
+   line`
+1. trailing
+   [c\_d](/rel)
+   double``tick
+
+   ---
+
+| 1. numbered [`amp & lt <`](/rel) | | pipe | char ~~[café naïve](https://example.com)~~ trailing | | only alt | |
+| --- | --- | --- | --- | --- | --- |
+| Altcafé naïve | A | | 1. numbered |
+
+[amp & lt <](https://example.com)
+
+---Fuzz
+
+```
+  indented
+```
+
+|  |  |
+| --- | --- |
+| tabs and spaces leading | |
+|  | |
+
+**zero​width‌space**
+pipe | char
+================================
+
+[child](s.mp4) Fuzz
+
+
+
+
+
+
+*multi
+line*
+
+| `- dashed` | pipe | char | | `c_d` |
+| --- | --- | --- | --- |
+| café naïvejoiner‍and﻿bom | | a\*b | [multi line](https://example.com) |
+
+---
+
+ 0. double``tick
+
+   ### pipe | char
+
+1. > café naïve
+   >
+   > a\*b`amp & lt <`
+
+1. # hashed amp & lt < "double``tick"
+
+" "Fuzz
+
+**invisible** payloadFuzz
+
+| back`tick |
+| --- |
+| 1. numbered `https://example.com` |
+| café naïveAa\*b | |
+
+> - verticaltabform `hello world`
+>
+> `multi
+> line`
+>
+> ~~[trailing](/rel)~~ ![Alt](a.png)---
+
+1. https://example.com
+
+   ```
+   plain
+     code
+   ```
+3. `word⁠joiner᠎vowel` tabs and spaces zero​width‌space
+
+   ###### café naïve
+
+> ---
+>
+> leadingFuzz
+
+| **tabs and spaces**`trailing`  ~~A~~ |
+| --- |0. c\_d
+
+   - dashed verticaltabform word⁠joiner᠎vowel
+   :   leading
+       amp & lt <
+       trailing
+
+   c\_d
+   :   c\_d
+       zero​width‌space
+
+> |  |
+> | --- |
+> | * tabs and spaces   + controlcharshere     - controlcharshere       * back`tick         + café naïve`amp & lt <` c\_d controlcharshere |
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+|  | | tabs and spaces | | ~~`a*b`~~ *a\*b* controlcharshere |
+| ~~https://example.com~~ `pipe | char` | c\_d | | controlcharshere |
+|  |  |  |
+| --- | --- | --- |
+| verticaltabform - dashed | `` back`tick `` | amp & lt < |![A](a.png "T")
+
+---| --- |
+| --- |
+
+```
+plain
+  code
+```
+
+|  |
+| --- |
+| "quoted" |Fuzz
+> ~~zero​width‌space~~
+> :   `# hashed`
+>     verticaltabform
+
+`c_d` "joiner‍and﻿bom" `"tabs and spaces"`
+:   ~~`` back`tick ``~~
+
+"- dashed"
+:   word⁠joiner᠎voweldouble``tick
+
+> ###### way beyond> **leading**
+>
+> |  |
+> | --- |
+> | joiner‍and﻿bom A |
+> | **https://example.com** [trailing](https://example.com "T")  zero​width‌space |
+> |  |
+> | --- |
+> |  |
+
+```
+plain
+  code
+```
+
+```
+one
+
+two
+```
+
+* **c\_d** amp & lt < `- dashed`
+
+  `pipe | char` ``` double``tick ``` ![A](a.png "T")
+  :   [verticaltabform](https://example.com)
+* **[c\_d](https://example.com)**`` back`tick `` 
+> # hashed joiner‍and﻿bom
+> :   word⁠joiner᠎vowel
+>     zero​width‌space
+>     leading
+>
+> # hashed controlcharshere
+> :   zero​width‌space
+>     double``tick
+
+### multi line
+
+```
+  indented
+```---
+
+word⁠joiner᠎vowel 1. numbered
+:   tabs and spaces
+
+~~verticaltabform~~double``tick
+:   leadinghello world
+
+café naïveamp & lt <
+====================
+
+zero​width‌space pipe | char
+
+|  |  |  |
+| --- | --- | --- |
+| - dashed controlcharshere | ~~https://example.com~~ | |
+| double``tick   hello world | | Alt | |`hello world`word⁠joiner᠎vowel
+
+
+**- dashed**
+:   `a*b`  
+    `c_d`
+
+1. trailing ![only alt]() `joiner‍and﻿bom`
+2. `verticaltabform`https://example.com
+
+   ### ~~# hashed~~~~[controlcharshere](https://example.com "T")~~
+
+   > * [![fallback](p.png)](v.mp4)> ##### # hashed # hashed **leading**
+
+```
+one
+
+two
+```
+
+#### "tabs and spaces" `amp & lt <`
+
+> ```
+> 1. numbered
+> ```
+
+3. `controlcharshere`
+4. café naïveback`tick- dashed
+   > * `hello world`controlcharshere
+5. `a*b` 
+
+   a\*b word⁠joiner᠎vowel verticaltabform
+   :   verticaltabformFuzz
+"quoted"
+
+**invisible** payloadleading
+
+```
+a_b*c
+```Fuzz
+
+```
+plain
+  code
+```
+
+* hello world
+  + 1. numbered
+    - * 1. numbered
+
+> ```
+>   indented
+> ```> no js
+
+* [joiner‍and﻿bom](https://example.com)
+
+  #### back`tick
+* trailing zero​width‌space
+
+  word⁠joiner᠎vowel
+
+  | multi line zero​width‌space | double``tick verticaltabform | |  | |
+  | --- | --- | --- | --- | --- |
+  | amp & lt | 1. numbered 1. numbered zero​width‌space | | pipe | charword⁠joiner᠎vowelzero​width‌space | |
+  | https://example.com | a\*b c\_d - dashed | | hello world trailing |
+
+  `leading`hello worldjoiner‍and﻿bom
+
+  #####
+* ~~a\*b~~```
+a_b*c
+```
+
+---
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| leading | [joiner‍and﻿bom](https://example.com "T") | | double``tick leading | |
+| "~~joiner‍and﻿bom~~" `a*b` | `1. numbered``zero​width‌space` | [~~# hashed~~](https://example.com) trailing |
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| - dashed **# hashed** "multi line" | **`amp & lt <`**trailing | | pipe | charonly altcafé naïve | |`- dashed`~~zero​width‌space~~
+------------------------------
+
+```
+one
+
+two
+```Fuzz
+
+| A | |
+| --- | --- |
+| `tabs and spaces` |
+
+| # hashed | zero​width‌space | |
+| --- | --- | --- |
+| `# hashed` | only alt |
+| **# hashed**c\_d |  |
+
+controlcharshere *word⁠joiner᠎vowel*
+:   **leading**
+    trailing
+    ![only alt]()> > c\_d
+
+#### joiner‍and﻿bom verticaltabform amp & lt <```
+plain
+  code
+```
+
+![only alt]() ![](a.png)
+:   *`leading`*
+    ``` double``tick ```
+
+| `` back`tick `` c\_d `pipe | char` | Alt | |  |
+| --- | --- | --- | --- |
+| ~~multi line~~ café naïve | ~~1. numbered~~ | - dashedpipe | char |
+
+###### beyond six
+
+![]()
+
+ [trailing](https://example.com "T")
+-----------------------------------
+
+> :   back`tick
+>     a\*b
+>     café naïve
+>
+> **leading**
+>
+> ### pipe | char multi line `verticaltabform````
+one
+
+two
+```
+
+*hello world*controlcharshere`c_d`
+
+| café naïve `tabs and spaces` |
+| --- |
+| café naïve - dashed |
+| ~~multi line~~ multi line |Fuzz
+
+0. `café naïve`
+
+| `c_d` leading | | *controlcharshere* *amp & lt <* | [multi line](https://example.com "T") | |
+| --- | --- | --- | --- | --- |
+| `verticaltabform` | `amp & lt <` | | "hello world" |
+
+only alt
+--------###### `verticaltabform`- amp & lt <
+
+joiner‍and﻿bom"tabs and spaces"`tabs and spaces`
+
+hello world
+*hello world*---
+
+ 
+
+cap
+
+ 
+
+tabs and spaces
+
+| pipe | char # hashed | |
+| --- | --- |
+| c\_d |
+| joiner‍and﻿bom `leading`word⁠joiner᠎vowel | | 
+
+```
+a_b*c
+```
+
+```
+  indented
+```
+
+##### amp & lt <Fuzz
+
+* `café naïve`
+  # hashed
+* `- dashed`
+* *1. numbered*
+
+  multi line
+  :   ~~hello world~~
+      1. numbered
+
+```
+  word⁠joiner᠎vowel
+  tabs	and  spaces
+```Fuzz
+
+controlcharshere
+:   *hello world*
+
+~~`c_d`~~
+:   amp & lt <
+    `1. numbered`
+    back`tickFuzz
+> 1. ![](a.png) # hashed [- dashed](https://example.com "T")
+> 2. *https://example.com*
+>    `# hashed`
+> 3. ~~leading~~   
+>     c\_d
+>    > **controlcharshere**
+>    > [trailing](https://example.com)
+
+```
+a_b*c
+```
+
+---
+
+tabs and spaces verticaltabformFuzz 
+
+---
+
+ ***a\*b***pipe | char
+
+trailing
+
+### `café naïve`##### **Alt** trailing### ["tabs and spaces"](https://example.com) `zero​width‌space` double``tick
+
+###### way beyond[trailing](https://example.com "T")
+:   hello world###### zero​width‌space
+
+![A](a.png "T")
+:   leading ***hello world***
+
+- dashed
+:   `joiner‍and﻿bom`
+
+trailing   `verticaltabform`
+==============================|  |  |  |  |
+| --- | --- | --- | --- |
+| `verticaltabform` `word⁠joiner᠎vowel` |  | café naïve joiner‍and﻿bom | |
+| hello world | verticaltabform zero​width‌space | |  | |
+|  |  |  |
+| --- | --- | --- |
+| Alt `https://example.com` | only alt zero​width‌space | [c\_d](https://example.com "T") `trailing` |
+
+- ![A](a.png "T") verticaltabform *zero​width‌space*Fuzz
+
+
+https://example.com `controlcharshere`
+
+```
+one
+
+two
+```
+
+> ~~verticaltabform~~ tabs and spaces ![A](a.png "T")| 1. numbered `zero​width‌space` |
+| --- |
+| **1. numbered** | |
+| `1. numbered`~~- dashed~~ |
+
+|  |  |  |
+| --- | --- | --- |
+| **~~c\_d~~** | https://example.com Alt | ~~tabs and spaces~~ only alt |
+| only alt | | [controlcharshere](https://example.com "T") *https://example.com* | *[https://example.com](https://example.com "T")* |
+|  |  |  |  |
+| --- | --- | --- | --- |
+| A ~~[trailing](https://example.com "T")~~  c\_d | c\_d `- dashed` | | "tabs and spaces" |
+
+```
+a_b*c
+``` 
+
+templated prompthello world word⁠joiner᠎vowel ![only alt]()
+
+> 1. ~~- dashed~~
+>    ~~https://example.com~~
+>    `- dashed`
+> 2. word⁠joiner᠎vowel
+>    ~~multi
+>    line~~
+> 3. ~~double``tick~~ tabs and spaces
+>    > ###### leading
+
+- `1. numbered`
+
+> trailing **c\_d**
+
+leading`trailing` controlcharshere
+:   **word⁠joiner᠎vowel**> | [tabs and spaces](/rel)[controlcharshere](https://example.com)**c\_d** | | c\_d *zero​width‌space* | | *café naïve* | |
+> | --- | --- | --- | --- | --- | --- |
+> | `word⁠joiner᠎vowel`Alt | | # hashed *tabs and spaces* | 1. numbered1. numbered# hashed |
+> | Alt pipe | char | "back`tick" | <https://example.com> | |
+
+| [tabs and spaces](https://example.com "T") `a*b` | *# hashed* tabs and spaces | |
+| --- | --- | --- |
+| `joiner‍and﻿bom` | **[pipe | char](https://example.com)**[# hashed](https://example.com) | |
+| **back`tick** |  |Fuzz
+
+| `multi line`~~**c\_d**~~ |
+| --- |
+
+> **# hashed**
+> ~~back`tick~~Fuzz
+> ###### leading **`joiner‍and﻿bom`**Fuzz
+> "![]()"zero​width‌space
+
+> # hashed
+> :   pipe | char
+>
+> joiner‍and﻿bom ![A](a.png "T")
+> :   leading
+>     `a*b`
+
+* back`tick
+  + joiner‍and﻿bom
+    - leadingdouble``tick##### 
+
+**c\_d** hello world
+====================| word⁠joiner᠎vowel | | amp & lt < |
+| --- | --- | --- |
+| ~~hello world~~  **leading** | Ahello world |
+| leading pipe | char | | ~~1. numbered~~ | || zero​width‌space |  |
+| --- | --- |
+| - dashed *`zero​width‌space`* *verticaltabform* | | **multi line**pipe | char |
+| word⁠joiner᠎vowel 1. numbered | | a\*b~~~~amp & lt <~~~~ |Fuzz
+
+### [**pipe | char**](https://example.com)hello world
+
+c\_d~~`1. numbered`~~`pipe | char`
+----------------------------------
+
+```
+plain
+  code
+```Fuzz
+
+
+![]()a\*b
+
+**controlcharshere**
+controlcharshere
+a\*b
+-----------------------------------------------*![](a.png)* ![only alt]() leading
+:   leading
+
+> https://example.com
+> [`controlcharshere`](/rel)> * **- dashed** *joiner‍and﻿bom* [café naïve](https://example.com)
+> * - dashed
+
+* `"amp & lt <"`
+
+  ### 
+
+  ###
+
+| ~~**back`tick**~~ tabs and spaces | | tabs and spaces | - dashed | |
+| --- | --- | --- | --- | --- |
+| `trailing`  1. numbered | ~~"café naïve"~~ | `leading` | |
+
+> * ~~double``tick~~
+>     
+>
+>   multi
+>   line~~tabs and spaces~~*zero​width‌space*
+>   ===============================================
+>
+>   #### *[verticaltabform](https://example.com "T")* [a\*b](/rel)
+> * https://example.com
+>   joiner‍and﻿bom
+>   tabs and spacesFuzz
+
+1. multi
+   line
+2. ![]()
+
+* [`` back`tick ``](https://example.com "T") tabs and spaces back`tick
+
+### joiner‍and﻿bom back`tick
+
+| *`c_d`* |
+| --- ||  |  |  |  |
+| --- | --- | --- | --- |
+|  | trailing | `a*b` | |
+| `amp & lt <` | `only alt` `pipe | char` | `a*b` `joiner‍and﻿bom` `joiner‍and﻿bom` |
+
+```
+pipe | char
+c_d
+controlcharshere
+``````
+plain
+  code
+```
+
+|  |  |
+| --- | --- |
+|  | |
+| *tabs and spaces* | |---
+
+`a*b` 1. numbered *![]()*
+:   - dashed`1. numbered`
+
+![A](a.png "T") a\*b *leading*
+:   `` back`tick ``#### multi linemulti linehttps://example.com
+
+```
+plain
+  code
+```
+
+* [multi
+  line](https://example.com "T")
+  1. numbered
+
+  | back`tick leading |
+  | --- |
+  | leading |
+* leadingword⁠joiner᠎vowel`1. numbered`
+
+  | # hashed | https://example.com | trailing | |
+  | --- | --- | --- | --- |
+  | 1. numbered | back`tick double``tick | | verticaltabformhello world |
+  | tabs and spaces | word⁠joiner᠎vowel |  |* tabs and spaces
+  + c\_d
+    - pipe | char
+
+A leading
+---------
+
+`a*b``word⁠joiner᠎vowel`
+
+`tabs and spaces`
+-----------------Fuzz
+
+|  |  |  |
+| --- | --- | --- |
+| ~~verticaltabform~~   ~~c\_d~~ | joiner‍and﻿bom trailing | double``tick |
+| tabs and spaces verticaltabform | `a*b` | Alt |
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| joiner‍and﻿bom **~~zero​width‌space~~** | | hello world | back`tick `word⁠joiner᠎vowel` | |
+
+---
+
+ 
+
+---Fuzz
+
+###### word⁠joiner᠎vowel c\_d `hello world`
+
+> word⁠joiner᠎vowel
+
+> > amp & lt <
+
+---
+
+- dashed
+:   joiner‍and﻿bom
+
+![only alt]() double``tick```
+a_b*c
+```
+
+~~`trailing`~~ ![]()`zero​width‌space`
+:   `verticaltabform` verticaltabform- dashed
+--------
+
+c\_d # hashed
+:   ***c\_d****double``tick*
+
+tabs and spaces
+:   # hashed
+
+* verticaltabform
+  + word⁠joiner᠎vowel
+    - joiner‍and﻿bom
+      * pipe | char leadingback`tick
+
+---###### 
+
+* ![only alt]()
+* # hashed - dashed
+  > **# hashed**
+  > 1. numbered
+  > word⁠joiner᠎vowel
+  > ------------------------------------------
+
+```
+plain
+  code
+```Fuzz
+
+hello world
+:   1. numbered leading
+
+https://example.com ![](a.png) [# hashed](https://example.com "T")
+:   ![](a.png)
+    tabs and spaces
+
+### 1. numbered controlcharshere
+
+"amp & lt <"
+
+~~[# hashed](/rel)~~
+
+3. *multi
+   line* `multi
+   line`
+4. amp & lt < - dashed
+5. https://example.comverticaltabformc\_d```
+a_b*c
+```
+
+|  |
+| --- |
+| c\_d leading double``tick |
+| `a*b` zero​width‌space |
+|  |
+| --- |
+| **multi line** |
+
+`![]()` verticaltabform[tabs and spaces](https://example.com "T")~~hello world~~
+:   multi
+    line
+
+*verticaltabform*`c_d`
+:   verticaltabform trailing```
+a_b*c
+```Fuzz
+
+```
+a_b*c
+```
+
+multi
+line
+
+> café naïve
+>
+> | controlcharshere word⁠joiner᠎vowel controlcharshere | | trailing pipe | char | | https://example.com pipe | char 1. numbered |
+> | --- | --- | --- | --- | --- |
+> | pipe | char | café naïve verticaltabform | zero​width‌space |
+> | a\*b leading amp & lt < | word⁠joiner᠎voweltabs and spaceshello world | trailing a\*bpipe | char |
+>
+> > > amp & lt <~~hello world~~|  | leading   A | | " " |
+| --- | --- | --- | --- |
+| tabs and spaces https://example.com café naïve | *c\_d* | | controlcharshere`hello world` | |
+| controlcharshere# hashed | trailing |  | |
+
+##### https://example.com `tabs and spaces`
+
+ Fuzz
+
+
+* [`tabs and spaces`](/rel)
+* | "verticaltabform"[- dashed](https://example.com) |
+  | --- |
+
+##### 
+
+###### `https://example.com` tabs and spaces
+
+`trailing`
+:   ~~joiner‍and﻿bom~~trailing ~~1. numbered~~---
+
+3. `1. numbered`
+4. ~~**# hashed**~~
+   **c\_d**
+
+
+   ---
+
+back`tick
+
+
+**tabs and spaces** a\*b
+:   `multi
+    line` verticaltabformFuzz
+
+* `verticaltabform`
+* ~~https://example.com~~"zero​width‌space"
+* `verticaltabform`
+
+  templated prompt
+
+---
+
+##### pipe | char
+
+zero​width‌space*back`tick*double``tick###### a\*b zero​width‌space
+
+" "**trailing**
+:   multi
+    line
+    café naïve
+
+word⁠joiner᠎vowel
+:   **https://example.com**
+
+cap
+
+no js
+
+> |  |  |  |  |
+> | --- | --- | --- | --- |
+> | `- dashed`trailing | café naïvejoiner‍and﻿bom |  | |
+> | verticaltabform | leading | `zero​width‌space` **double``tick** `- dashed` |Fuzz
+
+joiner‍and﻿bom
+amp & lt <
+leading| 1. numbered | | ~~amp & lt <~~ | | c\_d |
+| --- | --- | --- | --- | --- |
+| [zero​width‌space](https://example.com "T") | controlcharshere `verticaltabform` A | `a*b`verticaltabform |
+
+``` double``tick ```
+:   https://example.com
+
+**1. numbered** 1. numbered
+:   joiner‍and﻿bom zero​width‌space controlcharshere
+
+> |  |  |  |  |
+> | --- | --- | --- | --- |
+> | `café naïve` a\*b | | leadingzero​width‌space[amp & lt <](https://example.com "T") | amp & lt < a\*b |
+> | *word⁠joiner᠎vowel*only alt`https://example.com` | | café naïve leading | # hashed only alt |
+> |  |  |  |  |
+> | --- | --- | --- | --- |
+> | only alt | c\_d | ~~multi line~~ ~~joiner‍and﻿bom~~ `verticaltabform` | | 
+
+# hasheddouble``tick
+
+ 
+
+cap
+
+> ![poster](p.png)Fuzz
+> 1. word⁠joiner᠎vowel*café naïve*
+> 2. trailing 
+>    [back`tick](https://example.com)
+>
+>    joiner‍and﻿bomtrailing
+>    :   back`tick
+> 3. tabs and spaces
+>    **1. numbered**
+
+* `c_d`
+  `""`
+* ![A](a.png "T")word⁠joiner᠎voweldouble``tick
+
+c\_d
+
+|  | | `controlcharshere` | |
+| --- | --- | --- | --- |
+| c\_d | `pipe | char` | |
+| `trailing` | word⁠joiner᠎vowel | |#### # hashed`Alt`[controlcharshere](https://example.com)*~~verticaltabform~~* ![](a.png)
+:   verticaltabform `verticaltabform`
+
+"`` back`tick ``"~~tabs and spaces~~
+:   a\*b
+    *`1. numbered`*
+
+> back`ticka\*b
+
+- collides with convert\_listFuzz
+
+##### 
+
+| trailing zero​width‌space | café naïve |
+| --- | --- |
+| leading `pipe | char` | | double``tick joiner‍and﻿bom |---
+
+---
+
+### `pipe | char`
+
+|  |
+| --- |
+| **amp & lt <** controlcharshere |
+| - dashed`1. numbered` |
+|  |
+| --- |
+|  |
+
+```
+  indented
+```Fuzz 
+
+cap
+
+> # hashed
+
+> *word⁠joiner᠎vowel*
+> ===================
+
+```
+  indented
+```Fuzz
+
+`trailing` verticaltabform
+:   leading [https://example.com](https://example.com "T")
+
+`trailing`
+:   back`tick
+    ~~café naïve~~
+
+```
+a_b*c
+```
+
+0. ![]()|  |  |  |
+| --- | --- | --- |
+| controlcharshere joiner‍and﻿bom https://example.com | https://example.com `tabs and spaces` only alt | `trailing`  café naïve |
+| `amp & lt <` | hello world*zero​width‌space* | "double``tick" "*tabs and spaces*" amp & lt < |
+
+```
+one
+
+two
+```
+
+--- 
+
+> ### ~~~~# hashed~~~~controlcharshere
+
+`verticaltabform`
+~~[word⁠joiner᠎vowel](/rel)~~
+- dashed
+
+> 1. numbered
+
+```
+a_b*c
+```
+
+"
+"https://example.com
+
+|  |
+| --- |
+| `zero​width‌space`[c\_d](https://example.com) |
+| amp & lt < [back`tick](https://example.com "T") |Fuzz
+
+| zero​width‌space | | 1. numbered verticaltabform |
+| --- | --- | --- |
+| back`tick | https://example.com |
+| https://example.com | c\_d verticaltabform |
+
+hello world
+**word⁠joiner᠎vowel**
+``` double``tick ```
+------------------------------------------------------
+
+---
+
+```
+  indented
+```
+
+#### AFuzz
+
+0. café naïve 1. numbered
+
+   ---1. ![]() verticaltabform
+
+   `amp & lt <` pipe | char
+
+   | amp & lt < |
+   | --- |
+   | word⁠joiner᠎vowel- dashed |
+   | https://example.com | |
+
+["amp & lt <"](/rel)zero​width‌spacehello world
+===============================================Fuzz|  |  |  |  |
+| --- | --- | --- | --- |
+| **"https://example.com"**hello world | pipe | char`word⁠joiner᠎vowel`Alt |  | |
+| *<https://example.com>*   amp & lt < | **# hashed**verticaltabform | Alt `amp & lt <` **1. numbered** |
+
+* ![](a.png)
+
+  zero​width‌space
+  controlcharshere
+  word⁠joiner᠎vowel
+* ~~`zero​width‌space`~~
+
+  ###
+
+```
+a_b*c
+```
+
+[trailing](https://example.com "T") trailing
+:   "tabs and spaces"trailing
+
+hello world leading
+:   ![]()"back`tick"`trailing`https://example.com
+`c_d`
+=========================tabs and spaces
+
+| **https://example.com** [verticaltabform](https://example.com) | |
+| --- | --- |
+| leading |
+
+| 1. numbered`` back`tick ```A` | *- dashed* controlcharshere - dashed | | [**c\_d**](https://example.com) |
+| --- | --- | --- | --- |
+| **double``tick** controlcharshere café naïve | *# hashed* | `verticaltabform` | |
+
+~~![Alt](a.png)~~
+
+a\*b
+----Fuzz
+
+**pipe | char**
+
+> * `multi
+>   line`
+> * - dashed
+> * *word⁠joiner᠎vowel*
+>   multi
+>   line
+
+```
+one
+
+two
+```
+
+> * trailing
+> * joiner‍and﻿bom
+>
+>   ###### Alt[c\_d](/rel)
+> * controlcharshere
+>   **https://example.com**amp & lt < joiner‍and﻿bom [controlcharshere](/rel)
+----------------------------------------------------```
+ trailing
+```
+
+```
+one
+
+two
+```* 1. numbered
+  `pipe | char`
+   [leading](https://example.com "T")
+
+  |  |  |
+  | --- | --- |
+  | https://example.comjoiner‍and﻿bom | |
+  | trailing word⁠joiner᠎vowelword⁠joiner᠎vowel |
+  |  |  |
+  | --- | --- |
+  | amp & lt < hello world | |
+* # hashed
+* [zero​width‌space](https://example.com)controlcharshere
+
+" "
+:   ~~controlcharshere~~Fuzz
+
+#### c\_d`trailing`
+
+* https://example.com
+  + # hashed
+    - controlcharshere
+      * leading
+        + controlcharsherecafé naïve  ~~leading~~ café naïve
+
+zero​width‌space 1. numbered joiner‍and﻿bom
+:   `` back`tick `` `a*b`
+
+``` double``tick ```
+:   # hashed
+    back`tick
+    word⁠joiner᠎vowel
+
+```
+a_b*c
+```* ~~- dashed~~`trailing` *a\*b*
+* joiner‍and﻿bom  
+  ![only alt]()
+* ![A](a.png "T")
+  trailing
+
+|  |  |  |
+| --- | --- | --- |
+| - dashed leading |  | trailing |
+| # hashed *back`tick* tabs and spaces | | back`ticktabs and spaces# hashed | | zero​width‌space |
+
+![only alt]()
+:   `zero​width‌space`Fuzz
+> * [zero​width‌space](/rel) pipe | char 1. numbered
+> * ![A](a.png "T")
+>   1. numbered
+> * ~~zero​width‌space~~`controlcharshere``joiner‍and﻿bom`
+> * amp & lt < a\*b [1. numbered](/rel)1. multi
+   lineamp & lt <
+2. ~~1. numbered~~![Alt](a.png)
+
+   `- dashed` `https://example.com`
+
+verticaltabform
+*[amp & lt <](https://example.com "T")*
+verticaltabform
+
+```
+a_b*c
+```| Alt *pipe | char* | - dashed double``tick | | only alt hello world multi line | |
+| --- | --- | --- | --- | --- |
+| `` back`tick `` | | *~~zero​width‌space~~* | - dashed |
+|  | | double``tick | only alt |
+
+| "[multi line](https://example.com)" pipe | char |
+| --- |![poster](p.png)
+> café naïve
+
+`amp & lt <`~~*verticaltabform*~~zero​width‌space
+
+|  |
+| --- |
+| only alt *trailing* |
+| **trailing** |
+
+[child](s.mp4)Fuzz
+
+* back`tick
+  + # hashed
+    - leading
+      * pipe | char
+        + controlcharshere`1. numbered`
+
+hello world ~~``` double``tick ```~~
+====================================
+
+```
+a_b*c
+```
+
+hello world
+
+| ~~https://example.com~~ |
+| --- |
+| `zero​width‌space`word⁠joiner᠎vowelhttps://example.com |
+| amp & lt < `amp & lt <` `joiner‍and﻿bom` |> [word⁠joiner᠎vowel](/rel)
+> trailing
+
+> multi
+> line
+> *~~pipe | char~~*
+
+* - dashedverticaltabform
+* double``tick
+  multi
+  line
+* multi
+  line
+
+### # hashed
+
+- trailing verticaltabformFuzz
+
+1. "tabs and spaces"Fuzz
+
+* trailing
+  + zero​width‌space
+    - * verticaltabform leading
+
+`tabs and spaces`
+
+|  |  |
+| --- | --- |
+| *pipe | char***double``tick** | [- dashed](/rel)zero​width‌spacea\*b |
+| pipe | charhttps://example.comcontrolcharshere | tabs and spaces | |
+
+```
+plain
+  code
+``````
+a_b*c
+```
+
+---
+
+1. numbered `- dashed` verticaltabform
+:   **tabs and spaces**
+    ~~`a*b`~~
+    ~~https://example.com~~
+
+controlcharshere~~tabs and spaces~~
+:   ![]() back`tick leadingFuzz
+
+~~pipe | char~~ ![A](a.png "T")
+
+templated prompt
+
+> 3. ``` double``tick ```
+>    word⁠joiner᠎vowel
+> 4. **tabs and spaces**
+>
+>    ##### pipe | char pipe | char 1. numbered
+>
+>    #### double``tick [café naïve](/rel) 
+
+---
+
+[café naïve](https://example.com "T")Fuzz
+
+```
+a_b*c
+```
+
+*`https://example.com`*"pipe | char"
+
+---
+
+ joiner‍and﻿bom trailing
+:   `verticaltabform`   
+     double``tick
+
+a\*b
+:   **trailing**  ![Alt](a.png)
+
+### pipe | char###### beyond six
+
+- word⁠joiner᠎vowel
+  ![Alt](a.png)
+
+`multi line` a\*b hello world
+:   c\_d
+    verticaltabform
+    controlcharshere
+
+**hello world** `1. numbered` ![Alt](a.png)
+:   zero​width‌space
+    `1. numbered`
+
+* **1. numbered**
+  *![]()*
+  `joiner‍and﻿bom`
+* 1. numbered**verticaltabform**
+
+  pipe | char **pipe | char**
+
+  `word⁠joiner᠎vowel`
+  -------------------**amp & lt <**
+--------------
+
+* *back`tick*   
+   hello world
+* back`tick[zero​width‌space](https://example.com)
+
+  ```
+  plain
+    code
+  ```
+* trailing
+
+###### way beyond 
+
+1. numbered**a\*b**
+
+- ~~pipe | char~~
+
+* double``tick
+* a\*b`` back`tick ``- dashed
+
+  ---
+
+###### beyond six> #####
+
+> ![poster](p.png)
+
+> | double``tick - dashed | |
+> | --- | --- |
+> | verticaltabform ~~trailing~~  joiner‍and﻿bom |
+
+##### café naïve word⁠joiner᠎vowel###### 
+
+#### - dashed 1. numbered###### tabs and spaces
+
+c\_d trailing [~~leading~~](https://example.com)
+:   ![A](a.png "T") pipe | char - dashed
+
+a\*ba\*b
+:   leading1. numberedpipe | char> `amp & lt <` multi
+> line
+
+* trailing
+* hello world a\*b
+* "c\_d"
+  **`controlcharshere`**
+
+  ### `a*b`https://example.com
+
+templated prompt
+
+1. *double``tick*
+   c\_d
+
+#### word⁠joiner᠎vowelFuzz
+
+# hashed
+:   pipe | char 1. numbered
+
+1. numbered https://example.com
+:   **~~multi
+    line~~**
+
+#### `verticaltabform` double``tick trailing
+
+--- 
+
+---
+
+> * ``` double``tick ```
+>   double``tick
+> * ~~hello world~~
+
+double``tick # hashedFuzz
+
+
+```
+one
+
+two
+```> ###### ~~leading~~* https://example.com ~~*tabs and spaces*~~ café naïve
+* controlcharshere 
+
+---
+
+***joiner‍and﻿bom*** trailing
+
+**trailing**
+
+| double``tick | multi line café naïve | |
+| --- | --- | --- |
+| tabs and spaces hello world | amp & lt < - dashed word⁠joiner᠎vowel | |
+
+* tabs and spacesamp & lt <~~double``tick~~
+
+1. ~~café naïve~~
+   # hashed
+   back`tick
+
+* ![Alt](a.png)
+  3. | multi line multi line | | controlcharshere # hashed 1. numbered | |
+     | --- | --- | --- | --- |
+     | word⁠joiner᠎vowel | | controlcharsherec\_dtrailing | |
+     | multi line 1. numbered c\_d | | https://example.com |
+  4. trailing  [1. numbered](https://example.com "T") `amp & lt <`
+
+
+     ####
+* **back`tick** - dashed
+
+  | verticaltabform`trailing` | | *leading*- dashed |
+  | --- | --- | --- |
+  | c\_dhello world | 1. numbered # hashed `a*b` |
+  | joiner‍and﻿bom `leading` | `c_d` [c\_d](https://example.com "T") |
+* # hashed
+  pipe | char 
+
+---###### https://example.com amp & lt <
+
+`café naïve`
+:   ![only alt]()Fuzz
+
+[back`tick](https://example.com)
+
+> ```
+>   indented
+> ```
+
+* `tabs and spaces`
+
+|  |  |  |
+| --- | --- | --- |
+| tabs and spaces word⁠joiner᠎vowel | hello world | |
+| verticaltabform | tabs and spaces |
+|  |  |
+| --- | --- |
+| - dashed leading | tabs and spaces # hashed - dashed |
+
+tabs and spaces
+:   verticaltabform
+
+hello worldcafé naïve
+:   hello world# hashedback`tick
+
+---
+
+1. trailing
+ * multi
+  line
+  café naïve
+  pipe | char
+  > ****zero​width‌space****
+  > word⁠joiner᠎vowel
+  > ------------------------------------------
+* café naïve
+
+* **café naïve**
+  `controlcharshere`
+  pipe | char
+
+  #### café naïve
+
+trailing
+:   leading hello world
+
+multi line
+:   trailing
+    1. numbered
+    # hashed
+
+```
+  indented
+```---
+
+```
+hello world
+amp & lt <
+double``tick
+```###### [c\_d](https://example.com "T")~~only alt~~a\*b
+
+[- dashed](https://example.com)
+-------------------------------
+
+---
+
+back`tick**1. numbered**
+
+| joiner‍and﻿bom | | `A` *hello world* `tabs and spaces` |  |
+| --- | --- | --- | --- |
+| [zero​width‌space](https://example.com) | c\_d | `# hashed` |###### `trailing` `hello world`
+
+1. `amp & lt <`
+   ![A](a.png "T")
+   [verticaltabform](https://example.com)
+
+   back`tick controlcharshere
+   :   controlcharshere
+       café naïve
+2. controlcharshere ![A](a.png "T")
+3. ---
+
+   |  |  |
+   | --- | --- |
+   | word⁠joiner᠎vowel pipe | char a\*b | |
+   | leading |
+
+| double``tickcontrolcharshere | | *multi line* `only alt` |
+| --- | --- | --- |
+| a\*b `c_d` | - dashed | |
+
+> > amp & lt < back`tick pipe | char
+> > :   word⁠joiner᠎vowel# hashedFuzz
+
+
+---
+
+ 
+
+```
+  indented
+```
+
+ ![poster](p.png)
+
+```
+  indented
+```Fuzzno js Fuzz
+
+
+---
+
+> [# hashed](https://example.com "T")`- dashed`
+
+~~amp & lt <~~
+==============hidden instructions
+
+1. numbered
+
+|  | joiner‍and﻿bom `verticaltabform` | |
+| --- | --- | --- |
+| `1. numbered` # hashed | café naïve |
+
+> ~~verticaltabform~~
+> `- dashed`
+
+pipe | char**- dashed**Fuzz
+
+#### [**leading**](https://example.com "T")[`amp & lt <`](/rel)`verticaltabform`
+
+---
+
+" leading"
+----------* + c\_d
+    - * verticaltabform *leading*
+
+---
+
+> # hashed
+
+hidden instructions| [only alt](/rel) |
+| --- |
+| # hashed   **`` back`tick ``** |
+| *`controlcharshere`* |
+
+# hashed "amp & lt <"
+
+| ``` plain   code ``` |
+| --- |
+
+https://example.com**1. numbered**
+==================================Fuzz
+
+https://example.com
+~~![A](a.png "T")~~Fuzz
+
+### verticaltabform
+
+---~~`joiner‍and﻿bom`~~
+
+trailing
+ **`leading`**
+
+* 1. numbered
+
+  `hello world`hello world
+  :   c\_d
+
+  tabs and spaceshello world`c_d`
+  :   **pipe | char*** ![](a.png)
+  # hashed
+  3. tabs and spaces- dashed1. numbered
+
+     ```
+     plain
+       code
+     ```
+  4. hello world `pipe | char` **double``tick**
+* *trailing*  amp & lt <
+* `controlcharshere`
+
+---
+
+> ```
+> plain
+>   code
+> ```| Alt |
+| --- |`- dashed`[*controlcharshere*](https://example.com)
+
+```
+  indented
+```Fuzz
+> > ### café naïve
+
+---
+
+* double``tick
+
+  ---
+* controlcharshere
+* a\*b
+  **verticaltabform**
+  ****c\_d****
+  + **back`tick**
+    `a*b`
+  + [c\_d](/rel)
+    hello world
+
+> **pipe | char** 1. numbered amp & lt <
+> :   `` back`tick ``
+>
+> ~~# hashed~~
+> :   ![A](a.png "T")`amp & lt <`**multi
+>     line**Fuzz
+
+![](a.png) *double``tick*
+:   [`c_d`](https://example.com) pipe | char
+
+---
+
+**back`tick**
+:   *zero​width‌space*
+
+*1. numbered*
+back`tickFuzz
+
+*leading* `tabs and spaces` "- dashed"
+--------------------------------------Fuzz
+
+double``tick
+:   hello world
+
+```
+one
+
+two
+```Fuzz
+
+```
+one
+
+two
+```
+
+> ```
+>   indented
+> ```> * hello world
+>   + joiner‍and﻿bom
+>     - https://example.comcafé naïve
+
+- collides with convert\_list
+
+multi line **`leading`**
+:   ~~joiner‍and﻿bom~~ **tabs and spaces** c\_d
+:   `![]()`> ####
+
+##### 
+
+``` double``tick ``` multi
+line
+-------------------------------
+
+**word⁠joiner᠎vowel**
+:   amp & lt <Fuzz
+
+| `https://example.com` | | *- dashed* café naïve |
+| --- | --- | --- |
+|  | | word⁠joiner᠎vowel | |
+| `"multi line"` double``tick **word⁠joiner᠎vowel** |  |
+
+|  |  |
+| --- | --- |
+| a\*b   pipe | char | A |
+| leading | https://example.com - dashed `hello world` |verticaltabform[pipe | char](https://example.com "T")
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| ~~trailing~~ |  | | double``tick |
+| a\*b*amp & lt <* | tabs and spaces trailing café naïve | **c\_d** | |
+
+amp & lt <
+:   "https://example.com"
+
+---
+
+### Alt double``tick [1. numbered](/rel)0. word⁠joiner᠎vowel`# hashed`tabs and spaces
+1. ~~a\*b~~ zero​width‌space
+
+word⁠joiner᠎vowel double``tick verticaltabform
+:   ~~https://example.com~~double``tick
+
+---![Alt](a.png)
+:   "amp & lt <"
+    ![]()
+
+`controlcharshere` **back`tick** https://example.com
+:   word⁠joiner᠎vowel
+
+> ~~`tabs and spaces`~~ *`amp & lt <`*> ---
+
+zero​width‌space
+
+ 
+
+
+* ![]()https://example.com`![Alt](a.png)`
+
+  :   verticaltabform
+* `verticaltabform`
+  > ```
+  > one
+  >
+  > two
+  > ```Fuzz
+
+tabs and spaces ~~double``tick~~ joiner‍and﻿bom
+:   multi
+    line
+
+*amp & lt <*# hashed~~a\*b~~
+:   verticaltabform ![only alt]() [café naïve](https://example.com)
+
+`tabs and spaces` **verticaltabform** amp & lt <
+--------------------------------------------------```
+a_b*c
+```
+
+1. c\_d café naïve ![]()
+
+   | [hello world](https://example.com "T") | | multi line# hashed | |
+   | --- | --- | --- | --- |
+   | - dashed | | double``tick `` back`tick `` |
+
+~~trailing~~
+:   a\*b [multi
+    line](/rel)
+
+`joiner‍and﻿bom`![only alt]()[multi
+line](https://example.com "T")> ```
+> a_b*c
+> ```
+
+> ### [1. numbered](/rel)
+
+###### `amp & lt <`
+
+| ~~amp & lt <~~ | *word⁠joiner᠎vowel* | | *café naïve* | |
+| --- | --- | --- | --- | --- |
+| `- dashed` | multi line | back`tick |
+| - dashed # hashed | |  | - dashed |Fuzz
+
+verticaltabform
+:   hello world
+
+* multi
+  line 1. numbered c\_d
+* leading
+* tabs and spaces
+> |  |  |
+> | --- | --- |
+> | # hashed double``tick a\*b | joiner‍and﻿bom |
+> | multi line | 1. numberedjoiner‍and﻿bomamp & lt < | |
+
+`zero​width‌space` "zero​width‌space" [controlcharshere](https://example.com "T")
+
+|  |
+| --- |
+| **double``tick** |
+| *`pipe | char`* amp & lt < tabs and spaces |
+|  |
+| --- |
+| zero​width‌space |
+
+---
+
+> `a*b`
+> `amp & lt <`---
+
+```
+plain
+  code
+```
+
+### multi lineFuzz
+
+[amp & lt <](https://example.com)######Fuzz 
+
+---
+
+```
+amp & lt <
+  amp & lt <
+  word⁠joiner᠎vowel
+```# hashed leading
+:   [double``tick](https://example.com "T")
+    back`tick```
+plain
+  code
+```
+
+---
+
+`trailing` zero​width‌space
+:   [verticaltabform](https://example.com) `# hashed`
+
+`verticaltabform`
+:   joiner‍and﻿bomamp & lt <
+
+```
+![]()
+```Fuzz
+
+* 1. numbered*pipe | char* leading
+
+`hello world`
+
+|  |  |
+| --- | --- |
+| `word⁠joiner᠎vowel` | [`c_d`](/rel) |
+| https://example.com | `café naïve` | |
+
+* controlcharshere
+  + c\_d
+    - zero​width‌space
+      * pipe | chardouble``tick
+
+> |  |  |
+> | --- | --- |
+> |  | tabs and spaces |
+> | `word⁠joiner᠎vowel` leadinghello world |  |
+> |  |  |
+> | --- | --- |
+> | `` back`tick `` | `verticaltabform` "- dashed" café naïve |*# hashed*"pipe | char"
+:   - dashed [`https://example.com`](https://example.com)
+
+`word⁠joiner᠎vowel`
+
+ - [https://example.com](/rel)- dashed`# hashed`
+
+| - dashed`zero​width‌space`joiner‍and﻿bom |
+| --- |
+| `tabs and spaces` |
+
+```
+  indented
+```
+
+*café naïve*
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| a\*b controlcharshere pipe | char | trailing | | amp & lt < tabs and spaces leading |
+| café naïve pipe | char | multi line | back`tick | |
+
+#### multi linetabs and spaces
+
+`hello world`
+
+```
+a_b*c
+```##### tabs and spaces
+
+```
+c_d
+```
+
+***tabs and spaces***
+---------------------
+
+| **leading** ~~trailing~~  a\*b | zero​width‌space | | [amp & lt <](/rel)# hashedamp & lt < | |
+| --- | --- | --- | --- | --- |
+| trailing  only alt | café naïve | 1. numbered |
+| # hashed hello world `multi line` | - dashed | a\*b only alt |Fuzz
+
+**1. numbered**![]()
+:   https://example.com~~- dashed~~
+
+`tabs and spaces` *controlcharshere*
+:   back`tick
+    a\*b
+
+* *leading*![Alt](a.png)~~verticaltabform~~
+
+---# hashed joiner‍and﻿bom **1. numbered**
+
+|  |  |  |
+| --- | --- | --- |
+| verticaltabform | |  |
+| *- dashed* ~~verticaltabform~~ | | joiner‍and﻿bom 1. numbered |
+|  |  |  |
+| --- | --- | --- |
+| `https://example.com` `- dashed` | controlcharsherecontrolcharshere | |
+
+> > *multi
+> > line*trailing controlcharshere
+
+multi
+line> 3. - dashed ~~leading~~
+>
+>    #### `amp & lt <`
+
+| controlcharshere | |
+| --- | --- |
+| [double``tick](https://example.com)*back`tick*- dashed | || - dashed zero​width‌space | | word⁠joiner᠎vowel | café naïve a\*b amp & lt < |
+| --- | --- | --- | --- |
+| joiner‍and﻿bom https://example.com | zero​width‌spacezero​width‌space | double``tick trailing https://example.com |Fuzz
+
+##### 
+
+```
+  indented
+```
+
+*c\_d*
+tabs and spaces
+
+|  |  |  |
+| --- | --- | --- |
+| controlcharsherecontrolcharshere | `pipe | char` | only alt |
+| 1. numbered |  | - dashed |
+
+###### https://example.com
+
+1. verticaltabform 1. numbered word⁠joiner᠎vowelFuzz
+no js
+
+### zero​width‌space a\*b
+
+"  
+" word⁠joiner᠎vowelFuzz
+> * `zero​width‌space` 1. numbered café naïve
+> * pipe | char
+> * pipe | char
+>
+>   - dashed
+>   # hashed
+>   `a*b`
+
+###### ~~c\_d~~`Alt`Fuzz
+
+#### leading
+
+###### way beyond
+
+3. word⁠joiner᠎vowel`"tabs and spaces"`pipe | char
+4. `trailing` 
+   ~~~~# hashed~~~~
+   c\_d 
+
+   ---
+
+`tabs and spaces` ~~verticaltabform~~
+=======================================multi line `""`
+:   `pipe | char`
+
+https://example.com`zero​width‌space`
+:   tabs and spaces
+
+```
+a_b*c
+```> > 1. 1. numbered
+
+| - dashed |  | `- dashed`https://example.com | |
+| --- | --- | --- | --- |
+| word⁠joiner᠎vowel verticaltabform | verticaltabformA1. numbered | hello worldcontrolcharshereonly alt |
+| `hello world` | verticaltabform[# hashed](/rel) | | hello world |Fuzz
+
+*verticaltabform*
+[multi
+line](https://example.com "T")
+**hello world**
+
+| [back`tick](/rel) amp & lt < | | ~~café naïve~~ | |
+| --- | --- | --- | --- |
+| *https://example.com* | pipe | char 1. numbered |
+| "café naïve"a\*b*amp & lt <* | - dashed |
+
+> ---Fuzz
+> https://example.com
+
+| https://example.com a\*b | | Atrailing | |
+| --- | --- | --- | --- |
+| only alt ~~verticaltabform~~ | `a*b`a\*b |
+
+|  |  |
+| --- | --- |
+| double``tick | 1. numbered |
+| `controlcharshere` | pipe | char ~~`- dashed`~~ |
+|  |  |
+| --- | --- |
+| multi line | *c\_d* |
+
+1. - dashed
+     
+
+   |  |
+   | --- |
+   | trailing |
+   | `café naïve` | |
+2. double``tick
+
+   leading
+   trailing
+3. `a*b`controlcharshere
+
+   ```
+   one
+
+   two
+   ```Fuzz
+
+#### tabs and spaces
+
+|  |
+| --- |
+| ``` https://example.com ``` |
+
+> https://example.com back`tick
+> :   # hashed
+>     *trailing*tabs and spaces``` double``tick ```
+--------------------
+
+1. numbered # hashed ~~double``tick~~
+
+
+zero​width‌space word⁠joiner᠎vowel
+:   word⁠joiner᠎vowel zero​width‌space"zero​width‌space"Fuzz
+
+trailing amp & lt <
+:   `c_d`
+:   [a\*b](https://example.com "T")~~[tabs and spaces](/rel)~~ ![A](a.png "T") trailing
+:   # hashed *https://example.com* hello world
+
+[![fallback](p.png)](v.mp4) ---
+
+```
+a_b*c
+```---
+
+[amp & lt <](https://example.com "T")
+:   ``` double``tick ```
+
+* word⁠joiner᠎vowel
+  + café naïve
+    - word⁠joiner᠎vowel
+      * `# hashed`
+
+> `- dashed`
+> ****word⁠joiner᠎vowel****
+> "c\_d"**c\_d***verticaltabform*
+:   1. numbered
+
+# hashedword⁠joiner᠎vowel
+=========================
+
+* joiner‍and﻿bom
+  leading
+  **- dashed**
+* ~~`trailing`~~ ![]()joiner‍and﻿bom> > leading verticaltabform ~~**c\_d**~~ 
+
+
+café naïve  back`tick
+
+ 
+
+| templated prompt |
+| --- |* 1. numbered
+
+
+  hello world
+
+  *café naïve*
+* https://example.com amp & lt < back`tick
+
+  leading
+  -------
+
+screen reader onlycafé naïve
+:   verticaltabform [c\_d](https://example.com "T")
+
+> 1. ~~controlcharshere~~
+>
+>    # hashedFuzz
+
+```
+  indented
+```
+
+`joiner‍and﻿bom`
+:   café naïve
+
+> trailing **controlcharshere**
+>
+> |  |  |  |  |
+> | --- | --- | --- | --- |
+> | `tabs and spaces` | | only alt | - dashed a\*b |
+> | controlcharshere | `- dashed` # hashed only alt | leading "joiner‍and﻿bom" |
+
+verticaltabform - dashed  `leading`* pipe | char
+
+leading
+
+```
+a_b*c
+```Fuzz
+
+a\*b
+====Fuzz
+
+> https://example.com
+
+> > ##### `amp & lt <` **leading**
+
+> * https://example.com
+>
+>   ##### # hashed ~~hello world~~
+> * "zero​width‌space"leading
+> * `# hashed`
+>   multi
+>   line
+>
+>   `tabs and spaces` *zero​width‌space*
+>
+>   ### hello world
+
+* `word⁠joiner᠎vowel` `a*b`
+
+  ### - dashed
+* ![A](a.png "T") https://example.comFuzz
+
+a\*b
+:   controlcharshere
+
+~~https://example.com~~**amp & lt <**
+:   a\*b
+
+word⁠joiner᠎vowel**- dashed***c\_d*
+===================================
+
+* leading
+  + trailing
+    - joiner‍and﻿bom
+      * https://example.com
+        + # hashedtabs and spaces
+          multi
+          line
+
+> * pipe | char*# hashed*
+> * a\*b
+>   `1. numbered`
+>   café naïve```
+one
+
+two
+```Fuzz
+
+a\*b **verticaltabform** - dashed
+:   `zero​width‌space`
+
+| `amp & lt <` zero​width‌space | |  | *pipe | char* zero​width‌space | |
+| --- | --- | --- | --- | --- |
+| `https://example.com` | | **joiner‍and﻿bom** |  |
+| **verticaltabform**  ~~leading~~ | back`tick - dashed a\*b | pipe | chardouble``tick | |
+
+double``tick back`tick
+
+###### **A**Fuzz
+
+##### `verticaltabform` **multi line** *[zero​width‌space](https://example.com)*Fuzz
+
+a\*b
+joiner‍and﻿bom
+===================
+
+```
+  indented
+```
+
+| controlcharshere joiner‍and﻿bom | |
+| --- | --- |
+| back`tick | |
+| hello world café naïve |
+
+~~multi
+line~~café naïvetabs and spaces
+=======================================
+
+# hashed
+
+~~`tabs and spaces`~~
+`` back`tick ``
+
+# hashed "joiner‍and﻿bom"
+
+
+verticaltabform
+:   leadingFuzz
+
+###### ****hello world****
+
+###### beyond six
+
+###### back`tick
+
+```
+plain
+  code
+```Fuzz
+
+|  |  |
+| --- | --- |
+| <https://example.com> `verticaltabform` | - dashed |
+| **leading** - dashed | https://example.com Alt [trailing](/rel) |
+|  |  |
+| --- | --- |
+| # hashed | multi line`hello world`A |
+
+> 1. a\*b
+>    word⁠joiner᠎vowel
+> 2. verticaltabform
+
+```
+plain
+  code
+```### *# hashed*[trailing](https://example.com "T")
+
+| joiner‍and﻿bom | | `joiner‍and﻿bom` | |
+| --- | --- | --- | --- |
+| word⁠joiner᠎vowel`# hashed` | a\*b word⁠joiner᠎vowel |
+| tabs and spaces`verticaltabform`word⁠joiner᠎vowel | amp & lt < controlcharshere *`trailing`* |
+
+#### "verticaltabform" controlcharshere leading
+
+0. word⁠joiner᠎vowel ![only alt]()
+
+   `multi line`
+   :   ![](a.png)`tabs and spaces`
+1. `hello world`screen reader only
+2. `verticaltabform` "**café naïve**" 1. numbered
+
+   ###### **trailing** [multi line](https://example.com)`` back`tick ``| `# hashed` `verticaltabform` |
+| --- |
+
+```
+  indented
+```
+
+***back`tick***`trailing` https://example.com```
+plain
+  code
+```
+
+```
+zero​width‌space
+```
+
+**# hashed**
+
+# hashedcafé naïvecafé naïve
+
+| [verticaltabform](https://example.com "T") joiner‍and﻿bom | "zero​width‌space" double``tick | | zero​width‌space leading a\*b |
+| --- | --- | --- | --- |
+| **trailing** **back`tick** café naïve | | [amp & lt <](https://example.com "T") controlcharshere | trailing  back`tick hello world | |
+| "# hashed"   multi line | `1. numbered`"*word⁠joiner᠎vowel*"**double``tick** |  |---
+
+#### zero​width‌space *"tabs and spaces"*Fuzz
+
+### joiner‍and﻿bom Alt
+
+![]()`amp & lt <`- dashed
+
+* [double``tick](https://example.com)
+* c\_d[child](s.mp4)
+
+* # hashed controlcharshere
+* collides with convert\_list
+* tabs and spaces
+* multi
+  linetrailing
+
+> ```
+>   indented
+> ```
+
+#### ~~only alt~~ *café naïve* 
+
+---
+
+
+
+---
+
+word⁠joiner᠎vowel
+
+|  |  |
+| --- | --- |
+| *word⁠joiner᠎vowel* | |
+|  |Fuzz
+
+###### 
+
+##### double``tick
+
+- collides with convert\_listFuzz
+
+```
+a_b*c
+```
+
+```
+plain
+  code
+```
+
+`https://example.com`*joiner‍and﻿bom*
+
+```
+one
+
+two
+```---
+
+ zero​width‌space
+
+```
+a_b*c
+```Fuzz
+
+###### only alt`https://example.com`
+:   # hashed
+
+***pipe | char*** [a\*b](https://example.com "T")
+:   amp & lt < leading> ---
+
+**double``tick** ~~zero​width‌space~~##### *- dashed* pipe | char
+
+```
+a_b*c
+```
+
+```
+a_b*c
+```Fuzz
+
+* ![Alt](a.png) ~~1. numbered~~
+
+> * 1. numbered
+
+> a\*b
+> c\_d
+
+```
+one
+
+two
+``````
+  indented
+```#### a\*b
+
+| tabs and spaces |
+| --- |
+| "**pipe | char**" *tabs and spaces* controlcharshere | | 
+
+[c\_d](/rel)
+:   café naïve
+
+--- 
+
+---
+
+> ```
+> a_b*c
+> ```
+
+### Alt|  |
+| --- |
+| `` back`tick `` `café naïve` |
+| - dashed |
+
+| controlcharshere c\_d | `- dashed` |
+| --- | --- |
+| double``tick | leading |
+
+![only alt]() ~~pipe | char~~
+:   double``tick
+
+---> ```
+> plain
+>   code
+> ```
+
+> ![only alt]() `![Alt](a.png)` `pipe | char`
+
+https://example.com - dashed
+----------------------------> 3. verticaltabform
+>
+> | hello world | pipe | char zero​width‌space | https://example.com | |
+> | --- | --- | --- | --- |
+> | 1. numbered | amp & lt < hello world | double``tick | |
+> | c\_d | | controlcharshere | - dashed verticaltabform joiner‍and﻿bom |
+
+trailing back`tick
+
+---
+
+#### Fuzz
+
+|  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| |  |  | | --- | --- | | verticaltabform | 1. numbered | | multi line amp & lt < | | https://example.com multi line | | |  |  | | --- | --- | | leadingamp & lt < | double``tickmulti linepipe | char | |
+
+```
+ leading
+multi
+line
+```
+
+|  | joiner‍and﻿bom*verticaltabform*café naïve | | *hello world* multi line |
+| --- | --- | --- | --- |
+| *`pipe | char`* | [- dashed](https://example.com "T") | ``` double``tick ``` zero​width‌space trailing |
+| pipe | char | **`c_d`** | trailing`"https://example.com"` | 
+
+"c\_d"
+*multi
+line*
+**pipe | char**> amp & lt < ~~tabs and spaces~~
+
+> * zero​width‌space
+
+pipe | char
+
+###### back`tick `hello world`
+
+```
+  indented
+```Fuzz
+
+#### [~~café naïve~~](https://example.com)trailingFuzz
+
+amp & lt <
+"![only alt]()"
+*multi
+line*| *trailing*  **tabs and spaces** | leading | # hashed |
+| --- | --- | --- |
+| c\_d back`tick controlcharshere | | multi line | ~~amp & lt <~~ verticaltabform café naïve |
+| https://example.com | | https://example.com | `a*b`double``tick leading |
+
+zero​width‌space
+back`tick
+leading
+
+```
+  indented
+```Fuzz
+
+# hashed c\_d
+:   *trailing*
+
+`word⁠joiner᠎vowel` *word⁠joiner᠎vowel*
+:   verticaltabform0. multi
+   line
+   > * pipe | chartrailing amp & lt <
+   > * - dashed
+   >
+   >   ---
+   > * https://example.com
+
+# hashed**café naïve**"a\*b"
+-------------------------------
+
+ 
+
+- collides with convert\_list
+
+|  |
+| --- |
+| 3. back`tick |Fuzz
+
+* 1. numbered
+  `café naïve`
+* `trailing` 
+
+  ```
+    indented
+  ```
+* `joiner‍and﻿bom`
+
+|  |
+| --- |
+|  |
+
+a\*b
+hello world
+
+| A | |
+| --- | --- |
+|  |
+| - dashed controlcharshere double``tick |Fuzz
+
+`a*b`
+
+|  |  |  |
+| --- | --- | --- |
+| `hello world` [~~a\*b~~](https://example.com) a\*b | | Alt tabs and spaces |
+| "- dashed" verticaltabform | | 1. numbered |
+|  |  |
+| --- | --- |
+| café naïve c\_d `- dashed` |  |
+
+> tabs and spaces
+
+zero​width‌spaceverticaltabform
+:   controlcharshere
+    `pipe | char`Fuzz
+> ```
+> plain
+>   code
+> ```
+>
+> 0. pipe | charhello world
+> 1. verticaltabformamp & lt <
+
+multi
+line
+
+`` back`tick ``
+--------------- 
+
+---
+
+joiner‍and﻿bom trailing
+:   word⁠joiner᠎vowel
+
+verticaltabform controlcharshere
+
+```
+  ![](a.png)
+  double``tick
+```###### way beyondFuzz
+
+pipe | char
+pipe | char
+
+| https://example.com | |
+| --- | --- |
+| `café naïve`Alt |
+|  |
+
+* zero​width‌space
+  **zero​width‌space**
+
+  ~~pipe | char~~
+
+`1. numbered`zero​width‌space`joiner‍and﻿bom`
+
+> > ```
+> > plain
+> >   code
+> > ````word⁠joiner᠎vowel`
+
+#### tabs and spaces
+
+* ~~- dashed~~
+
+  |  |  |  |
+  | --- | --- | --- |
+  | ~~https://example.com~~ [zero​width‌space](https://example.com) | https://example.comonly alt | |
+  | **pipe | char**  - dashed | **- dashed** | |
+  |  |  |
+  | --- | --- |
+  |  | tabs and spaces controlcharshere A |
+
+| hello world`` back`tick ``**`pipe | char`** | |
+| --- | --- |
+|  | |
+
+> *double``tick*
+> leading*pipe | char*
+
+|  |
+| --- |
+| 1. numbered a\*b |
+| word⁠joiner᠎vowel joiner‍and﻿bom || "" | café naïve |
+| --- | --- |
+| word⁠joiner᠎vowel # hashed | amp & lt |
+| controlcharshere | | "[controlcharshere](https://example.com)" |
+
+``` double``tick ```
+
+pipe | char
+back`tick
+=====================
+
+multi line controlcharshere
+:   hello world**# hashed**
+
+1. numbered
+:   " leading"c\_dzero​width‌space| * café naïve   + joiner‍and﻿bom     - tabs and spaces       * word⁠joiner᠎vowel         + back`tick*tabs and spaces* *hello world* |
+| --- |
+
+> `pipe | char`*zero​width‌space* 
+> https://example.com
+
+ Fuzz
+
+```
+  indented
+```
+
+|  |  |
+| --- | --- |
+| `verticaltabform` *amp & lt <* | "amp & lt <"**hello world** |
+| *a\*b*verticaltabform`amp & lt <` | **tabs and spaces** |
+|  |  |
+| --- | --- |
+| https://example.com | joiner‍and﻿bom |
+
+```
+one
+
+two
+```###### ~~`https://example.com`~~
+
+---
+
+> multi
+> line<https://example.com>
+
+- word⁠joiner᠎vowel 
+
+---
+
+> | https://example.com 1. numbered leading |
+> | --- |
+> | verticaltabform |
+> | `c_d`double``tick |
+
+1. pipe | char `word⁠joiner᠎vowel`
+2. # hashed
+   *1. numbered*
+    ~~leading~~
+3. verticaltabform 1. numbered `amp & lt <`
+
+   ```
+     indented
+   ```
+
+* `pipe | char`
+* joiner‍and﻿bom
+ ~~leading~~`pipe | char`
+========================* + amp & lt <
+    - back`tick
+      * ![only alt]()
+        pipe | char
+        amp & lt <
+* amp & lt <
+* https://example.comFuzz
+
+```
+a_b*c
+```> * - dashed
+> * hello world
+>   https://example.com
+
+> 1. ~~c\_d~~
+>    `pipe | char`### A
+
+```
+plain
+  code
+```
+
+`- dashed``https://example.com`Fuzz
+
+---
