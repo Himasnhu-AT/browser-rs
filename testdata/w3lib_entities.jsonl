@@ -1,0 +1,100 @@
+{"input": "", "expected": ""}
+{"input": "plain text with no entities", "expected": "plain text with no entities"}
+{"input": "&amp;", "expected": "&"}
+{"input": "&amp", "expected": "&"}
+{"input": "&AMP;", "expected": "&"}
+{"input": "&Amp;", "expected": "&"}
+{"input": "&lt;div&gt;", "expected": "<div>"}
+{"input": "&LT;DIV&GT;", "expected": "<DIV>"}
+{"input": "&#39;", "expected": "'"}
+{"input": "&#x27;", "expected": "'"}
+{"input": "&#X27;", "expected": "'"}
+{"input": "&#x2F;", "expected": "/"}
+{"input": "&#0;", "expected": "\u0000"}
+{"input": "&#00039;", "expected": "'"}
+{"input": "&nosuch;", "expected": ""}
+{"input": "&nosuch", "expected": "&nosuch"}
+{"input": "&nbsp;", "expected": " "}
+{"input": "&nbsp", "expected": " "}
+{"input": "&apos;", "expected": ""}
+{"input": "&apos", "expected": "&apos"}
+{"input": "a&amp;b&amp;c", "expected": "a&b&c"}
+{"input": "&amp;amp;", "expected": "&amp;"}
+{"input": "&&amp;&", "expected": "&&&"}
+{"input": "&#128;", "expected": "€"}
+{"input": "&#x80;", "expected": "€"}
+{"input": "&#153;", "expected": "™"}
+{"input": "&#x99;", "expected": "™"}
+{"input": "&#129;", "expected": ""}
+{"input": "&#x81;", "expected": ""}
+{"input": "&#141;", "expected": ""}
+{"input": "&#144;", "expected": ""}
+{"input": "&#157;", "expected": ""}
+{"input": "&#8364;", "expected": "€"}
+{"input": "&#x20AC;", "expected": "€"}
+{"input": "&euro;", "expected": "€"}
+{"input": "&EURO;", "expected": "€"}
+{"input": "&#1114111;", "expected": "􏿿"}
+{"input": "&#1114112;", "expected": ""}
+{"input": "&#x110000;", "expected": ""}
+{"input": "&#99999999999999999999;", "expected": ""}
+{"input": "&#x10FFFF;", "expected": "􏿿"}
+{"input": "&#10;", "expected": "\n"}
+{"input": "&#9;", "expected": "\t"}
+{"input": "&#32;", "expected": " "}
+{"input": "Hello&#32;World", "expected": "Hello World"}
+{"input": "5 &lt; 6 &amp;&amp; 7 &gt; 3", "expected": "5 < 6 && 7 > 3"}
+{"input": "&copy; 2024 &reg; &trade;", "expected": "© 2024 ® ™"}
+{"input": "&Aacute;&aacute;&Uuml;&uuml;", "expected": "ÁáÜü"}
+{"input": "&alpha;&beta;&gamma;&Omega;", "expected": "αβγΩ"}
+{"input": "&hellip;&mdash;&ndash;&lsquo;&rsquo;&ldquo;&rdquo;", "expected": "…—–‘’“”"}
+{"input": "&frac12;&frac14;&frac34;&deg;&plusmn;", "expected": "½¼¾°±"}
+{"input": "caf&eacute;", "expected": "café"}
+{"input": "na&iuml;ve", "expected": "naïve"}
+{"input": "&szlig;", "expected": "ß"}
+{"input": "&#x0;&#x1;", "expected": "\u0000\u0001"}
+{"input": "&#;", "expected": "&#;"}
+{"input": "&#x;", "expected": "&#x;"}
+{"input": "&x27;", "expected": ""}
+{"input": "&;", "expected": "&;"}
+{"input": "&", "expected": "&"}
+{"input": "&amp;&#38;&#x26;", "expected": "&&&"}
+{"input": "&AMP", "expected": "&"}
+{"input": "&aMp;", "expected": "&"}
+{"input": "text &unknown; more", "expected": "text  more"}
+{"input": "text &unknown more", "expected": "text &unknown more"}
+{"input": "&thetasym;&upsih;&piv;&oline;&frasl;", "expected": "ϑϒϖ‾⁄"}
+{"input": "&#38;#38;", "expected": "&#38;"}
+{"input": "&&&", "expected": "&&&"}
+{"input": "&#x41;&#x42;&#x43;", "expected": "ABC"}
+{"input": "&sup1;&sup2;&sup3;&micro;&para;&middot;", "expected": "¹²³µ¶·"}
+{"input": "&larr;&uarr;&rarr;&darr;&harr;&crarr;", "expected": "←↑→↓↔↵"}
+{"input": "&spades;&clubs;&hearts;&diams;", "expected": "♠♣♥♦"}
+{"input": "&#x1F600;", "expected": "😀"}
+{"input": "&#128512;", "expected": "😀"}
+{"input": "你好&amp;世界", "expected": "你好&世界"}
+{"input": "&quot;quoted&quot;", "expected": "\"quoted\""}
+{"input": "&#34;", "expected": "\""}
+{"input": "&#x22;", "expected": "\""}
+{"input": "&yen;&pound;&cent;&curren;", "expected": "¥£¢¤"}
+{"input": "&#x9;&#xA;&#xD;", "expected": "\t\n\r"}
+{"input": "&iexcl;&iquest;&laquo;&raquo;", "expected": "¡¿«»"}
+{"input": "&Ccedil;&ccedil;&Ntilde;&ntilde;", "expected": "ÇçÑñ"}
+{"input": "&oelig;&OElig;&scaron;&Scaron;&Yuml;", "expected": "œŒšŠŸ"}
+{"input": "&fnof;&circ;&tilde;", "expected": "ƒˆ˜"}
+{"input": "&ensp;&emsp;&thinsp;&zwnj;&zwj;&lrm;&rlm;", "expected": "   ‌‍‎‏"}
+{"input": "&bull;&prime;&Prime;&permil;&lsaquo;&rsaquo;", "expected": "•′″‰‹›"}
+{"input": "&image;&real;&weierp;&alefsym;", "expected": "ℑℜ℘ℵ"}
+{"input": "&#x266B;&#9835;", "expected": "♫♫"}
+{"input": "trailing&", "expected": "trailing&"}
+{"input": "&#", "expected": "&#"}
+{"input": "&#x", "expected": "&#x"}
+{"input": "&nosuch;&amp;&nosuch2;", "expected": "&"}
+{"input": "&nosuch;", "expected": "&nosuch;", "remove_illegal": false}
+{"input": "&amp;", "expected": "&", "remove_illegal": false}
+{"input": "&#x110000;", "expected": "&#x110000;", "remove_illegal": false}
+{"input": "&#99999999999999999999;", "expected": "&#99999999999999999999;", "remove_illegal": false}
+{"input": "&#129;", "expected": "&#129;", "remove_illegal": false}
+{"input": "&unknown;", "expected": "&unknown;", "remove_illegal": false}
+{"input": "&amp;&lt;", "expected": "&amp;<", "keep": ["amp"]}
+{"input": "&AMP;&lt;", "expected": "&AMP;<", "keep": ["amp"]}

@@ -2527,7 +2527,6 @@ dependencies = [
 name = "browser-core"
 version = "0.1.0"
 dependencies = [
- "cookie",
  "fancy-regex",
  "indexmap",
  "phf 0.14.0",

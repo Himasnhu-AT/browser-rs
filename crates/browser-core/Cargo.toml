@@ -12,7 +12,6 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-cookie.workspace = true
 fancy-regex.workspace = true
 indexmap = { workspace = true, features = ["serde"] }
 phf.workspace = true
