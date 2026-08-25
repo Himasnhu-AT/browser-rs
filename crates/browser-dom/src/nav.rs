@@ -136,6 +136,33 @@ impl<'a> NodeRef<'a> {
         self.children().filter(|n| !n.is_comment())
     }
 
+    /// lxml's `iterchildren()`: elements, comments and processing
+    /// instructions, in document order, with **no text nodes**.
+    ///
+    /// This is the child sequence lxml itself iterates — in lxml a comment and
+    /// a PI are `Element` subclasses while character data lives in the
+    /// neighbours' `.text` / `.tail`, so `list(el)` and `el.iterchildren()`
+    /// skip text without being asked to. `_StorageTools.element_to_dict` counts
+    /// siblings through exactly this sequence, so the port needs it verbatim.
+    ///
+    /// The doctype is *not* a child of any element, so the distinction from
+    /// [`NodeRef::non_comment_children`] (text in, comments out) is real:
+    /// `iterchildren` is the complement of the text nodes, not of the comments.
+    ///
+    /// ```
+    /// # use browser_dom::{Document, ParseOptions};
+    /// let doc = Document::parse_with(
+    ///     "<div>t0<!--c--><p>a</p>t1<span></span></div>",
+    ///     &ParseOptions::new().keep_comments(true),
+    /// );
+    /// let div = doc.elements().find(|e| e.tag() == "div").expect("a div");
+    /// let kinds: Vec<&str> = div.iterchildren().map(|n| n.tag()).collect();
+    /// assert_eq!(kinds, ["#comment", "p", "span"]);
+    /// ```
+    pub fn iterchildren(&self) -> impl Iterator<Item = NodeRef<'a>> + 'a {
+        self.children().filter(|n| !n.is_text())
+    }
+
     /// The first child node.
     #[must_use]
     pub fn first_child(&self) -> Option<NodeRef<'a>> {

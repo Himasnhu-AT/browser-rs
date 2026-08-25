@@ -599,3 +599,552 @@ fn the_comma_split_adaptive_path_stores_one_fingerprint_per_sub_selector() {
     // first-visit path.
     assert_eq!(storage.retrieve("#never-seen").expect("reads"), None);
 }
+
+// ---------------------------------------------------------------------------
+// Wave 4 seam: a `Response`-shaped value driven through unit 10's public API.
+//
+// Units 12 (`browser-http`'s driver) and 14 (the CDP driver) both end in the
+// same place — Python's `Response(Selector)`, a bag of HTTP metadata that *is*
+// a parsed document. Neither crate exists yet, so this module builds the shape
+// they will build and drives it through every part of `browser-parser` they
+// are expected to expose: lazy parsing, `css`/`xpath`/`find_all`, and one full
+// adaptive save-then-relocate across two fetches sharing one storage backend.
+//
+// If unit 12 cannot be written against these signatures, this file stops
+// compiling — which is the point.
+// ---------------------------------------------------------------------------
+mod response_seam {
+    use std::sync::{Arc, OnceLock};
+
+    use indexmap::IndexMap;
+    use regex::Regex;
+
+    use browser_http::config::{RequestOverrides, SelectorConfig};
+    use browser_parser::config::{CssOpts, DocumentConfig};
+    use browser_parser::document::{Body, Document};
+    use browser_parser::error::Result;
+    use browser_parser::find::FindQuery;
+    use browser_parser::node::Node;
+    use browser_parser::nodes::Nodes;
+    use browser_storage::{SqliteStorage, StorageSystem};
+
+    /// `ResponseFactory.__CHARSET_RE__`, verbatim.
+    ///
+    /// Python only applies it to browser responses, because `curl_cffi` already
+    /// resolves the charset for the HTTP engines; unit 14 needs it and unit 12
+    /// needs the same fallback when a backend does not resolve one.
+    fn charset_of(headers: &IndexMap<String, String>, default: &str) -> String {
+        let re = Regex::new(r#"charset=["']?([\w-]+)"#).expect("the Python pattern compiles");
+        headers
+            .iter()
+            .find(|(name, _)| name.eq_ignore_ascii_case("content-type"))
+            .and_then(|(_, value)| re.captures(value))
+            .map(|caps| caps[1].to_owned())
+            .unwrap_or_else(|| default.to_owned())
+    }
+
+    /// The `Response` unit 12 will put in `browser-http/src/response.rs`.
+    ///
+    /// The fields are Python's `Response.__init__` parameters; `doc` is the
+    /// documented deviation — Python calls `Selector.__init__` eagerly, even on
+    /// a binary body, and we defer it to the first selector call.
+    struct Response {
+        status: u16,
+        reason: String,
+        /// The URL actually fetched. **Not** necessarily the document's `url`:
+        /// `adaptive_domain` replaces it there and only there.
+        url: String,
+        headers: IndexMap<String, String>,
+        request_headers: IndexMap<String, String>,
+        history: Vec<String>,
+        body: Body,
+        config: DocumentConfig,
+        doc: OnceLock<Document>,
+    }
+
+    impl Response {
+        /// What a backend hands over: bytes, headers and the caller's
+        /// `parser_keywords`. Nothing is parsed here.
+        fn from_wire(
+            url: &str,
+            status: u16,
+            reason: &str,
+            headers: IndexMap<String, String>,
+            body: Vec<u8>,
+            selector_config: &SelectorConfig,
+            storage: Option<Arc<dyn StorageSystem>>,
+        ) -> Self {
+            // The whole of `SelectorConfig` -> `DocumentConfig`. Unit 12 owns
+            // this function; that it can be written from the two public APIs is
+            // exactly what this test asserts.
+            let mut config = DocumentConfig::new()
+                .url(url)
+                .encoding(charset_of(&headers, "utf-8"))
+                .keep_comments(selector_config.keep_comments())
+                .keep_cdata(selector_config.keep_cdata())
+                .huge_tree(selector_config.huge_tree())
+                .adaptive(selector_config.adaptive());
+            if let Some(domain) = selector_config.adaptive_domain() {
+                config = config.adaptive_domain(domain);
+            }
+            if let Some(storage) = storage {
+                config = config.storage(storage);
+            }
+
+            Self {
+                status,
+                reason: reason.to_owned(),
+                url: url.to_owned(),
+                headers,
+                request_headers: IndexMap::new(),
+                history: Vec::new(),
+                body: Body::Bytes(body),
+                config,
+                doc: OnceLock::new(),
+            }
+        }
+
+        /// Whether the body has been parsed yet. Only this test needs it.
+        fn is_parsed(&self) -> bool {
+            self.doc.get().is_some()
+        }
+
+        /// The lazily parsed document.
+        ///
+        /// `parse_content` is `Selector.__init__`'s "content or root" check, so
+        /// a `Response` holding no body at all — a redirect hop, which Python
+        /// constructs with `content=""` — is a representable state rather than
+        /// a panic.
+        fn doc(&self) -> &Document {
+            self.doc.get_or_init(|| {
+                Document::parse_content(Some(&self.body), &self.config)
+                    .expect("a `Response` always carries a body, even an empty one")
+            })
+        }
+
+        fn css(&self, selector: &str) -> Result<Nodes<'_>> {
+            self.doc().css(selector)
+        }
+
+        fn css_with(&self, selector: &str, opts: &CssOpts) -> Result<Nodes<'_>> {
+            self.doc().css_with(selector, opts)
+        }
+
+        fn xpath(&self, expression: &str) -> Result<Nodes<'_>> {
+            self.doc().xpath(expression)
+        }
+
+        fn find_all(&self, query: &FindQuery<'_>) -> Result<Nodes<'_>> {
+            self.doc().find_all(query)
+        }
+
+        fn save(&self, node: &Node<'_>, identifier: &str) -> Result<()> {
+            self.doc().save(node, identifier)
+        }
+    }
+
+    const PAGE_ONE: &str = concat!(
+        r#"<!doctype html><html><head><title>Shop</title></head><body>"#,
+        r#"<div id="wrap" class="container">"#,
+        r#"<p class="price" data-sku="A-1">$9.99</p>"#,
+        r#"<a href="/p/1">one</a><a href="/p/2">two</a>"#,
+        r#"</div></body></html>"#,
+    );
+
+    /// The same shop after a redesign — the wrapper is a `<main>`, a `<section>`
+    /// was inserted, the price gained a class. `div#wrap > p.price` is dead.
+    const PAGE_TWO: &str = concat!(
+        r#"<!doctype html><html><head><title>Shop</title></head><body>"#,
+        r#"<main id="wrap" class="container"><section>"#,
+        r#"<p class="price cost" data-sku="A-1">$10.99</p>"#,
+        r#"<a href="/p/1">one</a><a href="/p/2">two</a>"#,
+        r#"</section></main></body></html>"#,
+    );
+
+    fn html_headers(charset: &str) -> IndexMap<String, String> {
+        let mut headers = IndexMap::new();
+        headers.insert(
+            "Content-Type".to_owned(),
+            format!("text/html; charset={charset}"),
+        );
+        headers.insert("Server".to_owned(), "nginx".to_owned());
+        headers
+    }
+
+    /// Raw bytes + headers in, `Nodes` out, with nothing parsed until asked.
+    #[test]
+    fn a_response_parses_lazily_and_answers_css_xpath_and_find_all() {
+        let response = Response::from_wire(
+            "https://shop.example.com/catalogue",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            PAGE_ONE.as_bytes().to_vec(),
+            &SelectorConfig::default(),
+            None,
+        );
+
+        // The metadata half is available without touching the parser at all —
+        // this is what makes the lazy deviation worth having, since a spider
+        // rejecting a 403 never pays for a parse.
+        assert_eq!(response.status, 200);
+        assert_eq!(response.reason, "OK");
+        assert_eq!(response.url, "https://shop.example.com/catalogue");
+        assert_eq!(response.headers["Server"], "nginx");
+        assert!(response.request_headers.is_empty());
+        assert!(response.history.is_empty());
+        assert!(!response.is_parsed(), "no selector call has been made yet");
+
+        // Unit 5's engine.
+        assert_eq!(
+            response.css("p.price::text").expect("css").texts(),
+            ["$9.99"]
+        );
+        assert!(response.is_parsed(), "the first selector call parses");
+        assert_eq!(
+            response.css("a").expect("css").attrs("href"),
+            ["/p/1", "/p/2"]
+        );
+
+        // Unit 6's engine, on the very same tree.
+        assert_eq!(
+            response.xpath("//a/@href").expect("xpath").texts(),
+            ["/p/1", "/p/2"]
+        );
+        assert_eq!(
+            response
+                .xpath("//p[@data-sku='A-1']")
+                .expect("xpath")
+                .texts(),
+            ["$9.99"]
+        );
+
+        // Unit 10's own query builder.
+        let hits = response
+            .find_all(&FindQuery::new().tag("a").attr("href*", "/p/2"))
+            .expect("find_all");
+        assert_eq!(hits.texts(), ["two"]);
+
+        // …and the two-way identity: a node found by XPath is the node found by
+        // CSS, so a caller can mix engines and compare results.
+        let by_css = response.css("p.price").expect("css");
+        let by_xpath = response.xpath("//p[@class='price']").expect("xpath");
+        assert_eq!(by_css.at(0), by_xpath.at(0));
+
+        // Base-URL resolution comes from the response URL, not from the page.
+        assert_eq!(
+            response.doc().urljoin("/p/3"),
+            "https://shop.example.com/p/3"
+        );
+        // `body` survives the parse — Python's `Response.body` is the raw bytes.
+        assert_eq!(response.body.as_bytes(), PAGE_ONE.as_bytes());
+    }
+
+    /// The `charset=` of a `Content-Type` header has to reach the decoder.
+    ///
+    /// It did not until this wave: `browser-dom` recorded the label and then
+    /// decoded every byte body as UTF-8 regardless, so unit 12 would have
+    /// carried `encoding` as dead metadata. See `docs/DIVERGENCES.md`.
+    #[test]
+    fn the_content_type_charset_reaches_the_decoder() {
+        let latin1 = b"<html><body><p class='price'>9,99\xa0\xe9</p></body></html>".to_vec();
+
+        let mislabelled = Response::from_wire(
+            "https://shop.example.com/",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            latin1.clone(),
+            &SelectorConfig::default(),
+            None,
+        );
+        assert_eq!(mislabelled.doc().encoding(), "utf-8");
+        assert_eq!(
+            mislabelled.css("p::text").expect("css").texts(),
+            ["9,99\u{fffd}\u{fffd}"],
+            "an undeclared latin-1 body read as UTF-8 is replacement characters, as in Python"
+        );
+
+        let labelled = Response::from_wire(
+            "https://shop.example.com/",
+            200,
+            "OK",
+            html_headers("windows-1252"),
+            latin1,
+            &SelectorConfig::default(),
+            None,
+        );
+        assert_eq!(labelled.doc().encoding(), "windows-1252");
+        assert_eq!(
+            labelled.css("p::text").expect("css").texts(),
+            ["9,99\u{a0}é"]
+        );
+
+        // A header with no charset falls back to utf-8, which is what
+        // `__extract_browser_encoding`'s `default` argument does.
+        let mut bare = IndexMap::new();
+        bare.insert("content-type".to_owned(), "text/html".to_owned());
+        assert_eq!(charset_of(&bare, "utf-8"), "utf-8");
+        assert_eq!(charset_of(&IndexMap::new(), "utf-8"), "utf-8");
+        assert_eq!(charset_of(&html_headers("Shift_JIS"), "utf-8"), "Shift_JIS");
+    }
+
+    /// Two fetches, one storage backend, one adaptive relocation.
+    ///
+    /// This is the whole reason `Response` subclasses `Selector` in Python: the
+    /// fetcher's `parser_keywords` carry `adaptive`, `adaptive_domain` and the
+    /// storage handle, and the selector saved on Monday has to relocate on
+    /// Tuesday's response.
+    #[test]
+    fn an_adaptive_round_trip_survives_two_separate_responses() {
+        let storage: Arc<dyn StorageSystem> =
+            Arc::new(SqliteStorage::in_memory(Some("https://shop.example.com/")).expect("opens"));
+
+        // `adaptive_domain` is the one parser keyword that changes the parse:
+        // Python passes `url=adaptive_domain or url` into `Selector.__init__`,
+        // so the storage key is the domain and `Selector.url` reports it too.
+        let selector_config = SelectorConfig::default()
+            .with("adaptive", true.into())
+            .with_adaptive_domain("shop.example.com");
+
+        let monday = Response::from_wire(
+            "https://shop.example.com/catalogue?page=1",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            PAGE_ONE.as_bytes().to_vec(),
+            &selector_config,
+            Some(Arc::clone(&storage)),
+        );
+        assert!(monday.doc().adaptive_enabled());
+        assert!(monday.doc().has_storage());
+        assert_eq!(
+            monday.doc().url(),
+            "https://shop.example.com/catalogue?page=1",
+            "the fetched URL is what the caller asked for"
+        );
+        assert_eq!(
+            monday.config.effective_url(),
+            "shop.example.com",
+            "`adaptive_domain` is what storage is keyed on"
+        );
+
+        // Explicit save, the `Selector.save(element, identifier)` path.
+        let price = monday
+            .css("div#wrap > p.price")
+            .expect("css")
+            .at(0)
+            .cloned()
+            .expect("the price is on page one");
+        monday.save(&price, "price").expect("saves");
+
+        // Implicit save, the `css(..., auto_save=True)` path — same storage,
+        // different identifier, and only the *first* match is stored.
+        let saved = monday
+            .css_with("a", &CssOpts::new().identifier("links").auto_save(true))
+            .expect("css");
+        assert_eq!(saved.texts(), ["one", "two"]);
+
+        // --- Tuesday: the redesign ---------------------------------------
+        let tuesday = Response::from_wire(
+            "https://shop.example.com/catalogue?page=1",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            PAGE_TWO.as_bytes().to_vec(),
+            &selector_config,
+            Some(Arc::clone(&storage)),
+        );
+
+        // The old selector is dead …
+        assert!(tuesday.css("div#wrap > p.price").expect("css").is_empty());
+
+        // … and the adaptive branch finds it anyway, through the fingerprint
+        // the *other* `Response` wrote.
+        let relocated = tuesday
+            .css_with(
+                "div#wrap > p.price",
+                &CssOpts::new().identifier("price").adaptive(true),
+            )
+            .expect("css");
+        assert_eq!(relocated.texts(), ["$10.99"]);
+        assert_eq!(relocated.at(0).map(Node::tag), Some("p"));
+        assert_eq!(
+            relocated.at(0).and_then(|n| n.attr("class")),
+            Some("price cost")
+        );
+
+        // A threshold nothing clears returns empty, never an error: the
+        // `test_relocation_auto_save_no_match_above_threshold` regression.
+        assert!(tuesday
+            .css_with(
+                "div#wrap > p.price",
+                &CssOpts::new()
+                    .identifier("price")
+                    .adaptive(true)
+                    .percentage(99),
+            )
+            .expect("css")
+            .is_empty());
+
+        // The fingerprint really did go through SQLite, not through a cache
+        // living on the first `Response`.
+        let stored = storage.retrieve("price").expect("reads").expect("saved");
+        assert_eq!(stored.tag, "p");
+        assert_eq!(tuesday.doc().relocate(&stored, 40).texts(), ["$10.99"]);
+    }
+
+    /// A `Response` is handed between tasks, so it must cross threads.
+    ///
+    /// `Document` is `Send + Sync`; wrapping it in a `OnceLock` keeps both, and
+    /// that is what lets unit 12 return a `Response` out of an async fetch and
+    /// unit 17 hand it to a spawned callback.
+    #[test]
+    fn a_response_is_send_and_sync_across_the_lazy_parse() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Response>();
+        assert_send_sync::<Document>();
+
+        let response = Arc::new(Response::from_wire(
+            "https://shop.example.com/",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            PAGE_ONE.as_bytes().to_vec(),
+            &SelectorConfig::default(),
+            None,
+        ));
+
+        // Race the lazy parse from two threads: `OnceLock` must publish one
+        // tree, and the `Node`s each thread pulls out must agree.
+        let texts: Vec<Vec<String>> = std::thread::scope(|scope| {
+            let handles: Vec<_> = (0..2)
+                .map(|_| {
+                    let response = Arc::clone(&response);
+                    scope.spawn(move || response.css("a::text").expect("css").texts())
+                })
+                .collect();
+            handles
+                .into_iter()
+                .map(|h| h.join().expect("no panic"))
+                .collect()
+        });
+        assert_eq!(texts, [["one", "two"], ["one", "two"]]);
+    }
+
+    /// Unit 12's `resolve_selector_config` output is a legal `DocumentConfig`.
+    ///
+    /// The older seam test proved every `PARSER_KEYWORDS` entry has a *meaning*;
+    /// this one proves the mapping is total now that `DocumentConfig` exists.
+    #[test]
+    fn every_fetcher_parser_keyword_lands_somewhere_in_document_config() {
+        use browser_http::config::{FetcherConfig, PARSER_KEYWORDS};
+
+        let requested = SelectorConfig::default()
+            .with("keep_comments", true.into())
+            .with("keep_cdata", true.into())
+            .with("huge_tree", false.into())
+            .with("adaptive", true.into())
+            .with_adaptive_domain("shop.example.com");
+        let fetcher = FetcherConfig::default().with_selector_config(requested);
+        let resolved =
+            browser_http::config::resolve_selector_config(&fetcher, &RequestOverrides::new());
+
+        let config = DocumentConfig::new()
+            .url("https://shop.example.com/x")
+            .keep_comments(resolved.keep_comments())
+            .keep_cdata(resolved.keep_cdata())
+            .huge_tree(resolved.huge_tree())
+            .adaptive(resolved.adaptive())
+            .adaptive_domain(resolved.adaptive_domain().unwrap_or_default());
+
+        assert!(config.keep_comments && config.keep_cdata && config.adaptive);
+        assert!(!config.huge_tree);
+        assert_eq!(config.effective_url(), "shop.example.com");
+
+        // `storage` and `storage_args` are the two keywords that do not map to
+        // a scalar: they collapse into the one `Arc<dyn StorageSystem>` slot.
+        let with_storage = config.clone().storage(Arc::new(
+            SqliteStorage::in_memory(Some("https://shop.example.com/")).expect("opens"),
+        ));
+        assert!(with_storage.storage.is_some());
+        for keyword in PARSER_KEYWORDS {
+            assert!(
+                matches!(
+                    keyword,
+                    "huge_tree"
+                        | "keep_comments"
+                        | "keep_cdata"
+                        | "adaptive"
+                        | "adaptive_domain"
+                        | "storage"
+                        | "storage_args"
+                ),
+                "keyword {keyword} has no `DocumentConfig` home"
+            );
+        }
+
+        // `keep_comments` really is honoured all the way to the tree.
+        let doc = Document::parse_with("<div><!--k--></div>", &config);
+        assert!(doc.dom().nodes().any(|n| n.is_comment()));
+    }
+
+    /// Unit 15's `FetchedResponse` is unit 12's `Response`, narrowed.
+    ///
+    /// `browser-spider` deliberately does not depend on the parser, so the
+    /// crawl core reads a flat struct. Two conversions have to exist for unit
+    /// 12 to wire the two together, and both are written here to prove the
+    /// field sets line up: `Response -> FetchedResponse` on the way into the
+    /// engine, and `FetchedResponse -> Document` for a spider callback (and for
+    /// a dev-mode cache replay, which never had a live `Response`).
+    #[test]
+    fn a_fetched_response_round_trips_to_a_parsed_document() {
+        use browser_spider::request::Request;
+        use browser_spider::session::FetchedResponse;
+
+        let response = Response::from_wire(
+            "https://shop.example.com/catalogue",
+            200,
+            "OK",
+            html_headers("utf-8"),
+            PAGE_ONE.as_bytes().to_vec(),
+            &SelectorConfig::default(),
+            None,
+        );
+
+        // Unit 12 writes this as `impl From<Response> for FetchedResponse`.
+        let mut fetched = FetchedResponse {
+            status: response.status,
+            reason: response.reason.clone(),
+            url: response.url.clone(),
+            body: bytes::Bytes::from(response.body.as_bytes().to_vec()),
+            encoding: response.doc().encoding().to_owned(),
+            headers: response.headers.clone(),
+            request_headers: response.request_headers.clone(),
+            cookies: serde_json::Value::Object(serde_json::Map::new()),
+            history: response.history.clone(),
+            meta: Default::default(),
+            request: None,
+        };
+        let request = Request::new("https://shop.example.com/catalogue");
+        fetched.attach_request(&request);
+        assert_eq!(
+            fetched.to_string(),
+            "<200 https://shop.example.com/catalogue>"
+        );
+        assert_eq!(
+            fetched.request.as_ref().map(|r| r.url.as_str()),
+            Some("https://shop.example.com/catalogue")
+        );
+
+        // …and back to a document, which is what a spider callback needs. The
+        // encoding label survives the narrowing, which is the whole reason
+        // `FetchedResponse` carries one.
+        let config = DocumentConfig::new()
+            .url(&fetched.url)
+            .encoding(&fetched.encoding);
+        let doc = Document::parse_bytes(&fetched.body, &config);
+        assert_eq!(doc.css("p.price::text").expect("css").texts(), ["$9.99"]);
+        assert_eq!(doc.url(), "https://shop.example.com/catalogue");
+    }
+}

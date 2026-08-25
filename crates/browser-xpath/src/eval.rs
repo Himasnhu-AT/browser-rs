@@ -666,11 +666,14 @@ impl FastPath {
                             continue;
                         }
                     }
-                    out.extend(
+                    // Unprefixed attribute name tests match the null namespace
+                    // only, exactly as `matches_test` decides it — `@href` must
+                    // not reach an `xlink:href`.
+                    out.extend(model.attributes(node).filter(|a| {
                         model
-                            .attributes(node)
-                            .filter(|a| model.name(*a).is_some_and(|(_, name)| name == attribute)),
-                    );
+                            .name(*a)
+                            .is_some_and(|(ns, name)| ns.is_empty() && name == attribute)
+                    }));
                 }
                 out
             }
@@ -960,9 +963,12 @@ mod tests {
         // Union results are sorted and de-duplicated.
         assert_eq!(eval_num(&document, "count(//a | //a)"), 2.0);
         assert_eq!(eval_num(&document, "count(//a | //p)"), 4.0);
+        // `<p>   </p>` keeps its blank — `p` admits character data, so
+        // `remove_blank_text` leaves it alone exactly as libxml2 does, and lxml
+        // answers with the same four strings.
         assert_eq!(
             strings(&nodes(&document, "//p/text() | //a/@href")),
-            ["/one", "/two", "tail text"]
+            ["/one", "/two", "tail text", "   "]
         );
     }
 
@@ -1196,7 +1202,7 @@ mod tests {
         let document = doc();
         assert_eq!(
             strings(&nodes(&document, ".//a/@href| .//p/text()")),
-            ["/one", "/two", "tail text"]
+            ["/one", "/two", "tail text", "   "]
         );
         // `.//*[normalize-space(text())]` skips the blank-only paragraph.
         let with_text = nodes(&document, ".//*[normalize-space(text())]");

@@ -272,14 +272,17 @@ scoring, still is):
 5. **A group's results can escape the subtree in lxml but not here.** `node.css("* ~ *")` is
    `descendant-or-self::*/following-sibling::*`, so in lxml the *query node's own* following
    siblings are reachable even though they are outside its subtree; we enumerate candidates over
-   `descendant-or-self(root)` only and stop there. 8 rows of the differential corpus, all of the
+   `descendant-or-self(root)` only and stop there. 12 rows of the differential corpus, all of the
    form "Python found more", are exactly this. (The converse error — the query node matching a
    combinator through an anchor Python cannot use — was a real bug and is fixed; see below.)
-6. **Whitespace-only `::text` results differ**, inherited from `browser-dom` deviation #3
-   (`remove_blank_text` is stricter than libxml2's `areBlanks()`, and it also drops a `&nbsp;`-only
-   text node, which libxml2 never treats as blank). Visible for `::text` — where the golden corpus
-   filters blank text on both sides and says so — and for `:empty`, where it cannot be filtered and
-   is declared row by row.
+6. **Whitespace-only `::text` results agree.** They used not to: `browser-dom` deleted every
+   blank text node while libxml2's `areBlanks()` did not. `remove_blank_text` now implements
+   `areBlanks()`, so the golden corpus compares blank text results like any other and the
+   "filter them out of both sides" hatch is gone. What remains is one *tree-shape* difference at
+   the very end of a document — html5ever's *after body* insertion mode keeps the whitespace
+   between `</body>` and `</html>` inside `<body>`, libxml2 makes it the tail of `<body>` — which
+   is declared row by row, and `:empty` now answers as lxml does (`<span> </span>` is not empty,
+   `<ul> </ul>` is).
 
 ### Behaviour corrected by the differential test (`tests/css_golden.rs`)
 
@@ -351,14 +354,19 @@ odd operands), all four combinators, comma groups, every `:nth-child(an+b)` spel
 classes, ids and values — and **thirty invalid selectors**, whose Python exception text is recorded
 so the port is checked for rejecting what the reference rejects.
 
-**3948/4159 rows reproduce Python exactly (94.9%).** The other 211 are listed in
+**3933/4159 rows reproduce Python exactly (94.6%).** The other 226 are listed in
 `EXPECTED_DIVERGENT_SELECTORS` (70 rows: the seven CSS4-vs-cssselect grammar cases of deviation 2)
-and `EXPECTED_DIVERGENCES` (141 rows, each with its reason), and the test fails if one of them ever
-starts passing, so the table cannot rot into a skip-list. The 141 are 119 rows of
+and `EXPECTED_DIVERGENCES` (156 rows, each with its reason), and the test fails if one of them ever
+starts passing, so the table cannot rot into a skip-list. The 156 are 119 rows of
 html5ever-vs-libxml2 **tree shape** (an implied `<tbody>`, a `<head>` libxml2 does not synthesise,
-the adoption-agency `<b>`/`<i>` reconstruction), 9 rows of `browser-dom`'s stricter
-`remove_blank_text` seen through `:empty`, 8 rows of the lxml scoping quirk (deviation 5) and 5 rows
-of minimised boolean attributes and SVG attribute-name case.
+the adoption-agency `<b>`/`<i>` reconstruction), 20 rows of the whitespace between `</body>` and
+`</html>`, 12 rows of the lxml scoping quirk (deviation 5) and 5 rows of minimised boolean
+attributes and SVG attribute-name case.
+
+The figure was 3948/4159 before `browser-dom` adopted libxml2's `areBlanks()`, and it went *down*
+because the fix let a filter be deleted, not because anything regressed: whitespace-only `::text`
+results used to be dropped from both sides before comparison, which hid the 20 end-of-document rows.
+The fix itself closed 5 `:empty` rows and re-labelled 4 more to their real cause (deviation 5).
 
 That "it is only tree shape" claim is *checked*, not asserted: re-running all 343 selectors against
 shape-normalised copies of the four affected pages — explicit `<tbody>`, explicit `<head>`,

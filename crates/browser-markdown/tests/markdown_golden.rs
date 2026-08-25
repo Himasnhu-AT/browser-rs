@@ -43,18 +43,26 @@
 //!
 //! ## Regenerating
 //!
-//! The generator lives outside the repo, because it needs an interpreter with
+//! The generator is in `tools/corpus/mdgold/`; it needs an interpreter with
 //! `browser-rs`, `markdownify` and `lxml` installed. Its four files are
 //! `cases.py` (the hand-written HTML corpus), `step1_cases.py` (merges it with
 //! whatever names this file already pins, so the corpus can only grow),
-//! `classify.py` (the per-case divergence reasons) and `step2_golden.py`:
+//! `classify.py` (the per-case divergence reasons) and `step2_golden.py`.
+//! **Paths must be absolute** — the middle step is a `cargo test`, whose working
+//! directory is the workspace root, not this crate:
 //!
 //! ```text
-//! $PYREF <gen>/step1_cases.py     # cases.py + this corpus -> cases.jsonl
-//! MD_CASES=<gen>/cases.jsonl MD_OUT=<gen>/rust.jsonl \
+//! G=$PWD/tools/corpus/mdgold
+//! $PYREF $G/step1_cases.py                        # cases.py + this corpus -> cases.jsonl
+//! MD_CASES=$G/cases.jsonl MD_OUT=$G/rust.jsonl \
 //!   cargo test -p browser-markdown --test markdown_golden -- --ignored emit_rust_answers
-//! $PYREF <gen>/step2_golden.py    # -> testdata/markdown_golden.jsonl
+//! $PYREF $G/step2_golden.py                       # -> testdata/markdown_golden.jsonl
 //! ```
+//!
+//! 265 of the 279 cases are byte-exact on both arms; 8 converter-arm and 12
+//! pipeline-arm rows diverge, every one labelled by `classify.py`, and **zero**
+//! rows differ from markdownify on an identical tree. Before `browser-dom`
+//! implemented libxml2's `areBlanks()` those numbers were 258 / 8 / 19.
 //!
 //! `step2_golden.py` refuses to label a divergence it has no entry for in
 //! `classify.py`, so a newly appearing difference cannot be absorbed under a

@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><title>Edge &amp; cases</title></head>
+<body>
+<div id="ws"> </div>
+<div id="nl">
+</div>
+<div id="cmt"><!-- only a comment --></div>
+<div id="none"></div>
+<div id="nbsp">&nbsp;</div>
+<div id="mixed">alpha<b>bold</b>beta<!--c-->gamma<i>it</i></div>
+<p id="a.b" class="a/b dot">escaped</p>
+<p id="123start" class="@at">numeric id</p>
+<p id="has space" class="one&#9;two&#10;three four">tabbed classes</p>
+<p id="emptyclass" class="">empty class</p>
+<p id="q" title='say "hi"' data-json='{"k":[1,2]}'>quoted</p>
+<a id="amp" href="/x?a=1&amp;b=2" rel="">amp</a>
+<a id="noh">no href</a>
+<span id="sp1">one</span><span id="sp2">two</span><span id="sp3">three</span>
+<ul id="list"><li>l1</li><!--between--><li>l2</li><li>l3</li></ul>
+<div id="brs">line1<br>line2<br/>line3</div>
+<div id="deep"><div><div><div><span class="bottom">deep</span></div></div></div></div>
+</body></html>

@@ -357,11 +357,18 @@ fn every_named_axis_has_an_o1_step() {
     // preceding-sibling / following-sibling (element-only and all-kinds forms)
     assert_eq!(node.prev_element_sibling().map(|n| n.tag()), Some("a"));
     assert_eq!(node.next_element_sibling(), None);
-    // `prev_siblings()` is the all-kinds walk. With the default parse options the
-    // comment and the blank text between the two <a>s are already gone, so the only
-    // preceding sibling is the first <a> — a reminder that the `preceding-sibling`
-    // axis sees the *normalised* tree, exactly as lxml does with the same flags.
-    assert_eq!(node.prev_siblings().count(), 1);
+    // `prev_siblings()` is the all-kinds walk over the *normalised* tree. The
+    // comment is gone, but the indentation around it is not: `div` admits
+    // character data and so does `a`, so `remove_blank_text` keeps both runs and
+    // re-merges them across the deleted comment. lxml with the same flags agrees
+    // exactly — `preceding-sibling::node()` is `["\n    ", <a/>, "\n    \n    "]`.
+    assert_eq!(node.prev_siblings().count(), 3);
+    assert_eq!(
+        node.prev_siblings()
+            .filter_map(|n| n.as_text())
+            .collect::<Vec<_>>(),
+        ["\n    \n    ", "\n    "]
+    );
     let verbose = Document::parse_with(
         PAGE,
         &browser_dom::ParseOptions::new()

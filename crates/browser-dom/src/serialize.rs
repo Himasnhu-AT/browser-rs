@@ -43,7 +43,12 @@ pub fn truncate_repr(content: &str) -> String {
     format!("{}...", head.trim())
 }
 
-/// Escape a string for use in character data (`&`, `<`, `>`, NBSP).
+/// Escape a string for use in character data (`&`, `<`, `>`).
+///
+/// Non-ASCII characters are written through verbatim, U+00A0 included: libxml2's
+/// HTML serialiser only emits character entities for code points the output
+/// encoding cannot represent, and the reference implementation always serialises as UTF-8
+/// (`tostring(..., encoding=self.encoding)` with `encoding = "utf-8"`).
 #[must_use]
 pub fn escape_text(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
@@ -52,26 +57,102 @@ pub fn escape_text(text: &str) -> String {
             '&' => out.push_str("&amp;"),
             '<' => out.push_str("&lt;"),
             '>' => out.push_str("&gt;"),
-            '\u{00A0}' => out.push_str("&nbsp;"),
             other => out.push(other),
         }
     }
     out
 }
 
-/// Escape a string for use in a double-quoted attribute value.
+/// Escape a string for use in a **double**-quoted attribute value.
+///
+/// libxml2 escapes `&`, `<`, `>` and — only when it has chosen double quotes —
+/// `"`. The private `write_attribute` makes the quote choice; a value holding a
+/// `"` and no `'` takes single quotes instead and is escaped by `escape_attr_single`.
 #[must_use]
 pub fn escape_attr(value: &str) -> String {
     let mut out = String::with_capacity(value.len());
     for ch in value.chars() {
         match ch {
             '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
             '"' => out.push_str("&quot;"),
-            '\u{00A0}' => out.push_str("&nbsp;"),
             other => out.push(other),
         }
     }
     out
+}
+
+/// Escape a string for use in a **single**-quoted attribute value.
+///
+/// The quote character itself is left alone, which is the whole point of libxml2
+/// picking single quotes: a value containing `"` but no `'` round-trips without
+/// a single entity.
+fn escape_attr_single(value: &str) -> String {
+    let mut out = String::with_capacity(value.len());
+    for ch in value.chars() {
+        match ch {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            other => out.push(other),
+        }
+    }
+    out
+}
+
+/// Does this attribute get URI-escaped on the way out?
+///
+/// libxml2's `htmlAttrDumpOutput` percent-escapes `href`, `src` and `action` on
+/// any element, plus `name` — but only on `<a>`. Everything else, `longdesc`,
+/// `cite`, `background` and the rest included, is written literally.
+fn is_uri_attribute(name: &str, owner: &str) -> bool {
+    matches!(name, "href" | "src" | "action") || (name == "name" && owner == "a")
+}
+
+/// libxml2's URI escaping, as observed against libxml2 2.14.6.
+///
+/// Leading XML whitespace is dropped, then the space character, every C0
+/// control and every non-ASCII byte become `%XX` over the UTF-8 encoding.
+/// Everything else — `"`, `'`, `&`, `[`, `]`, `{`, `}`, `|`, `\`, `^` included —
+/// is passed through, and the result then goes through the normal attribute
+/// escaping.
+fn uri_escape(value: &str) -> String {
+    let trimmed = value.trim_start_matches([' ', '\t', '\n', '\r']);
+    let mut out = String::with_capacity(trimmed.len());
+    for &byte in trimmed.as_bytes() {
+        if byte <= b' ' || byte >= 0x80 {
+            out.push_str(&format!("%{byte:02X}"));
+        } else {
+            out.push(char::from(byte));
+        }
+    }
+    out
+}
+
+/// Write one attribute the way libxml2 does, quote choice included.
+///
+/// A value that contains `"` but no `'` is written inside single quotes with the
+/// double quote left bare; otherwise double quotes and `&quot;` are used.
+fn write_attribute(name: &str, value: &str, owner: &str, out: &mut String) {
+    let escaped;
+    let value = if is_uri_attribute(name, owner) {
+        escaped = uri_escape(value);
+        escaped.as_str()
+    } else {
+        value
+    };
+    out.push(' ');
+    out.push_str(name);
+    if value.contains('"') && !value.contains('\'') {
+        out.push_str("='");
+        out.push_str(&escape_attr_single(value));
+        out.push('\'');
+    } else {
+        out.push_str("=\"");
+        out.push_str(&escape_attr(value));
+        out.push('"');
+    }
 }
 
 fn write_open(node: NodeRef<'_>, out: &mut String) {
@@ -85,12 +166,9 @@ fn write_open(node: NodeRef<'_>, out: &mut String) {
         NodeData::Element(el) => {
             out.push('<');
             out.push_str(&name_to_string(el.name()));
+            let owner = el.local_name().to_owned();
             for (name, value) in el.attrs().iter_qual() {
-                out.push(' ');
-                out.push_str(&name_to_string(name));
-                out.push_str("=\"");
-                out.push_str(&escape_attr(value));
-                out.push('"');
+                write_attribute(&name_to_string(name), value, &owner, out);
             }
             out.push('>');
         }
@@ -310,17 +388,66 @@ mod tests {
         assert_eq!(script.outer_html(), "<script>if (a < b && c) x();</script>");
     }
 
+    /// libxml2 switches to single quotes rather than emit `&quot;`, and only
+    /// falls back to `&quot;` when the value contains an apostrophe too.
     #[test]
-    fn attribute_values_are_escaped() {
+    fn attribute_values_are_escaped_the_way_libxml2_escapes_them() {
         let doc = Document::parse(r#"<a title='say "hi" & bye'>x</a>"#);
+        let a = doc
+            .elements()
+            .find(|e| e.local_name() == Some("a"))
+            .unwrap();
+        assert_eq!(a.outer_html(), r#"<a title='say "hi" &amp; bye'>x</a>"#);
+
+        let doc = Document::parse(r#"<a title="both &quot; and &#39; quotes">x</a>"#);
         let a = doc
             .elements()
             .find(|e| e.local_name() == Some("a"))
             .unwrap();
         assert_eq!(
             a.outer_html(),
-            r#"<a title="say &quot;hi&quot; &amp; bye">x</a>"#
+            r#"<a title="both &quot; and ' quotes">x</a>"#
         );
+    }
+
+    /// `href` / `src` / `action` — and `name` on `<a>` alone — are
+    /// percent-escaped; every other attribute is written literally.
+    #[test]
+    fn uri_attributes_are_percent_escaped() {
+        for (html, expected) in [
+            (
+                "<a href=\"/na\u{ef}ve x\">t</a>",
+                "<a href=\"/na%C3%AFve%20x\">t</a>",
+            ),
+            ("<a name=\"a b\">t</a>", "<a name=\"a%20b\">t</a>"),
+            (
+                "<a longdesc=\"/na\u{ef}ve\">t</a>",
+                "<a longdesc=\"/na\u{ef}ve\">t</a>",
+            ),
+            (
+                "<a href=\"  /a?x=1&amp;y=2#f\">t</a>",
+                "<a href=\"/a?x=1&amp;y=2#f\">t</a>",
+            ),
+        ] {
+            let doc = Document::parse(html);
+            let a = doc
+                .elements()
+                .find(|e| e.local_name() == Some("a"))
+                .unwrap();
+            assert_eq!(a.outer_html(), expected);
+        }
+    }
+
+    /// U+00A0 is a perfectly ordinary character in a UTF-8 document; libxml2
+    /// only reaches for `&nbsp;` when the output encoding cannot hold it.
+    #[test]
+    fn non_breaking_space_is_not_turned_into_an_entity() {
+        let doc = Document::parse("<p title=\"a\u{a0}b\">A&nbsp;B</p>");
+        let p = doc
+            .elements()
+            .find(|e| e.local_name() == Some("p"))
+            .unwrap();
+        assert_eq!(p.outer_html(), "<p title=\"a\u{a0}b\">A\u{a0}B</p>");
     }
 
     #[test]
@@ -371,7 +498,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             format!("{p:?}"),
-            "<data='<p>hello</p>' parent='<div><p>hello</p></div>'>"
+            "<data='<p>hello</p>' parent='<div> <p>hello</p></div>'>"
         );
         let text = p.first_child().unwrap();
         assert_eq!(format!("{text:?}"), "<text='hello'>");

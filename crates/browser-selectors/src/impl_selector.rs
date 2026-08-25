@@ -821,15 +821,36 @@ mod tests {
         );
     }
 
+    /// `:empty` reads the tree `remove_blank_text` produced, and since that
+    /// pass implements libxml2's `areBlanks()` the whitespace-only `<span>` is
+    /// **not** empty: `span` allows PCDATA, so its blank survives. Checked
+    /// against `Selector(...).css("span:empty")`, which selects only the first.
     #[test]
     fn empty_matches_the_normalised_tree() {
-        let doc = Document::parse("<span></span><span> </span><span>x</span><span><b></b></span>");
+        let doc = Document::parse(
+            "<span></span><span> </span><span>&nbsp;</span><span>x</span><span><b></b></span>",
+        );
         let empties: Vec<bool> = doc
             .elements()
             .filter(|e| e.tag() == "span")
             .filter_map(ElementRef::new)
             .map(|e| e.is_empty())
             .collect();
-        assert_eq!(empties, vec![true, true, false, false]);
+        assert_eq!(empties, vec![true, false, false, false, false]);
+    }
+
+    /// The same question inside a parent whose content model forbids character
+    /// data: there the blank *is* dropped, so the `<li>` is `:empty` — again
+    /// what `Selector(...).css("li:empty")` answers.
+    #[test]
+    fn empty_follows_the_content_model_of_the_parent() {
+        let doc = Document::parse("<ul> <li>a</li> </ul><div> </div>");
+        let ul = doc.elements().find(|e| e.tag() == "ul").expect("a ul");
+        let div = doc.elements().find(|e| e.tag() == "div").expect("a div");
+        assert!(!ElementRef::new(ul).expect("element").is_empty());
+        assert!(!ElementRef::new(div).expect("element").is_empty());
+        let doc = Document::parse("<ul> </ul>");
+        let ul = doc.elements().find(|e| e.tag() == "ul").expect("a ul");
+        assert!(ElementRef::new(ul).expect("element").is_empty());
     }
 }

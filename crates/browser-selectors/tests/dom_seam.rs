@@ -254,22 +254,35 @@ fn structural_pseudo_classes_have_everything_they_need() {
     assert!(!is_empty(&spans[1]), "<span>text</span> is not :empty");
 
     // Caveat for unit 5: the default `remove_blank_text` (Python passes
-    // `remove_blank_text=True` to lxml's HTMLParser — parser.py:157) deletes
-    // whitespace-only text nodes *before* matching, so `<span> </span>` is :empty
-    // here and in the reference implementation, but not in a browser. Parse with
-    // `ParseOptions::new().remove_blank_text(false)` to get the browser answer.
-    let kept = Document::parse_with(
-        "<span> </span>",
-        &browser_dom::ParseOptions::new().remove_blank_text(false),
-    );
-    let span = kept.elements().find(|e| e.tag() == "span").expect("<span>");
-    assert!(!is_empty(&span));
-    let dropped = Document::parse("<span> </span>");
-    let span = dropped
-        .elements()
-        .find(|e| e.tag() == "span")
-        .expect("<span>");
-    assert!(is_empty(&span));
+    // `remove_blank_text=True` to lxml's HTMLParser — parser.py:157) implements
+    // libxml2's `areBlanks()`, so whether a whitespace-only text node survives
+    // depends on the content model around it, and so therefore does `:empty`.
+    // `<span> </span>` keeps its space — `span` admits character data — and is
+    // *not* `:empty`, in the reference implementation and in a browser alike. `<ul> </ul>` loses
+    // it and is.
+    for (html, empty) in [
+        ("<span> </span>", false),
+        ("<span>\u{a0}</span>", false),
+        ("<ul> </ul>", true),
+        ("<table> </table>", true),
+    ] {
+        let doc = Document::parse(html);
+        let el = doc
+            .elements()
+            .find(|e| e.tag() != "html" && e.tag() != "body" && e.tag() != "head")
+            .expect("the element under test");
+        assert_eq!(is_empty(&el), empty, "{html} :empty");
+        // Turning the pass off always keeps the blank, so nothing is `:empty`.
+        let kept = Document::parse_with(
+            html,
+            &browser_dom::ParseOptions::new().remove_blank_text(false),
+        );
+        let el = kept
+            .elements()
+            .find(|e| e.tag() != "html" && e.tag() != "body" && e.tag() != "head")
+            .expect("the element under test");
+        assert!(!is_empty(&el), "{html} with remove_blank_text off");
+    }
 
     // :link
     let a_with_href = doc

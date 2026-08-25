@@ -66,14 +66,28 @@
 //! diverging — never silently skipped. The table is also checked for
 //! staleness: an entry that starts passing fails the test.
 //!
-//! **3948 of 4159 rows reproduce the reference implementation exactly.** The
-//! 211 that do not are 70 selectors the CSS Selectors 4 grammar accepts and
+//! Whitespace-only `::text` results are compared like any other result. They
+//! used to be filtered out of *both* sides, because `remove_blank_text` deleted
+//! every blank run while libxml2's `areBlanks()` did not; `browser-dom` now
+//! implements `areBlanks()`, so the filter is gone and the blank text nodes are
+//! part of the comparison.
+//!
+//! **3933 of 4159 rows reproduce the reference implementation exactly.** The
+//! 226 that do not are 70 selectors the CSS Selectors 4 grammar accepts and
 //! cssselect rejects (7 selectors x 10 pages), 119 rows of html5ever-vs-libxml2
 //! *tree shape* (implied `<tbody>`, a synthesised `<head>`, the adoption
-//! agency), 9 rows of `browser-dom`'s stricter `remove_blank_text`, 8 rows of
-//! the lxml scoping quirk `API.md` deviation 6 describes, and 5 rows of
-//! minimised boolean attributes and SVG attribute-name case. None is a CSS matching bug — see [`EXPECTED_DIVERGENCES`] for how
-//! that claim is checked rather than asserted.
+//! agency), 20 rows of the whitespace between `</body>` and `</html>` (the
+//! HTML5 *after body* insertion mode keeps it inside `<body>`, libxml2 makes it
+//! the tail of `<body>`) — these were invisible while blank text was filtered —
+//! 12 rows of the lxml scoping quirk `API.md` deviation 6 describes, and 5 rows
+//! of minimised boolean attributes and SVG attribute-name case. None is a CSS
+//! matching bug — see [`EXPECTED_DIVERGENCES`] for how that claim is checked
+//! rather than asserted.
+//!
+//! The count *rose* from 211 when the blank-text filter went away, and the fix
+//! itself removed 9 rows: 5 `:empty` questions on the `edge` page now pass, and
+//! the other 4 turned out to be the sibling-combinator scoping quirk wearing a
+//! blank-text label.
 
 use std::collections::BTreeSet;
 
@@ -935,60 +949,251 @@ const EXPECTED_DIVERGENCES: &[(&str, &str, &str, &str)] = &[
         "svg::attr(viewBox)",
         "html5ever keeps SVG's camel-cased attribute names; libxml2 lower-cases them",
     ),
-    // ---- BLANK (9 rows) ----
+    // ---- AFTER-BODY WHITESPACE (20 rows) ----
     (
-        "edge",
+        "svg",
         "",
-        "#nbsp:empty",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
     ),
     (
-        "edge",
+        "svg",
         "",
-        "#nl:empty",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "body *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
     ),
     (
-        "edge",
+        "unicode",
         "",
-        "#ws:empty",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
     ),
     (
-        "edge",
+        "unicode",
         "",
-        "*:empty",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "body *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
     ),
     (
-        "edge",
+        "forms",
         "",
-        "div:empty",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
     ),
+    (
+        "forms",
+        "",
+        "body *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "blog",
+        "",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "blog",
+        "",
+        "body *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "svg",
+        "body",
+        "::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "svg",
+        "body",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "svg",
+        "body",
+        "* *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "unicode",
+        "body",
+        "::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "unicode",
+        "body",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "unicode",
+        "body",
+        "* *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "forms",
+        "body",
+        "::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "forms",
+        "body",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "forms",
+        "body",
+        "* *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "blog",
+        "body",
+        "::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "blog",
+        "body",
+        "*::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    (
+        "blog",
+        "body",
+        "* *::text",
+        concat!(
+            "html5ever's `after body` insertion mode keeps the whitespace ",
+            "between `</body>` and `</html>` inside `<body>`, where it merges ",
+            "with the run before it; libxml2 makes it the tail of `<body>`, so ",
+            "Python sees two text nodes where we see one"
+        ),
+    ),
+    // ---- SIBLING-COMBINATOR ESCAPE, scoped (4 rows) ----
     (
         "edge",
         "#list",
         "* + *",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "lxml lets a sibling combinator leave the query node's subtree",
     ),
     (
         "edge",
         "#list",
         "* ~ *",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "lxml lets a sibling combinator leave the query node's subtree",
     ),
     (
         "edge",
         "#mixed",
         "* + *",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "lxml lets a sibling combinator leave the query node's subtree",
     ),
     (
         "edge",
         "#mixed",
         "* ~ *",
-        "browser-dom drops whitespace-only text nodes that libxml2's areBlanks() keeps",
+        "lxml lets a sibling combinator leave the query node's subtree",
     ),
 ];
 
@@ -1053,15 +1258,6 @@ impl Entry {
             Self::Element { path, .. } => Some(path),
             _ => None,
         }
-    }
-
-    /// Whitespace-only text results are dropped on both sides: `browser-dom`
-    /// deviation #3 makes `remove_blank_text` stricter than libxml2's
-    /// `areBlanks()`, so the two trees disagree about which ignorable
-    /// whitespace text nodes survive. the reference implementation's own `get_all_text()` filters
-    /// them too.
-    fn is_blank_text(&self) -> bool {
-        matches!(self, Self::Text { value, .. } if value.trim().is_empty())
     }
 }
 
@@ -1281,19 +1477,11 @@ fn check_row(doc: &Document, row: &Value, shape_stable: bool) -> Result<(), Stri
     }
 
     let group = parse_selector(selector).map_err(|e| format!("we failed to parse: {e}"))?;
-    let ours: Vec<Entry> = group
-        .select(root)
-        .iter()
-        .map(from_match)
-        .filter(|e| !e.is_blank_text())
-        .collect();
+    let ours: Vec<Entry> = group.select(root).iter().map(from_match).collect();
     let theirs: Vec<Entry> = row["results"]
         .as_array()
         .map(|items| items.iter().map(from_json).collect::<Vec<_>>())
-        .unwrap_or_default()
-        .into_iter()
-        .filter(|e| !e.is_blank_text())
-        .collect();
+        .unwrap_or_default();
 
     let ours_keys: Vec<String> = ours.iter().map(Entry::key).collect();
     let theirs_keys: Vec<String> = theirs.iter().map(Entry::key).collect();

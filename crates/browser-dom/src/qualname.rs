@@ -96,16 +96,105 @@ pub fn is_raw_text_element(local: &LocalName) -> bool {
     )
 }
 
-/// Elements inside which whitespace is significant, so `remove_blank_text`
-/// must not delete whitespace-only text nodes.
+/// Elements whose character data libxml2's HTML parser treats as CDATA, so
+/// `areBlanks()` is never consulted for it and blank text always survives
+/// [`crate::parse::remove_blank_text`].
 ///
-/// libxml2 keeps whitespace inside `pre`/`textarea` (rendering-significant) and
-/// inside CDATA-ish elements (`script`, `style`, `title`); we do the same.
+/// Determined by probing libxml2 2.14.6 through `lxml` — `<X> </X>` keeps its
+/// space for every name below, and `<X><ul></ul> <em>y</em></X>` keeps the
+/// space too (proving the content never reaches `areBlanks()` rather than
+/// merely being allowed PCDATA).
+///
+/// **Not** on this list, despite the name: `pre` and `listing`. libxml2 2.14
+/// parses both as ordinary element content, so their blanks go through the
+/// normal [`allows_pcdata`] rule — which keeps `<pre> </pre>` (because `pre`
+/// allows PCDATA) but *drops* the space in `<pre><ul></ul> <em/></pre>`.
 #[must_use]
-pub fn preserves_whitespace(local: &LocalName) -> bool {
+pub fn has_cdata_content(local: &LocalName) -> bool {
     matches!(
         local.as_ref(),
-        "pre" | "textarea" | "script" | "style" | "title" | "xmp" | "listing"
+        "script"
+            | "style"
+            | "textarea"
+            | "title"
+            | "xmp"
+            | "noembed"
+            | "noframes"
+            | "plaintext"
+            | "iframe"
+    )
+}
+
+/// libxml2's `allowPCData` table: elements whose content model admits
+/// character data, which is what its `areBlanks()` consults to decide whether a
+/// whitespace-only run is ignorable.
+///
+/// The list is **empirical**, not copied from a header: every HTML4 and HTML5
+/// element name (plus a handful of legacy and unknown ones) was fed to
+/// libxml2 2.14.6 twice, as the blank's parent (`<X> </X>`) and as the blank's
+/// preceding sibling (`<div><X></X> <em>y</em></div>`), and the two probes
+/// agree everywhere they are both constructible. Notably it is *not* the
+/// HTML 4.01 `%inline;` closure — `ul`, `ol`, `dl`, `dir`, `menu`, `map`, `sub`
+/// and `sup` are all absent, while `noframes` and `noscript` are present.
+///
+/// Unknown element names (`<acme>`, `<foobar>`) are never on the list, so a
+/// blank alone inside one is ignorable.
+#[must_use]
+pub fn allows_pcdata(local: &LocalName) -> bool {
+    matches!(
+        local.as_ref(),
+        "a" | "abbr"
+            | "acronym"
+            | "address"
+            | "applet"
+            | "b"
+            | "bdo"
+            | "big"
+            | "blockquote"
+            | "body"
+            | "button"
+            | "caption"
+            | "center"
+            | "cite"
+            | "code"
+            | "dd"
+            | "del"
+            | "dfn"
+            | "div"
+            | "dt"
+            | "em"
+            | "font"
+            | "form"
+            | "h1"
+            | "h2"
+            | "h3"
+            | "h4"
+            | "h5"
+            | "h6"
+            | "i"
+            | "iframe"
+            | "ins"
+            | "kbd"
+            | "label"
+            | "legend"
+            | "li"
+            | "noframes"
+            | "noscript"
+            | "object"
+            | "p"
+            | "pre"
+            | "q"
+            | "s"
+            | "samp"
+            | "small"
+            | "span"
+            | "strike"
+            | "strong"
+            | "td"
+            | "th"
+            | "tt"
+            | "u"
+            | "var"
     )
 }
 
@@ -134,7 +223,15 @@ mod tests {
         assert!(is_void_element(&LocalName::from("br")));
         assert!(!is_void_element(&LocalName::from("div")));
         assert!(is_raw_text_element(&LocalName::from("script")));
-        assert!(preserves_whitespace(&LocalName::from("pre")));
-        assert!(!preserves_whitespace(&LocalName::from("div")));
+        assert!(has_cdata_content(&LocalName::from("script")));
+        assert!(!has_cdata_content(&LocalName::from("pre")));
+        assert!(!has_cdata_content(&LocalName::from("listing")));
+        assert!(allows_pcdata(&LocalName::from("div")));
+        assert!(allows_pcdata(&LocalName::from("pre")));
+        assert!(allows_pcdata(&LocalName::from("body")));
+        assert!(!allows_pcdata(&LocalName::from("ul")));
+        assert!(!allows_pcdata(&LocalName::from("tr")));
+        assert!(!allows_pcdata(&LocalName::from("sub")));
+        assert!(!allows_pcdata(&LocalName::from("acme")));
     }
 }

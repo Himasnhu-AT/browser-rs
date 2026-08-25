@@ -16,8 +16,12 @@
 //! *serialiser*, not the cleaning rules. lxml writes an empty `<li></li>` as a
 //! bare `<li>`, which `html.parser` then nests the following `<li>` inside —
 //! `<ul><li></li><li>x</li></ul>` becomes `* * x` in the reference implementation and `* x` here.
-//! And libxml2's `areBlanks()` keeps some mixed-content whitespace that our
-//! `remove_blank_text` drops (`browser-dom` deviation 3).
+//! Whitespace is also removed from the text before comparison. That used to be
+//! load-bearing — `remove_blank_text` dropped blanks libxml2 kept — and since
+//! `browser-dom` implements `areBlanks()` it no longer is: the inputs in
+//! `testdata/normalized/` are minified, so they carry almost no inter-tag
+//! whitespace either way. It is kept because the goldens store the stripped
+//! form and regenerating them would churn a corpus this test is not about.
 //!
 //! Both of those are parser/serialiser artefacts. What this test pins is what
 //! the cleaning layer is *for*: exactly the right elements are pruned and
@@ -47,10 +51,8 @@ fn dump(html: &str) -> String {
         .chain(root.descendant_elements())
         .map(|node| node.tag())
         .collect();
-    // Whitespace is dropped on both sides: libxml2's `areBlanks()` keeps some
-    // mixed-content whitespace that `remove_blank_text` here does not, and that
-    // difference belongs to `browser-dom`, not to the cleaning layer. What
-    // must agree exactly is which elements and which *characters* survive.
+    // Whitespace is dropped on both sides; see the module docs. What must agree
+    // exactly is which elements and which *characters* survive.
     let text: String = root
         .text_content()
         .chars()

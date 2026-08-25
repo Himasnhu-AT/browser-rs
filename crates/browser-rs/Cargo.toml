@@ -23,16 +23,26 @@ browser-templates = { workspace = true, optional = true }
 thiserror.workspace = true
 
 # The seam tests in `tests/integration.rs` reach past the façade on purpose: they
-# assert that the member crates unit 10 and unit 12 are about to be built on top
+# assert that the member crates unit 12 and unit 14 are about to be built on top
 # of actually compose with one another. They are dev-only; nothing in `src/`
 # depends on them.
+#
+# `browser-parser` is listed again here with `adaptive` on so the adaptive
+# round trip runs under a plain `cargo test --workspace`, without the caller
+# having to remember `--features adaptive`. It does not change the façade's own
+# feature surface: `browser-rs`'s `#[cfg(feature = "adaptive")]` stays off.
 [dev-dependencies]
 browser-dom.workspace = true
 browser-selectors.workspace = true
 browser-xpath.workspace = true
 browser-storage.workspace = true
 browser-http.workspace = true
+browser-parser = { workspace = true, features = ["adaptive"] }
+browser-spider.workspace = true
+bytes.workspace = true
 indexmap.workspace = true
+regex.workspace = true
+serde_json.workspace = true
 
 [features]
 default = ["http", "parser"]

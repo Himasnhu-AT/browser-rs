@@ -15,6 +15,7 @@ categories.workspace = true
 browser-core.workspace = true
 
 ego-tree.workspace = true
+encoding_rs.workspace = true
 html5ever.workspace = true
 indexmap.workspace = true
 markup5ever.workspace = true

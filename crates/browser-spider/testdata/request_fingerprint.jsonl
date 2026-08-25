@@ -1,0 +1,84 @@
+{"name": "plain-0", "url": "http://example.com/", "sid": "", "kwargs": {}, "options": {}, "expected": "ea7e1e8c4551386b0220e1d167022c1344a2df4e"}
+{"name": "plain-0-sid", "url": "http://example.com/", "sid": "browser", "kwargs": {}, "options": {}, "expected": "1ce8949f5849f3a7180ae97c4bc42fc79a72f377"}
+{"name": "plain-0-frag", "url": "http://example.com/", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "ea7e1e8c4551386b0220e1d167022c1344a2df4e"}
+{"name": "plain-1", "url": "http://example.com", "sid": "", "kwargs": {}, "options": {}, "expected": "ea7e1e8c4551386b0220e1d167022c1344a2df4e"}
+{"name": "plain-1-sid", "url": "http://example.com", "sid": "browser", "kwargs": {}, "options": {}, "expected": "1ce8949f5849f3a7180ae97c4bc42fc79a72f377"}
+{"name": "plain-1-frag", "url": "http://example.com", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "ea7e1e8c4551386b0220e1d167022c1344a2df4e"}
+{"name": "plain-2", "url": "HTTP://Example.COM:8080/PaTh?b=2&a=1#frag", "sid": "", "kwargs": {}, "options": {}, "expected": "c6430fb60a968c94728d86c023f9c9c0b0a65630"}
+{"name": "plain-2-sid", "url": "HTTP://Example.COM:8080/PaTh?b=2&a=1#frag", "sid": "browser", "kwargs": {}, "options": {}, "expected": "8491b68bca2d87e72261cde96f634b46538f0956"}
+{"name": "plain-2-frag", "url": "HTTP://Example.COM:8080/PaTh?b=2&a=1#frag", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "4035b9f8956a6992eee68a7856d34495b3eff847"}
+{"name": "plain-3", "url": "https://example.com/a/b?q=café#top", "sid": "", "kwargs": {}, "options": {}, "expected": "d30ac7d3fee2dfb41f0f62b9b1556c2566c26026"}
+{"name": "plain-3-sid", "url": "https://example.com/a/b?q=café#top", "sid": "browser", "kwargs": {}, "options": {}, "expected": "ef4e959d8def2341c62e3f4b19b369b9091ee6d3"}
+{"name": "plain-3-frag", "url": "https://example.com/a/b?q=café#top", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "fa036ad27a1aa3721508a1b664f2968a5028a409"}
+{"name": "plain-4", "url": "https://example.com/a%2fb?x=%20&x=+", "sid": "", "kwargs": {}, "options": {}, "expected": "8e9438e32f27470734a48c82de226472992b8a9a"}
+{"name": "plain-4-sid", "url": "https://example.com/a%2fb?x=%20&x=+", "sid": "browser", "kwargs": {}, "options": {}, "expected": "f2540f0b8b4d64dc2164d760f9a834dadf61ba4a"}
+{"name": "plain-4-frag", "url": "https://example.com/a%2fb?x=%20&x=+", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "8e9438e32f27470734a48c82de226472992b8a9a"}
+{"name": "plain-5", "url": "https://user:pass@example.com:443/x;p?z=1", "sid": "", "kwargs": {}, "options": {}, "expected": "9b957dc5863567706132c766c846928c02452471"}
+{"name": "plain-5-sid", "url": "https://user:pass@example.com:443/x;p?z=1", "sid": "browser", "kwargs": {}, "options": {}, "expected": "618a6dabe86173e22164df3e85ec643a30b35bd8"}
+{"name": "plain-5-frag", "url": "https://user:pass@example.com:443/x;p?z=1", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "9b957dc5863567706132c766c846928c02452471"}
+{"name": "plain-6", "url": "http://münchen.example/straße?q=1", "sid": "", "kwargs": {}, "options": {}, "expected": "26416888646bdc3410823d905f90bc0f5db57ead"}
+{"name": "plain-6-sid", "url": "http://münchen.example/straße?q=1", "sid": "browser", "kwargs": {}, "options": {}, "expected": "360ab75da9862313abd0df3be4691e08be9e0220"}
+{"name": "plain-6-frag", "url": "http://münchen.example/straße?q=1", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "26416888646bdc3410823d905f90bc0f5db57ead"}
+{"name": "plain-7", "url": "/relative?b=1&a=2", "sid": "", "kwargs": {}, "options": {}, "expected": "5113615f67ea656e8f1e10d6d9b49f3ef9d72f64"}
+{"name": "plain-7-sid", "url": "/relative?b=1&a=2", "sid": "browser", "kwargs": {}, "options": {}, "expected": "1ae48b5032f8d4718bba689249597932ff8e6a9b"}
+{"name": "plain-7-frag", "url": "/relative?b=1&a=2", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "5113615f67ea656e8f1e10d6d9b49f3ef9d72f64"}
+{"name": "plain-8", "url": "http://example.com/?a=&b=&c=1", "sid": "", "kwargs": {}, "options": {}, "expected": "7af6b00bcc0808d8e8350f6e5d0cc43587696dac"}
+{"name": "plain-8-sid", "url": "http://example.com/?a=&b=&c=1", "sid": "browser", "kwargs": {}, "options": {}, "expected": "a3f59a6bc5047766fb0e2b0f80652d3b1a534a15"}
+{"name": "plain-8-frag", "url": "http://example.com/?a=&b=&c=1", "sid": "", "kwargs": {}, "options": {"keep_fragments": true}, "expected": "7af6b00bcc0808d8e8350f6e5d0cc43587696dac"}
+{"name": "method-GET", "url": "http://example.com/x", "sid": "", "kwargs": {"method": "GET"}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "method-POST", "url": "http://example.com/x", "sid": "", "kwargs": {"method": "POST"}, "options": {}, "expected": "2d76f7e23e428b172cacc0d92ec884971a5ab054"}
+{"name": "method-PUT", "url": "http://example.com/x", "sid": "", "kwargs": {"method": "PUT"}, "options": {}, "expected": "334035b993f6d8e228d1bba609db94eb23384903"}
+{"name": "method-DELETE", "url": "http://example.com/x", "sid": "", "kwargs": {"method": "DELETE"}, "options": {}, "expected": "8f9cf8e35b66301e9a0d28ef913c27b3795ca475"}
+{"name": "data-form", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"form": [["a", "1 2"], ["b", "x&y"]]}}, "options": {}, "expected": "4cad8cffafcb9b2de2200aaf9c7fc2b147aa56d7"}
+{"name": "data-form-order", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"form": [["b", "x&y"], ["a", "1 2"]]}}, "options": {}, "expected": "bfcc36d84663443141cdecd188249a628db47643"}
+{"name": "data-form-unicode", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"form": [["q", "café"]]}}, "options": {}, "expected": "b419dbd8bb7ef9c10b238f4a722a2d3eff99661b"}
+{"name": "data-form-empty", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"form": []}}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "data-text", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"text": "a=1+2&b=x%26y"}}, "options": {}, "expected": "4cad8cffafcb9b2de2200aaf9c7fc2b147aa56d7"}
+{"name": "data-text-empty", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"text": ""}}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "data-bytes", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"bytes_hex": "00ff10deadbeef"}}, "options": {}, "expected": "0567833d02167dc087c5bca08f5b520a4a92dae2"}
+{"name": "data-bytes-empty", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"bytes_hex": ""}}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "json-object", "url": "http://example.com/x", "sid": "", "kwargs": {"json": {"b": 1, "a": [1, 2, {"z": null}]}}, "options": {}, "expected": "49915850d35945c78259e1fa0d2eabfc55621823"}
+{"name": "json-object-reordered", "url": "http://example.com/x", "sid": "", "kwargs": {"json": {"a": [1, 2, {"z": null}], "b": 1}}, "options": {}, "expected": "32d48035adc9933591c206c88e36a45b4fb5f137"}
+{"name": "json-empty", "url": "http://example.com/x", "sid": "", "kwargs": {"json": {}}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "json-list", "url": "http://example.com/x", "sid": "", "kwargs": {"json": [1, 2, 3]}, "options": {}, "expected": "390cb2c8aaee60c0876fa204a20c7496af89c9b7"}
+{"name": "json-string", "url": "http://example.com/x", "sid": "", "kwargs": {"json": "hello"}, "options": {}, "expected": "77ea1b0c9919c82768a9361450e2b34802376d8c"}
+{"name": "json-zero", "url": "http://example.com/x", "sid": "", "kwargs": {"json": 0}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "json-false", "url": "http://example.com/x", "sid": "", "kwargs": {"json": false}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "json-number", "url": "http://example.com/x", "sid": "", "kwargs": {"json": 1.5}, "options": {}, "expected": "069f89771d990df5fc8f582f6adb556e2a86dcb3"}
+{"name": "data-wins-over-json", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"text": "raw"}, "json": {"a": 1}}, "options": {}, "expected": "a123e1f9a7926bb078456bf6853ee9090444eb72"}
+{"name": "empty-data-falls-through-to-json", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"text": ""}, "json": {"a": 1}}, "options": {}, "expected": "9ba32351481e88a6f1a2bb4c60714c5cbffc518a"}
+{"name": "headers-0", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "A"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "extra-headers-0", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"X-Test": "A"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "headers-1", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "a"}}, "options": {"include_headers": true}, "expected": "037b6f3fa72830a299614780832d015d7f9a1c55"}
+{"name": "extra-headers-1", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"X-Test": "a"}}, "options": {"include_headers": true}, "expected": "037b6f3fa72830a299614780832d015d7f9a1c55"}
+{"name": "headers-2", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"x-test": "A"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "extra-headers-2", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"x-test": "A"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "headers-3", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "A", "Accept": "*/*"}}, "options": {"include_headers": true}, "expected": "f8dfb84086901393a81df6a24db64620dfcacefe"}
+{"name": "extra-headers-3", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"X-Test": "A", "Accept": "*/*"}}, "options": {"include_headers": true}, "expected": "f8dfb84086901393a81df6a24db64620dfcacefe"}
+{"name": "headers-4", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"Accept": "*/*", "X-Test": "A"}}, "options": {"include_headers": true}, "expected": "aee81a17bacb9c4936b62734e30a6f3df022a4ac"}
+{"name": "extra-headers-4", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"Accept": "*/*", "X-Test": "A"}}, "options": {"include_headers": true}, "expected": "aee81a17bacb9c4936b62734e30a6f3df022a4ac"}
+{"name": "headers-5", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"Ünicode-Key": "vàlue"}}, "options": {"include_headers": true}, "expected": "4aee6529cb640beef15fd5ae5ba9fa3c9e480dad"}
+{"name": "extra-headers-5", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {"Ünicode-Key": "vàlue"}}, "options": {"include_headers": true}, "expected": "4aee6529cb640beef15fd5ae5ba9fa3c9e480dad"}
+{"name": "headers-6", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {}}, "options": {"include_headers": true}, "expected": "bd908800e04212e4e9907ec67b3d438873972e7a"}
+{"name": "extra-headers-6", "url": "http://example.com/x", "sid": "", "kwargs": {"extra_headers": {}}, "options": {"include_headers": true}, "expected": "bd908800e04212e4e9907ec67b3d438873972e7a"}
+{"name": "headers-empty-falls-back-to-extra", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {}, "extra_headers": {"X-Test": "A"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "headers-win-over-extra", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "A"}, "extra_headers": {"X-Test": "B"}}, "options": {"include_headers": true}, "expected": "b718ad3f3f550ac3ca66ae5558805a4c9eb11879"}
+{"name": "headers-ignored-without-the-flag", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "A"}}, "options": {}, "expected": "2ac2ded2fa71bf03df96fcbf012aa38594b79ca0"}
+{"name": "kwargs-0", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"timeout": 1}}, "options": {"include_kwargs": true}, "expected": "cf36eb321a82dbf62b4c284b84ba687747b00373"}
+{"name": "kwargs-1", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"timeout": 2}}, "options": {"include_kwargs": true}, "expected": "b31a2b208fb605a9564e23f6e2d6f6052eab94d3"}
+{"name": "kwargs-2", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"timeout": 1.5}}, "options": {"include_kwargs": true}, "expected": "5007c9ba32df63287db2ff495dee7f5148f07439"}
+{"name": "kwargs-3", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"timeout": null}}, "options": {"include_kwargs": true}, "expected": "85fc2ae5d5b6c230abcc2eb7d2ff09d3febc2730"}
+{"name": "kwargs-4", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"timeout": true}}, "options": {"include_kwargs": true}, "expected": "67d37411bd124da6aa9bb3484d277cc7fa470ac7"}
+{"name": "kwargs-5", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"stealthy_headers": false, "timeout": 30}}, "options": {"include_kwargs": true}, "expected": "2982813323357a6f6427b071f1f493f83da5812f"}
+{"name": "kwargs-6", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"TIMEOUT": 30}}, "options": {"include_kwargs": true}, "expected": "54c2ae6cafad2d3b5938fc48a905f3d0e7d3884c"}
+{"name": "kwargs-7", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"nested": {"b": 1, "a": 2}}}, "options": {"include_kwargs": true}, "expected": "1c8a2c6a113d98bec5b8f27638706a4d3041a34e"}
+{"name": "kwargs-8", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"list": [3, 1, 2]}}, "options": {"include_kwargs": true}, "expected": "c7a7dee1cc46aab761543fe99623eee309892213"}
+{"name": "kwargs-9", "url": "http://example.com/x", "sid": "", "kwargs": {"extra": {"text": "a string"}}, "options": {"include_kwargs": true}, "expected": "d030cdd13f331e6f54e952adba58b6f659aa0c40"}
+{"name": "kwargs-10", "url": "http://example.com/x", "sid": "", "kwargs": {"method": "POST", "extra": {"timeout": 30}}, "options": {"include_kwargs": true}, "expected": "9658fdf45ae2b55e547b747b317e68e445190d4f"}
+{"name": "kwargs-11", "url": "http://example.com/x", "sid": "", "kwargs": {"proxy": "http://user:pass@127.0.0.1:8080"}, "options": {"include_kwargs": true}, "expected": "7d8235262b2d7ce6a51a1f298bd86d976a2fabc5"}
+{"name": "kwargs-12", "url": "http://example.com/x", "sid": "", "kwargs": {"proxies": {"http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8081"}}, "options": {"include_kwargs": true}, "expected": "b8adf66de8e8229b9792a179bd27ae6baee75354"}
+{"name": "kwargs-13", "url": "http://example.com/x", "sid": "", "kwargs": {"headers": {"X-Test": "A"}}, "options": {"include_kwargs": true}, "expected": "ad1cbf4507a8746c552032aecb66b055bea2c9e0"}
+{"name": "kwargs-14", "url": "http://example.com/x", "sid": "", "kwargs": {"data": {"form": [["a", "1"]]}, "extra": {"timeout": 1}}, "options": {"include_kwargs": true}, "expected": "948b08ebb9b98e9fcfd9b90139d808885b4d8784"}
+{"name": "kwargs-15", "url": "http://example.com/x", "sid": "", "kwargs": {"json": {"a": 1}, "extra": {"timeout": 1}}, "options": {"include_kwargs": true}, "expected": "2d56f98db1aa99711822ba65075bbd8fa7028404"}
+{"name": "kwargs-16", "url": "http://example.com/x", "sid": "", "kwargs": {}, "options": {"include_kwargs": true}, "expected": "c3ecba587d1239fa7c4fe173e69e7386b6afa0aa"}
+{"name": "all-flags", "url": "HTTPS://Example.com/a?b=2&a=1#frag", "sid": "s1", "kwargs": {"method": "POST", "data": {"form": [["a", "1 2"]]}, "headers": {"X-Test": "A"}, "proxy": "http://127.0.0.1:8080", "extra": {"timeout": 30}}, "options": {"include_kwargs": true, "include_headers": true, "keep_fragments": true}, "expected": "3cfe276a07f86b2df5e4829bd00bcaba90554596"}

@@ -527,13 +527,15 @@ fn invalid_expressions_never_return_an_empty_node_set() {
     assert!(matches!(error, XPathError::UndefinedVariable { .. }));
 }
 
-/// The five places where this engine and `lxml` legitimately disagree, pinned so
+/// The places where this engine and `lxml` legitimately disagree, pinned so
 /// that a regression is visible and a reader knows the list is exhaustive.
 ///
 /// Every one of them is a **tree** difference (html5ever vs libxml2's HTML
 /// parser) or a data-model consequence of one — never an evaluation difference.
-/// `browser-dom`'s `API.md` documents the underlying causes as deviations 3
-/// (blank text), 9 (`xml:lang`) and the `default_doctype` row (`<head>`).
+/// `browser-dom`'s `API.md` documents the underlying causes as deviation 9
+/// (`xml:lang`) and the `default_doctype` row (`<head>`). Rows 1–3 used to be
+/// blank-text divergences and are now *agreements*, kept here with their old
+/// values in the comments so the fix cannot silently regress.
 #[test]
 fn the_known_divergences_from_lxml() {
     let structure = PAGES.get("structure.html").expect("the structure page");
@@ -547,18 +549,23 @@ fn the_known_divergences_from_lxml() {
             .string_value(&model)
     };
 
-    // 1. Blank text nodes: `remove_blank_text` is more aggressive here, so every
-    //    count over `text()` or `node()` is lower. lxml: 47 and 97.
-    assert_eq!(string("count(//text())"), "23");
-    assert_eq!(string("count(//node())"), "73");
+    // 1. Blank text nodes agree exactly: `remove_blank_text` implements
+    //    libxml2's `areBlanks()`, so `count(//text())` and `count(//node())`
+    //    are lxml's own answers. These two used to be 23 and 73.
+    assert_eq!(string("count(//text())"), "47");
+    assert_eq!(string("count(//node())"), "97");
 
-    // 2. …which also means the string-value of a mixed-content element has no
-    //    separating whitespace left. lxml: "alpha bold beta".
-    assert_eq!(string("normalize-space(//div[@id='d1'])"), "alphaboldbeta");
+    // 2. …and the string-value of a mixed-content element keeps its separating
+    //    whitespace, which is what makes Markdown of ordinary prose come out
+    //    right.
+    assert_eq!(
+        string("normalize-space(//div[@id='d1'])"),
+        "alpha bold beta"
+    );
 
-    // 3. cssselect's `:empty` translation therefore matches `<p>   </p>` here.
-    //    lxml: 8.
-    assert_eq!(string("count(//*[not(*) and not(string-length())])"), "9");
+    // 3. cssselect's `:empty` translation therefore no longer matches
+    //    `<p>   </p>`, agreeing with lxml at 8.
+    assert_eq!(string("count(//*[not(*) and not(string-length())])"), "8");
 
     // 4. html5ever turns `xmlns` into a real namespace declaration; libxml2's HTML
     //    parser ignores it, so this document has four namespace nodes libxml2 has

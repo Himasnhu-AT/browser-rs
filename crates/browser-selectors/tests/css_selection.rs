@@ -103,23 +103,7 @@ fn expected(row: &Value) -> Vec<BTreeMap<String, Value>> {
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect()
         })
-        .filter(|entry: &BTreeMap<String, Value>| !is_blank_text(entry))
         .collect()
-}
-
-/// `browser-dom` deviation #3 (see `crates/browser-dom/API.md`): our
-/// `remove_blank_text` deletes *every* whitespace-only text node, while
-/// libxml2's `areBlanks()` keeps a few of them in mixed-content positions. The
-/// difference is only ever visible in `::text` results that are pure
-/// whitespace — which the reference implementation's own `get_all_text(valid_values=True)` drops
-/// anyway — so both sides are filtered before comparison and the divergence
-/// stays legible in the corpus file.
-fn is_blank_text(entry: &BTreeMap<String, Value>) -> bool {
-    entry.get("kind").and_then(Value::as_str) == Some("text")
-        && entry
-            .get("value")
-            .and_then(Value::as_str)
-            .is_some_and(|v| v.trim().is_empty())
 }
 
 fn rows() -> impl Iterator<Item = Value> {
@@ -140,6 +124,42 @@ fn node_at<'a>(doc: &'a Document, path: &str) -> NodeRef<'a> {
     doc.elements()
         .find(|e| getpath(*e) == path)
         .unwrap_or_else(|| panic!("no element at {path}"))
+}
+
+/// The one thing on this fixture the port cannot reproduce, declared so it
+/// cannot rot into a silent skip.
+///
+/// The fixture ends `…</div>\n</body>\n</html>\n`. html5ever's *after body*
+/// insertion mode reprocesses that whitespace with the in-body rules, which
+/// append it to the run already inside `<body>`, so we end up with one
+/// `"\n\n"` text node where libxml2 has a `"\n"` tail on `<body>`. It is a
+/// tree-shape difference (`DIVERGENCES.md` T1/T3), not a matcher or
+/// `remove_blank_text` difference: every other whitespace node on this fixture
+/// — 50 of the 51 that `*::text` selects — matches lxml exactly.
+///
+/// [`the_after_body_whitespace_row_still_diverges`] asserts the divergence is
+/// still there, so this list cannot be used to hide a regression.
+const AFTER_BODY_WHITESPACE_SELECTORS: &[&str] = &["*::text", "::text", "* *::text"];
+
+/// Drop the trailing `<body>`-tail whitespace entry both sides disagree about.
+///
+/// Only the *last* entry is dropped, and only when it is whitespace owned by
+/// `/html/body`: any other difference still fails the assertion.
+fn without_the_after_body_tail(
+    mut entries: Vec<BTreeMap<String, Value>>,
+) -> Vec<BTreeMap<String, Value>> {
+    let trailing = entries.last().is_some_and(|e| {
+        e.get("kind").and_then(Value::as_str) == Some("text")
+            && e.get("role").and_then(Value::as_str) == Some("tail")
+            && e.get("owner").and_then(Value::as_str) == Some("/html/body")
+            && e.get("value")
+                .and_then(Value::as_str)
+                .is_some_and(|v| v.trim().is_empty())
+    });
+    if trailing {
+        entries.pop();
+    }
+    entries
 }
 
 #[test]
@@ -169,13 +189,12 @@ fn every_selector_selects_the_same_node_set_as_lxml() {
 
         let group =
             parse_selector(selector).unwrap_or_else(|e| panic!("{selector} should parse, got {e}"));
-        let got: Vec<_> = group
-            .select(from)
-            .iter()
-            .map(describe)
-            .filter(|entry| !is_blank_text(entry))
-            .collect();
-        let want = expected(&row);
+        let mut got: Vec<_> = group.select(from).iter().map(describe).collect();
+        let mut want = expected(&row);
+        if AFTER_BODY_WHITESPACE_SELECTORS.contains(&selector) {
+            got = without_the_after_body_tail(got);
+            want = without_the_after_body_tail(want);
+        }
         assert_eq!(
             got,
             want,
@@ -227,4 +246,31 @@ fn getpath_matches_the_generators_paths() {
             assert!(known.contains(path), "unknown path {path} in the corpus");
         }
     }
+}
+
+/// The declared divergence above must *stay* declared: if html5ever ever agrees
+/// with libxml2 about the whitespace after `</body>`, this fails and the
+/// exemption has to go.
+#[test]
+fn the_after_body_whitespace_row_still_diverges() {
+    let doc = document();
+    let group = parse_selector("*::text").expect("*::text parses");
+    let ours: Vec<BTreeMap<String, Value>> =
+        group.select(doc.root()).iter().map(describe).collect();
+    let theirs = rows()
+        .find(|row| {
+            row["selector"].as_str() == Some("*::text") && row.get("context_path").is_none()
+        })
+        .map(|row| expected(&row))
+        .expect("the corpus has an unscoped *::text row");
+    assert_ne!(
+        ours, theirs,
+        "the after-body whitespace divergence is gone — delete \
+         AFTER_BODY_WHITESPACE_SELECTORS and this test"
+    );
+    assert_eq!(
+        without_the_after_body_tail(ours),
+        without_the_after_body_tail(theirs),
+        "the divergence is no longer *only* the trailing <body> tail"
+    );
 }

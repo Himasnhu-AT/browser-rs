@@ -228,6 +228,13 @@ pub fn matches_test<M: TreeModel>(
                 return Ok(false);
             };
             match prefix {
+                // XPath 1.0 §2.3: an unprefixed name test matches the null
+                // namespace on the attribute axis. Element names are matched by
+                // local name alone, because libxml2's HTML parser puts every
+                // element — `svg` and `math` included — in no namespace, so
+                // `//svg//rect` has to keep working; but `@href` must not reach
+                // an `xlink:href`, which lxml only answers to `@xlink:href`.
+                None if axis == Axis::Attribute => node_ns.is_empty() && node_local == local,
                 None => node_local == local,
                 Some(prefix) => node_ns == namespaces.resolve(prefix)? && node_local == local,
             }

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head><title>Blog</title></head>
+<body class="blog">
+<div id="root" class="app">
+  <!-- a comment that must never be selectable -->
+  <section class="posts">
+    <article class="post" id="post-1" data-tags="a b c">
+      <h2 class="hd"><a href="/1" class="permalink">First</a></h2>
+      <p class="body">Body <em>one</em> here<span class="mark">!</span></p>
+      <footer class="meta"><span class="tag">a</span><span class="tag">b</span><span class="tag last">c</span></footer>
+    </article>
+    <article class="post featured" id="post-2" data-tags="b">
+      <h2 class="hd"><a href="/2" class="permalink">Second</a></h2>
+      <p class="body">Body two</p>
+      <footer class="meta"><span class="tag">b</span></footer>
+    </article>
+    <article class="post draft" id="post-3">
+      <h2 class="hd">Third</h2>
+      <p class="body">Body three</p>
+    </article>
+  </section>
+  <aside class="side"><ul class="widget"><li>w1</li><li>w2</li><li>w3</li><li>w4</li><li>w5</li><li>w6</li><li>w7</li></ul></aside>
+  <div class="deep"><div class="deep"><div class="deep"><div class="deep"><span class="bottom">bottom</span></div></div></div></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head><title>Text</title><style>.a{color:red}</style></head>
+<body>
+<div id="mixed">string1<span>string2</span>string3<p>string4<b>string5</b>string6</p>string7</div>
+<div id="scripted">keep<script>var x = 1;</script>done<style>.b{}</style>tail</div>
+<div id="spaced">  padded  <em> inner </em>  after  </div>
+<div id="empty"></div>
+<div id="blank">   </div>
+<div id="entities">A&nbsp;B &amp; C</div>
+<div id="prices"><span class="price">$10.99</span><span class="price">$8.50</span></div>
+<div id="stock"><p>In stock: 5</p><p>In stock: 3</p><p>Out of stock</p></div>
+<div id="json">{"totalProducts": 3, "ok": true}</div>
+<ul id="deep"><li>w1</li><li>w2</li><li>w3</li></ul>
+</body>
+</html>

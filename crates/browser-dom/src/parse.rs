@@ -15,8 +15,9 @@
 //! | `default_doctype=True` | free: html5ever always builds `html`/`head`/`body` |
 //! | `strip_cdata=True` | [`fold_cdata_sections`] rewrites html5ever's bogus `[CDATA[…]]` comment into a text node |
 //! | `remove_comments=True` | [`remove_comments`] deletes comment nodes, then adjacent text is re-merged (libxml2 merges text the same way) |
-//! | `remove_blank_text=True` | [`remove_blank_text`] deletes whitespace-only text nodes outside whitespace-preserving elements |
-//! | NUL stripping / `"" -> "<html/>"` | [`prepare_str`] / [`prepare_bytes`], before tokenising |
+//! | `remove_blank_text=True` | [`remove_blank_text`] reimplements libxml2's `areBlanks()` — a blank run is ignorable only where the content model forbids character data |
+//! | NUL stripping / `"" -> "<html/>"` | [`prepare_str`] / [`prepare_bytes_with`], before tokenising |
+//! | `encoding=…` | [`prepare_bytes_with`] decodes the body with that label before html5ever ever sees it — an explicit label overrides `<meta charset>`, as it does in libxml2 |
 //!
 //! The passes run in that order: CDATA first (so a preserved section is not
 //! mistaken for a comment), then comment removal, then text merging, then blank
@@ -29,10 +30,11 @@ use ego_tree::{NodeId, Tree};
 use html5ever::tendril::{StrTendril, TendrilSink};
 use html5ever::tree_builder::{ElementFlags, NodeOrText, QuirksMode, TreeSink};
 use html5ever::{Attribute, QualName};
+use markup5ever::LocalName;
 use url::Url;
 
 use crate::node::{cdata_payload, Attributes, Element, NodeData};
-use crate::qualname::preserves_whitespace;
+use crate::qualname::{allows_pcdata, has_cdata_content};
 use crate::tree::Document;
 
 /// Parser configuration — the Rust face of the reference implementation's `selector_config`.
@@ -140,12 +142,12 @@ pub fn parse_html_with(html: &str, options: &ParseOptions) -> Document {
 
 /// Parse a byte body with explicit options.
 ///
-/// The bytes are NUL-stripped and decoded as UTF-8 with replacement — the same
-/// lossy decode html5ever's own `from_utf8()` sink performs. Python does *not*
+/// The bytes are NUL-stripped and then decoded with [`ParseOptions::encoding`],
+/// which is what `HTMLParser(encoding=…)` does in Python. Python does *not*
 /// trim byte bodies, and neither do we.
 #[must_use]
 pub fn parse_bytes_with(bytes: &[u8], options: &ParseOptions) -> Document {
-    let prepared = prepare_bytes(bytes);
+    let prepared = prepare_bytes_with(bytes, &options.encoding);
     let tree = tokenize(&prepared);
     finish(tree, options)
 }
@@ -196,22 +198,95 @@ pub fn prepare_str(html: &str) -> Cow<'_, str> {
 
 /// `content.replace(b"\x00", b"")` — Python's `bytes` branch (no trimming),
 /// followed by a lossy UTF-8 decode.
+///
+/// Equivalent to [`prepare_bytes_with`] under the default `"utf-8"` label.
 #[must_use]
 pub fn prepare_bytes(bytes: &[u8]) -> Cow<'_, str> {
-    let cleaned: Cow<'_, [u8]> = if bytes.contains(&0) {
+    prepare_bytes_with(bytes, "utf-8")
+}
+
+/// `content.replace(b"\x00", b"")` followed by a decode with `encoding`.
+///
+/// This is the byte half of `Selector.__init__`. Python strips NULs from the
+/// raw bytes and then hands them to `HTMLParser(encoding=encoding)`, so the
+/// label the caller passed — in practice the `charset=` out of a `Content-Type`
+/// header — decides how the body is read. An explicit label **overrides** any
+/// `<meta charset>` in the document: libxml2 does not sniff when it is told.
+///
+/// ```
+/// use browser_dom::parse::prepare_bytes_with;
+///
+/// assert_eq!(prepare_bytes_with(b"<p>caf\xc3\xa9</p>", "utf-8"), "<p>café</p>");
+/// assert_eq!(prepare_bytes_with(b"<p>caf\xe9</p>", "windows-1252"), "<p>café</p>");
+/// // NULs go first, and an empty body becomes `<html/>`.
+/// assert_eq!(prepare_bytes_with(b"<p>a\0b</p>", "utf-8"), "<p>ab</p>");
+/// assert_eq!(prepare_bytes_with(b"", "utf-8"), "<html/>");
+/// ```
+///
+/// # Deviations from libxml2
+///
+/// The label is resolved through the WHATWG Encoding Standard
+/// ([`encoding_rs`]); libxml2 resolves it through `iconv`. Two consequences,
+/// both recorded in `docs/DIVERGENCES.md`:
+///
+/// * `iso-8859-1`, `latin1` and `ascii` are WHATWG aliases of **windows-1252**,
+///   so bytes `0x80..=0x9F` decode to typographic characters here and to C1
+///   controls (or a hard parse failure, for `ascii`) under libxml2.
+/// * An unresolvable label, or a byte sequence `iconv` rejects outright, makes
+///   Python return an *empty document*. We never destroy a document over an
+///   encoding problem: an unknown label logs a warning and falls back to UTF-8,
+///   and every decoder is used in replacement mode.
+#[must_use]
+pub fn prepare_bytes_with<'a>(bytes: &'a [u8], encoding: &str) -> Cow<'a, str> {
+    let cleaned: Cow<'a, [u8]> = if bytes.contains(&0) {
         Cow::Owned(bytes.iter().copied().filter(|b| *b != 0).collect())
     } else {
         Cow::Borrowed(bytes)
     };
-    let text = match cleaned {
-        Cow::Borrowed(b) => String::from_utf8_lossy(b),
-        Cow::Owned(b) => Cow::Owned(String::from_utf8_lossy(&b).into_owned()),
+
+    let label = if encoding.trim().is_empty() {
+        "utf-8"
+    } else {
+        encoding.trim()
     };
+    let codec = encoding_rs::Encoding::for_label(label.as_bytes()).unwrap_or_else(|| {
+        tracing::warn!(
+            encoding = label,
+            "unknown encoding label; decoding the body as UTF-8"
+        );
+        encoding_rs::UTF_8
+    });
+
+    let text: Cow<'a, str> = match cleaned {
+        Cow::Borrowed(b) => decode_without_bom(codec, b),
+        Cow::Owned(b) => Cow::Owned(decode_without_bom(codec, &b).into_owned()),
+    };
+
     if text.is_empty() {
         Cow::Borrowed("<html/>")
     } else {
         text
     }
+}
+
+/// Decode with `codec` in replacement mode, ignoring any BOM *except* a UTF-8
+/// one under a UTF-8 label.
+///
+/// WHATWG's `decode()` would let a UTF-8 BOM override the caller's label;
+/// libxml2 does not sniff at all once an encoding is given — decoding
+/// `\xEF\xBB\xBF` as latin-1 really does yield `ï»¿`. The one thing libxml2
+/// *does* swallow is a UTF-8 BOM on a UTF-8 body, so that is the only case
+/// handled here.
+fn decode_without_bom<'a>(codec: &'static encoding_rs::Encoding, bytes: &'a [u8]) -> Cow<'a, str> {
+    let bytes = if codec == encoding_rs::UTF_8 {
+        bytes
+            .strip_prefix(b"\xef\xbb\xbf".as_slice())
+            .unwrap_or(bytes)
+    } else {
+        bytes
+    };
+    let (text, _had_errors) = codec.decode_without_bom_handling(bytes);
+    text
 }
 
 // ---------------------------------------------------------------------------
@@ -310,33 +385,109 @@ pub(crate) fn merge_text_children(tree: &mut Tree<NodeData>, parent: NodeId) {
     }
 }
 
-/// Delete whitespace-only text nodes (libxml2's `remove_blank_text=True`).
+/// `true` when every character is HTML whitespace — space, tab, LF, CR or FF.
 ///
-/// Whitespace inside `pre`, `textarea`, `script`, `style`, `title`, `xmp` and
-/// `listing` is significant and is kept — the same exemption libxml2 applies.
+/// This is libxml2's `IS_WS_HTML`, and it is deliberately **not**
+/// [`char::is_whitespace`]: `U+000B` (vertical tab), `U+00A0` (no-break space)
+/// and every other Unicode space separator are *not* blank, so
+/// `<div>&nbsp;</div>` keeps its text. The empty string counts as blank, which
+/// is how libxml2's `for` loop over the run answers.
+#[must_use]
+pub fn is_html_blank(text: &str) -> bool {
+    text.bytes()
+        .all(|b| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0C))
+}
+
+/// What the last surviving non-comment sibling before a blank run was —
+/// libxml2's `lastChild` after its comment-skipping loop.
+enum Preceding<'a> {
+    /// Nothing before it (or only comments).
+    Nothing,
+    /// A text node: `xmlNodeIsText(lastChild)` is true.
+    Text,
+    /// Anything else, carrying the name `areBlanks()` looks up: an element's
+    /// local name, a doctype's root name, a processing instruction's target.
+    Named(&'a str),
+}
+
+/// Delete ignorable whitespace-only text nodes — libxml2's
+/// `remove_blank_text=True`, implementing its `areBlanks()` decision rather
+/// than "delete every blank run".
+///
+/// A run of [`is_html_blank`] characters is **ignorable** (deleted) when:
+///
+/// * its parent's character data is not CDATA ([`has_cdata_content`] — inside
+///   `<script>`, `<title>`, `<textarea>` … blanks always survive), **and**
+/// * looking backwards past any comments:
+///   * the previous sibling is a text node → **kept** (`<p>a <b>x</b></p>`);
+///   * the previous sibling is an element → deleted unless that element
+///     [`allows_pcdata`] (`<p><b>b</b> <i>i</i></p>` keeps its space because
+///     `b` does; `<ul><li>a</li> <li>b</li></ul>` keeps its newline for the
+///     same reason, while `<div><br> <em/></div>` loses it because `br` does
+///     not);
+///   * there is no previous sibling → deleted unless the *parent*
+///     [`allows_pcdata`] (`<div> </div>` keeps its space, `<ul> <li>a</li></ul>`
+///     does not).
+///
+/// The pass walks each parent's children left to right and only consults
+/// siblings that have survived, mirroring the fact that libxml2 decides while
+/// building and never inserts the runs it rejects.
 pub fn remove_blank_text(tree: &mut Tree<NodeData>) {
-    for id in all_ids(tree) {
-        let blank = match tree.get(id) {
-            Some(node) => match node.value() {
-                NodeData::Text(text) => {
-                    text.chars().all(char::is_whitespace)
-                        && !node
-                            .parent()
-                            .and_then(|p| {
-                                p.value()
-                                    .as_element()
-                                    .map(|el| preserves_whitespace(el.local_name()))
-                            })
-                            .unwrap_or(false)
+    let mut doomed: Vec<NodeId> = Vec::new();
+    for parent in all_ids(tree) {
+        collect_ignorable_children(tree, parent, &mut doomed);
+    }
+    for id in doomed {
+        if let Some(mut node) = tree.get_mut(id) {
+            node.detach();
+        }
+    }
+}
+
+/// Append the ignorable blank children of `parent` to `doomed`.
+fn collect_ignorable_children(tree: &Tree<NodeData>, parent: NodeId, doomed: &mut Vec<NodeId>) {
+    let Some(node) = tree.get(parent) else {
+        return;
+    };
+    let cdata_parent = node
+        .value()
+        .as_element()
+        .is_some_and(|el| has_cdata_content(el.local_name()));
+    if cdata_parent {
+        return;
+    }
+    let parent_allows_pcdata = node
+        .value()
+        .as_element()
+        .is_some_and(|el| allows_pcdata(el.local_name()));
+
+    let mut preceding = Preceding::Nothing;
+    for child in node.children() {
+        match child.value() {
+            // Comments are transparent: libxml2 walks back past them.
+            NodeData::Comment(_) => {}
+            NodeData::Text(text) => {
+                let ignorable = if !is_html_blank(text) {
+                    false
+                } else {
+                    match preceding {
+                        Preceding::Text => false,
+                        Preceding::Named(name) => !allows_pcdata(&LocalName::from(name)),
+                        Preceding::Nothing => !parent_allows_pcdata,
+                    }
+                };
+                if ignorable {
+                    doomed.push(child.id());
+                } else {
+                    preceding = Preceding::Text;
                 }
-                _ => false,
-            },
-            None => false,
-        };
-        if blank {
-            if let Some(mut node) = tree.get_mut(id) {
-                node.detach();
             }
+            NodeData::Element(el) => preceding = Preceding::Named(el.local_name().as_ref()),
+            NodeData::Doctype { name, .. } => preceding = Preceding::Named(name.as_str()),
+            NodeData::ProcessingInstruction { target, .. } => {
+                preceding = Preceding::Named(target.as_str());
+            }
+            NodeData::Document => preceding = Preceding::Named(""),
         }
     }
 }
@@ -574,6 +725,7 @@ impl TreeSink for DomSink {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::node::NodeRef;
 
     #[test]
     fn empty_and_blank_content_becomes_an_html_element() {
@@ -595,6 +747,53 @@ mod tests {
         assert_eq!(prepare_bytes(b"  <p>x</p>"), "  <p>x</p>");
         let doc = Document::parse("<p>a\0b</p>");
         assert_eq!(doc.body().map(|b| b.text_content()), Some("ab".to_owned()));
+    }
+
+    /// Every answer here was read off `lxml.html.HTMLParser(encoding=…)` via the
+    /// reference interpreter — `Selector(content=…, encoding=…).css('p::text')`.
+    /// This is the seam `browser-http`'s `Response` (unit 12) and the CDP
+    /// driver (unit 14) hang the `charset=` of a `Content-Type` header on.
+    #[test]
+    fn the_encoding_label_decides_how_a_byte_body_is_read() {
+        fn text(bytes: &[u8], encoding: &str) -> String {
+            let options = ParseOptions::default().encoding(encoding);
+            Document::parse_bytes(bytes, &options)
+                .body()
+                .map(|b| b.text_content())
+                .unwrap_or_default()
+        }
+
+        // Python: 'café' / 'caf�'.
+        let latin1 = b"<html><body><p>caf\xe9</p></body></html>";
+        assert_eq!(text(latin1, "windows-1252"), "café");
+        assert_eq!(text(latin1, "utf-8"), "caf\u{fffd}");
+
+        // Python: 'café' / 'cafÃ©' — a UTF-8 body read as a single-byte charset.
+        let utf8 = "<html><body><p>café</p></body></html>".as_bytes();
+        assert_eq!(text(utf8, "utf-8"), "café");
+        assert_eq!(text(utf8, "windows-1252"), "cafÃ©");
+
+        // Python: '殿秘'. A multi-byte codec, to prove the label is not just a
+        // single-byte table lookup.
+        assert_eq!(
+            text(
+                b"<html><body><p>\x93a\x94\xe9</p></body></html>",
+                "shift_jis"
+            ),
+            "殿秘"
+        );
+
+        // A UTF-8 BOM is swallowed under a UTF-8 label and is ordinary text
+        // under any other, exactly as libxml2 does it (it never re-sniffs once
+        // an encoding has been given).
+        let bom = b"\xef\xbb\xbf<html><body><p>caf\xc3\xa9</p></body></html>";
+        assert_eq!(text(bom, "utf-8"), "café");
+        assert_eq!(text(bom, "windows-1252"), "ï»¿cafÃ©");
+
+        // Declared divergence: an unknown label raises `LookupError` in Python.
+        // We warn and fall back to UTF-8 rather than lose the document.
+        assert_eq!(text(utf8, "not-a-charset"), "café");
+        assert_eq!(text(utf8, ""), "café");
     }
 
     #[test]
@@ -656,22 +855,88 @@ mod tests {
         assert_eq!(div.outer_html(), "<div><![CDATA[stay]]></div>");
     }
 
+    /// The whole `areBlanks()` decision table, every row checked against
+    /// libxml2 2.14.6 through `lxml` before being written down.
     #[test]
-    fn blank_text_nodes_are_removed_outside_pre() {
-        let doc = Document::parse("<div>\n   <p>a</p>\n   <p>b</p>\n</div>");
-        let div = doc
-            .body()
-            .and_then(|b| b.element_children().next())
-            .unwrap();
-        assert_eq!(div.children().count(), 2);
-        assert_eq!(div.text(), None);
+    fn blank_text_survives_where_libxml2_keeps_it() {
+        // Helper: the first element of `tag` in the parsed document.
+        fn first<'a>(doc: &'a Document, tag: &str) -> NodeRef<'a> {
+            doc.elements()
+                .find(|e| e.local_name() == Some(tag))
+                .expect("element is in the tree")
+        }
 
+        // -- no previous sibling: the *parent* decides ---------------------
+        let doc = Document::parse("<div> </div>");
+        assert_eq!(first(&doc, "div").text(), Some(" "), "div allows PCDATA");
+        let doc = Document::parse("<ul> <li>a</li></ul>");
+        assert_eq!(first(&doc, "ul").text(), None, "ul forbids PCDATA");
+        let doc = Document::parse("<div><ul> </ul></div>");
+        assert_eq!(first(&doc, "ul").text(), None);
+
+        // -- previous sibling is an element: *it* decides -------------------
+        let doc = Document::parse("<p><b>b</b> <i>i</i> <strong>s</strong></p>");
+        let tails: Vec<Option<&str>> = ["b", "i"].iter().map(|t| first(&doc, t).tail()).collect();
+        assert_eq!(tails, [Some(" "), Some(" ")], "b and i allow PCDATA");
+        let doc = Document::parse("<div><br> <em>y</em></div>");
+        assert_eq!(first(&doc, "br").tail(), None, "br does not allow PCDATA");
+        let doc = Document::parse("<ul><li>a</li>\n<li>b</li></ul>");
+        assert_eq!(first(&doc, "li").tail(), Some("\n"), "li allows PCDATA");
+
+        // -- previous sibling is text: always kept -------------------------
+        let doc = Document::parse("<ul>x<em>y</em> <em>z</em></ul>");
+        assert_eq!(first(&doc, "em").tail(), Some(" "));
+
+        // -- comments are transparent to the backwards walk ----------------
+        let keep = ParseOptions::new().keep_comments(true);
+        let doc = Document::parse_with("<ul><!--c--> <li>a</li></ul>", &keep);
+        assert_eq!(first(&doc, "ul").children().count(), 2, "blank dropped");
+        let doc = Document::parse_with("<div><!--c--> <p>a</p></div>", &keep);
+        assert_eq!(first(&doc, "div").children().count(), 3, "blank kept");
+
+        // -- U+00A0 and U+000B are never blank ------------------------------
+        let doc = Document::parse("<ul>\u{a0}</ul>");
+        assert_eq!(first(&doc, "ul").text(), Some("\u{a0}"));
+        let doc = Document::parse("<ul>\u{b}</ul>");
+        assert_eq!(first(&doc, "ul").text(), Some("\u{b}"));
+        let doc = Document::parse("<ul> \u{a0} </ul>");
+        assert_eq!(first(&doc, "ul").text(), Some(" \u{a0} "));
+
+        // -- CDATA-content parents never consult the table ------------------
+        // (html5ever eats the one LF right after `<pre>`; see divergence T7.)
         let doc = Document::parse("<pre>\n  \n</pre>");
-        let pre = doc
-            .body()
-            .and_then(|b| b.element_children().next())
+        assert_eq!(first(&doc, "pre").text(), Some("  \n"), "pre allows PCDATA");
+        let doc = Document::parse("<textarea> </textarea>");
+        assert_eq!(first(&doc, "textarea").text(), Some(" "));
+        let doc = Document::parse("<div><script> </script></div>");
+        assert_eq!(first(&doc, "script").text(), Some(" "));
+
+        // -- and `pre` is *not* exempt once a forbidding sibling precedes ----
+        let doc = Document::parse("<pre><ul></ul> <em>y</em></pre>");
+        assert_eq!(first(&doc, "ul").tail(), None);
+    }
+
+    #[test]
+    fn pretty_printed_structure_loses_exactly_what_lxml_loses() {
+        // `<ul>\n  <li>a</li>\n</ul>` keeps only the tail of the last `<li>`.
+        let doc = Document::parse("<ul>\n  <li>a</li>\n</ul>");
+        let ul = doc
+            .elements()
+            .find(|e| e.local_name() == Some("ul"))
             .unwrap();
-        assert_eq!(pre.text(), Some("  \n"));
+        assert_eq!(ul.text(), None);
+        assert_eq!(ul.children().count(), 2);
+        assert_eq!(ul.last_child().and_then(|n| n.as_text()), Some("\n"));
+
+        // `<table>` drops both, because `table` and `tr` both forbid PCDATA.
+        let doc = Document::parse("<table>\n  <tr><td>a</td></tr>\n</table>");
+        let table = doc
+            .elements()
+            .find(|e| e.local_name() == Some("table"))
+            .unwrap();
+        assert!(table
+            .descendant_text_nodes()
+            .all(|t| t.as_text() == Some("a")));
     }
 
     #[test]

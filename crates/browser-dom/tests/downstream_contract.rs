@@ -360,3 +360,50 @@ fn markdown_style_sanitisation_is_expressible() {
         Some("<p>keep</p>".to_owned())
     );
 }
+
+/// `_StorageTools.element_to_dict`'s sibling logic (unit 10) counts an
+/// element's position among the children lxml's `iterchildren()` yields:
+/// elements, comments and processing instructions, never text.
+///
+/// The three child iterators are deliberately different, and this pins all
+/// three against the same tree.
+#[test]
+fn iterchildren_matches_lxmls_child_sequence() {
+    let doc = Document::parse_with(
+        "<div>t0<!--c--><p>a</p>t1<span></span> </div>",
+        &ParseOptions::new().keep_comments(true),
+    );
+    let div = doc
+        .elements()
+        .find(|e| e.tag() == "div")
+        .expect("the <div>");
+
+    // lxml: `[<!--c-->, <p>, <span>]` — `list(div)` and `div.iterchildren()`.
+    assert_eq!(
+        div.iterchildren().map(|n| n.tag()).collect::<Vec<_>>(),
+        ["#comment", "p", "span"]
+    );
+    // Elements only.
+    assert_eq!(
+        div.element_children().map(|n| n.tag()).collect::<Vec<_>>(),
+        ["p", "span"]
+    );
+    // Everything but comments — text included, which is the difference.
+    assert_eq!(
+        div.non_comment_children()
+            .map(|n| n.tag())
+            .collect::<Vec<_>>(),
+        ["#text", "p", "#text", "span", "#text"]
+    );
+
+    // The index within `iterchildren()` is what `element_to_dict` stores.
+    let span = doc
+        .elements()
+        .find(|e| e.tag() == "span")
+        .expect("the <span>");
+    assert_eq!(
+        div.iterchildren().position(|n| n == span),
+        Some(2),
+        "the comment counts, the text does not"
+    );
+}

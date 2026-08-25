@@ -53,7 +53,7 @@ pub struct ParseOptions {
     pub keep_cdata: bool,        // default false  -> strip_cdata     = !keep_cdata
     pub remove_blank_text: bool, // default true
     pub base_url: Option<Url>,   // default None
-    pub encoding: String,        // default "utf-8"
+    pub encoding: String,        // default "utf-8" — DECODES a byte body, not just a label
 }
 impl Default for ParseOptions;
 impl ParseOptions {
@@ -72,16 +72,41 @@ pub fn parse_bytes_with(bytes: &[u8], options: &ParseOptions) -> Document;
 
 // input normalisation, exposed for tests/callers that pre-process bodies
 pub fn prepare_str(html: &str) -> Cow<'_, str>;    // trim, strip NUL, "" -> "<html/>"
-pub fn prepare_bytes(bytes: &[u8]) -> Cow<'_, str>;// strip NUL, lossy UTF-8, NO trim
+pub fn prepare_bytes(bytes: &[u8]) -> Cow<'_, str>;// = prepare_bytes_with(bytes, "utf-8")
+pub fn prepare_bytes_with<'a>(bytes: &'a [u8], encoding: &str) -> Cow<'a, str>;
+                                                   // strip NUL, decode with `encoding`, NO trim
 
 // the post-parse passes, runnable individually on a raw Tree
 pub fn fold_cdata_sections(tree: &mut Tree<NodeData>, keep_cdata: bool);
 pub fn remove_comments(tree: &mut Tree<NodeData>, keep_cdata: bool);
 pub fn merge_adjacent_text(tree: &mut Tree<NodeData>);
 pub fn remove_blank_text(tree: &mut Tree<NodeData>);
+pub fn is_html_blank(text: &str) -> bool;          // space/tab/LF/CR/FF only — NOT U+00A0 or U+000B
 ```
 
 Parsing is **infallible** (html5ever = libxml2 `recover=True`) — no `Result`.
+
+### The `encoding` label decodes the body
+
+`parse_bytes_with` decodes with `options.encoding` *before* html5ever sees a single byte, which
+is what `HTMLParser(encoding=…)` does. An explicit label **overrides** any `<meta charset>` in the
+document — libxml2 stops sniffing once it has been told, and so do we, because the tokenizer only
+ever receives a `&str`. This is the seam `browser-http`'s `Response` and the CDP driver hang the
+`charset=` of a `Content-Type` header on; it is pinned by
+`parse::tests::the_encoding_label_decides_how_a_byte_body_is_read`, every answer in which was read
+off the reference interpreter.
+
+Two deliberate deviations, both in `docs/DIVERGENCES.md`:
+
+* labels resolve through the **WHATWG** Encoding Standard (`encoding_rs`), not through `iconv`, so
+  `iso-8859-1` / `latin1` / `ascii` are aliases of **windows-1252** — bytes `0x80..=0x9F` become
+  typographic characters here and C1 controls (or, under `ascii`, a hard parse failure) in libxml2;
+* an unresolvable label logs a warning and falls back to UTF-8. Python raises `LookupError`, and a
+  body `iconv` cannot decode makes lxml return an *empty document*. We never destroy a document over
+  an encoding problem, and every decoder runs in replacement mode.
+
+A UTF-8 BOM is swallowed under a UTF-8 label (libxml2 does the same) and is ordinary text under any
+other label — there is no BOM sniffing that could override the caller.
 
 ## `tree::Document`
 
@@ -232,6 +257,8 @@ fn is_descendant_of(&self, other: &NodeRef<'a>) -> bool;
 fn children(&self) -> impl Iterator<Item = NodeRef<'a>>;             // all kinds
 fn element_children(&self) -> impl Iterator<Item = NodeRef<'a>>;
 fn non_comment_children(&self) -> impl Iterator<Item = NodeRef<'a>>; // Python's `children`
+fn iterchildren(&self) -> impl Iterator<Item = NodeRef<'a>>;         // lxml's `iterchildren()`:
+                                                                     // elements + comments + PIs, no text
 fn first_child/last_child/first_element_child/last_element_child(&self) -> Option<NodeRef<'a>>;
 fn has_children(&self) -> bool;
 fn descendants(&self) -> impl Iterator<Item = NodeRef<'a>>;          // excludes self
@@ -282,6 +309,21 @@ pub fn escape_attr(value: &str) -> String;
 
 `Debug for NodeRef` is Python's `__repr__`: `<text='…'>` or `<data='…' parent='…'>`.
 
+**Attribute writing follows libxml2 2.14.6, not html5ever**, because
+`html_content` is a user-visible string in the reference implementation:
+
+| rule | example |
+|---|---|
+| a value with `"` and no `'` takes **single** quotes, `"` bare | `title='say "hi"'` |
+| a value with both takes double quotes and `&quot;` | `title="both &quot; and ' quotes"` |
+| `&`, `<`, `>` are escaped inside attribute values | `data-lt="1&lt;2"` |
+| `href` / `src` / `action`, and `name` on `<a>`, are percent-escaped: leading XML whitespace dropped, then space, C0 controls and every non-ASCII byte as `%XX` over UTF-8 | `href="/na%C3%AFve%20x"` |
+| U+00A0 is written verbatim in text **and** attributes | `<p>A\u{a0}B</p>`, never `&nbsp;` |
+
+The one attribute case that still differs: libxml2 can tell `checked` from
+`checked=""` and prints the first bare, while html5ever loses the distinction, so
+both come out as `checked=""`. See `docs/DIVERGENCES.md`.
+
 ### mutation (`edit`, on `&mut Document`)
 
 ```rust
@@ -310,7 +352,8 @@ pub fn prefixed_name(prefix: &str, ns: &str, local: &str) -> QualName;
 pub fn to_string(name: &QualName) -> String;     // "href" | "xlink:href"
 pub fn is_void_element(local: &LocalName) -> bool;
 pub fn is_raw_text_element(local: &LocalName) -> bool;   // script/style/… : never escaped
-pub fn preserves_whitespace(local: &LocalName) -> bool;  // pre/textarea/… : blank text kept
+pub fn has_cdata_content(local: &LocalName) -> bool;     // script/style/textarea/… : blank text always kept
+pub fn allows_pcdata(local: &LocalName) -> bool;         // libxml2's `allowPCData` table (53 names)
 ```
 
 ### errors (`error`)
@@ -334,7 +377,7 @@ pub type Result<T, E = DomError> = std::result::Result<T, E>;
 | `content.strip().replace("\x00","") or "<html/>"` | `prepare_str`, applied by every `parse*` entry point |
 | bytes body: NUL-stripped, **not** trimmed | `prepare_bytes` |
 | `remove_comments=True` | comment nodes deleted, adjacent text re-merged |
-| `remove_blank_text=True` | whitespace-only text nodes deleted outside `pre/textarea/script/style/title/xmp/listing` |
+| `remove_blank_text=True` | libxml2's `areBlanks()`, reimplemented — see below |
 | `strip_cdata=True` | `<![CDATA[x]]>` becomes a text node `x` |
 | `keep_cdata=True` | the section stays one node: `is_cdata()`, `as_comment() == Some("x")`, serialises back as `<![CDATA[x]]>` |
 | `default_doctype=True` | free — html5ever always builds `html`/`head`/`body`, so a bare fragment is wrapped |
@@ -350,11 +393,37 @@ pub type Result<T, E = DomError> = std::result::Result<T, E>;
    `[CDATA[…]]` marker. `is_cdata()` / `as_comment()` / `cdata_payload()` hide that. With the
    default `strip_cdata` behaviour you never see it at all. lxml would expose the payload as the
    parent's `.text`; we expose it as a distinct node.
-3. **`remove_blank_text` is simpler than libxml2's `areBlanks()`.** We delete every whitespace-only
-   text node outside whitespace-preserving elements. libxml2 additionally keeps whitespace that
-   follows inline content in a few mixed-content cases. Since adjacent text is always merged, the
-   difference only ever shows up in `outer_html` spacing, never in `get_all_text` (whose default
-   `valid_values=true` drops blank parts anyway).
+3. **`remove_blank_text` implements libxml2's `areBlanks()`.** It is *not* "delete every blank
+   run": a run of space / tab / LF / CR / FF is ignorable only where the content model forbids
+   character data. `U+00A0` and `U+000B` are never blank, so `<div>&nbsp;</div>` keeps its text.
+
+   | the blank run's context | kept? |
+   |---|---|
+   | parent's content is CDATA (`has_cdata_content`: script, style, textarea, title, xmp, noembed, noframes, plaintext, iframe) | always |
+   | previous sibling (skipping comments) is a **text** node | always |
+   | previous sibling is an element/doctype/PI | only if that node's name `allows_pcdata` |
+   | no previous sibling | only if the **parent**'s name `allows_pcdata` |
+
+   `allows_pcdata` is libxml2's `allowPCData` table, established by probing libxml2 2.14.6 through
+   `lxml`, not copied from a header. It contains `div`, `p`, `span`, `li`, `td`, `pre`, `body`,
+   `b`/`i`/`em`/`strong`, `h1`–`h6`, `noscript`, `noframes` &c., and **not** `html`, `head`, `ul`,
+   `ol`, `dl`, `table`/`thead`/`tbody`/`tfoot`/`tr`, `select`, `option`, `optgroup`, `map`, `menu`,
+   `dir`, `fieldset`, `colgroup`, `sub`, `sup`, any HTML5-era element (`article`, `section`,
+   `figure`, `template`, `video`, …) or any unknown name. So:
+
+   ```text
+   <div> </div>                            -> the space survives; div is not :empty
+   <ul> <li>a</li> </ul>                   -> leading blank dropped, the li's tail kept
+   <p><b>b</b> <i>i</i></p>                -> both spaces survive (Markdown needs them)
+   <div><br> <em/></div>                   -> dropped; `br` does not admit character data
+   <pre><ul></ul> <em/></pre>              -> dropped; `pre` is not an exemption, only a PCDATA name
+   ```
+
+   Two lexer-level libxml2 quirks are **not** reproduced, and both are recorded in
+   `docs/DIVERGENCES.md`: a blank run interrupted by a character reference (`<ul> &#32;</ul>`) or
+   containing a bare `CR` not followed by `LF` is kept by libxml2 (its chunk is flushed with the
+   next character not being `<`) and dropped here, because html5ever merges references into the
+   surrounding text node and normalises `CR` before we ever see the tree.
 4. **Malformed HTML recovers per the HTML5 spec, not per libxml2.** `ARCHITECTURE.md` §11.6 accepts
    this; `tests/malformed.rs` pins the actual behaviour for foster parenting, adoption agency,
    stray end tags, unterminated comments and raw-text elements.
@@ -371,8 +440,9 @@ pub type Result<T, E = DomError> = std::result::Result<T, E>;
    latter is exactly `browser_core::AttributeDict`, i.e. what `ElementFingerprint` serialises.
 8. **`:empty` and the `preceding-sibling` axis see the *normalised* tree.** `remove_blank_text` and
    `remove_comments` both default to on (Python passes the same flags to lxml — `parser.py:157`),
-   so `<span> </span>` is `:empty` here. Parse with `ParseOptions::new().remove_blank_text(false)`
-   for the browser answer.
+   so what `:empty` answers depends on deviation 3's table: `<span> </span>` is **not** `:empty`
+   (and neither is it in lxml or a browser), while `<ul> </ul>` is. Parse with
+   `ParseOptions::new().remove_blank_text(false)` to keep every blank unconditionally.
 9. **`xml:lang` on an HTML element has no namespace and a colon in its local name.** html5ever only
    runs the HTML5 "adjust foreign attributes" step inside SVG/MathML, where `xlink:href` &c. *do*
    get a real namespace and prefix. This matches every browser; lxml, being an XML parser, differs.
