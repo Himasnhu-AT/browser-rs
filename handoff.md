@@ -16,7 +16,7 @@
 | Format | `cargo fmt --all --check` ✅ clean |
 | Code written | ~81k lines across 14 crates (~58k of it `src/`) |
 | Plan progress | **15 of 20 work units done** (units 1–13, 15, 16) |
-| Last commit | see `git log` — wave 4 is the commit titled *"Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams"* |
+| Last commit | `80241ef Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams` |
 
 The two ignored tests are both regeneration aids, not checks, and are meant to stay ignored:
 `browser-markdown`'s `emit_rust_answers` (reads `$MD_CASES`, writes `$MD_OUT` for
@@ -25,7 +25,7 @@ The two ignored tests are both regeneration aids, not checks, and are meant to s
 Commits so far:
 
 ```
-(wave 4)  Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams
+80241ef   Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams
 d78c06e   handoff: record the wave-3 commit hash
 3824cbb   Wave 3: the public document API, the spider data plane, and the Response seam
 9a29998   handoff: mark the two preservation TODOs done
