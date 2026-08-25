@@ -30,6 +30,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use indexmap::IndexMap;
+use browser_http::response::Response as HttpResponse;
 use serde_json::Value;
 
 use crate::error::{Result, SpiderError};
@@ -102,6 +103,115 @@ impl std::fmt::Display for FetchedResponse {
     /// Python's `Response.__str__`: `<200 https://example.com/>`. Log lines use it.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "<{} {}>", self.status, self.url)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The unit-12 seam: `browser_http::response::Response` <-> `FetchedResponse`
+// ---------------------------------------------------------------------------
+
+impl From<&HttpResponse> for FetchedResponse {
+    /// Narrow one of unit 12's (or unit 14's) responses down to what the crawl core reads.
+    ///
+    /// Everything the engine consults survives; the two things that do not are the parsed
+    /// [`browser_parser::document::Document`] — a crawl re-parses through
+    /// [`FetchedResponse::response_builder`] or [`browser_parser::document::Document`]
+    /// directly — and the per-hop headers of the redirect history, since Python's
+    /// `Response.history` is a list of URLs by the time the engine sees it.
+    ///
+    /// `request` is left `None`: [`SessionManager::fetch`] attaches it, exactly as Python
+    /// does after the session returns.
+    fn from(response: &HttpResponse) -> Self {
+        Self {
+            status: response.status,
+            reason: response.reason.clone(),
+            url: response.url.clone(),
+            body: response.body().clone(),
+            encoding: response.encoding.clone(),
+            headers: response.headers.clone(),
+            request_headers: response.request_headers.clone(),
+            // The HTTP engines produce an object; the browser engines produce an array.
+            // Both shapes reach the dev-mode cache unchanged — see `cache::CacheDocument`.
+            cookies: Value::Object(
+                response
+                    .cookies
+                    .iter()
+                    .map(|(name, value)| (name.clone(), Value::String(value.clone())))
+                    .collect(),
+            ),
+            history: response.history.iter().map(|hop| hop.url.clone()).collect(),
+            meta: response
+                .meta
+                .iter()
+                .map(|(key, value)| (key.clone(), value.clone()))
+                .collect(),
+            request: None,
+        }
+    }
+}
+
+impl From<HttpResponse> for FetchedResponse {
+    fn from(response: HttpResponse) -> Self {
+        Self::from(&response)
+    }
+}
+
+impl FetchedResponse {
+    /// Widen back into one of unit 12's responses, ready to be parsed.
+    ///
+    /// This is the dev-mode cache replay: a [`crate::cache::ResponseCacheManager`] hit never
+    /// had a live exchange, and a spider callback still expects the same `Response` a live
+    /// fetch would have produced. The builder is returned rather than a finished response so
+    /// the caller can attach its `selector_config` and its adaptive-storage
+    /// `document_hook` before the (lazy) parse is configured:
+    ///
+    /// ```
+    /// use browser_spider::session::FetchedResponse;
+    ///
+    /// let cached = FetchedResponse {
+    ///     encoding: "utf-8".to_owned(),
+    ///     ..FetchedResponse::new(200, "https://shop.test/", "<p class=price>$9.99</p>")
+    /// };
+    /// let response = cached.response_builder().build();
+    ///
+    /// assert_eq!(response.status, 200);
+    /// assert_eq!(response.css("p.price::text")?.texts(), ["$9.99"]);
+    /// # Ok::<(), browser_http::error::FetchError>(())
+    /// ```
+    ///
+    /// Two fields do not survive the round trip, both deliberately:
+    ///
+    /// * `history` — [`browser_http::redirect_safe::RedirectHop`] carries each hop's
+    ///   status, reason and headers, and a `FetchedResponse` only kept the URLs. Python's
+    ///   cache replay also reconstructs a response with `history=[]`.
+    /// * `meta` — it is the crawl's merged metadata, not the transport's, and
+    ///   [`FetchedResponse::attach_request`] rebuilds it on the way back in.
+    #[must_use]
+    pub fn response_builder(&self) -> browser_http::response::ResponseBuilder {
+        let mut builder = HttpResponse::builder(self.status, self.url.clone())
+            .reason(self.reason.clone())
+            .body(self.body.clone())
+            .headers(self.headers.clone())
+            .request_headers(self.request_headers.clone());
+        // An empty label would make unit 12 re-resolve the charset from `Content-Type`,
+        // which is what a `FetchedResponse` that never carried one wants.
+        if !self.encoding.is_empty() {
+            builder = builder.encoding(self.encoding.clone());
+        }
+        if let Some(method) = self.request.as_ref().map(|r| r.session_kwargs.method()) {
+            builder = builder.method(method.into());
+        }
+        if let Value::Object(cookies) = &self.cookies {
+            builder = builder.cookies(
+                cookies
+                    .iter()
+                    .filter_map(|(name, value)| {
+                        value.as_str().map(|v| (name.clone(), v.to_owned()))
+                    })
+                    .collect(),
+            );
+        }
+        builder
     }
 }
 

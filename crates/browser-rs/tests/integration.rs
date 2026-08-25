@@ -1148,3 +1148,852 @@ mod response_seam {
         assert_eq!(doc.url(), "https://shop.example.com/catalogue");
     }
 }
+
+// ---------------------------------------------------------------------------
+// Wave 4 seam (a): a *browser-shaped* response is the same `Response`.
+//
+// Unit 12 landed `browser_http::response::Response` for real, so the shadow
+// struct in `response_seam` above is now history — it stays because it is the
+// executable specification the unit was written against, and because it pins
+// that the shape is reconstructible from nothing but the two public APIs.
+//
+// Unit 14 (the CDP driver) is next, and its inputs are different in kind from
+// unit 12's: chromiumoxide hands over `Page.content()` as an already-decoded
+// **String**, a status and header map from `Network.responseReceived`, and a
+// redirect chain assembled from `redirectResponse` events. Nothing about that
+// is bytes-off-a-socket. The question this module answers is whether unit 14
+// can therefore reuse unit 12's `Response`, or whether it needs one of its own.
+//
+// It can reuse it. `Response::builder` is the seam, and these tests exercise
+// every part of it a browser response needs.
+// ---------------------------------------------------------------------------
+mod browser_response_seam {
+    use std::sync::Arc;
+
+    use indexmap::IndexMap;
+    use browser_http::backend::mock::{MockBackend, MockReply};
+    use browser_http::backend::Method;
+    use browser_http::config::SelectorConfig;
+    use browser_http::redirect_safe::RedirectHop;
+    use browser_http::response::{charset_from_content_type, DocumentHook, Response};
+    use browser_http::session::AsyncFetcherSession;
+    use browser_parser::config::CssOpts;
+    use browser_parser::node::Node;
+    use browser_storage::{SqliteStorage, StorageSystem};
+
+    /// What `Page.content()` returns after Chrome has run the scripts: a
+    /// serialised DOM, not the bytes the server sent.
+    const RENDERED: &str = concat!(
+        r#"<!DOCTYPE html><html><head><title>Shop</title></head><body>"#,
+        r#"<div id="wrap" class="container">"#,
+        r#"<p class="price" data-sku="A-1">$9.99</p>"#,
+        r#"<a href="/p/1">one</a><a href="/p/2">two</a>"#,
+        r#"</div></body></html>"#,
+    );
+
+    /// The same page after a redesign, as unit 14 would render it tomorrow.
+    const RERENDERED: &str = concat!(
+        r#"<!DOCTYPE html><html><head><title>Shop</title></head><body>"#,
+        r#"<main id="wrap" class="container"><section>"#,
+        r#"<p class="price cost" data-sku="A-1">$10.99</p>"#,
+        r#"<a href="/p/1">one</a><a href="/p/2">two</a>"#,
+        r#"</section></main></body></html>"#,
+    );
+
+    /// `PageSession._get_page_content` + `ResponseFactory.from_browser_page`,
+    /// written against nothing but `browser-http`'s public builder.
+    ///
+    /// Every argument is what CDP actually gives you: a `String` of rendered
+    /// HTML, an `i64` status, a header map from `Network.responseReceived`, and
+    /// a redirect chain built from `redirectResponse`.
+    fn from_browser_page(
+        url: &str,
+        status: u16,
+        headers: IndexMap<String, String>,
+        rendered: String,
+        redirects: &[(&str, u16, &str)],
+        selector_config: SelectorConfig,
+        storage: Option<Arc<dyn StorageSystem>>,
+    ) -> Response {
+        // `__extract_browser_encoding`: the *browser* charset regex, which
+        // accepts a quoted value. Unit 12's HTTP path deliberately uses the
+        // stricter `charset_from_content_type_http` instead — see
+        // `docs/DIVERGENCES.md`.
+        let encoding = headers
+            .iter()
+            .find(|(name, _)| name.eq_ignore_ascii_case("content-type"))
+            .and_then(|(_, value)| charset_from_content_type(value))
+            .unwrap_or("utf-8")
+            .to_owned();
+
+        let history: Vec<RedirectHop> = redirects
+            .iter()
+            .map(|(hop_url, hop_status, location)| RedirectHop {
+                url: (*hop_url).to_owned(),
+                status: *hop_status,
+                reason: reason_phrase(*hop_status).to_owned(),
+                headers: IndexMap::new(),
+                location: (*location).to_owned(),
+            })
+            .collect();
+
+        let mut builder = Response::builder(status, url)
+            .method(Method::Get)
+            // The rendered DOM is already text; `Bytes::from(String)` is the
+            // only conversion, and the declared encoding then round-trips it.
+            .body(rendered)
+            .headers(headers)
+            .encoding(encoding)
+            .history(history)
+            .selector_config(selector_config);
+        if let Some(storage) = storage {
+            let hook: DocumentHook = Arc::new(move |config| config.storage(Arc::clone(&storage)));
+            builder = builder.document_hook(hook);
+        }
+        builder.build()
+    }
+
+    fn html_headers(content_type: &str) -> IndexMap<String, String> {
+        let mut headers = IndexMap::new();
+        headers.insert("content-type".to_owned(), content_type.to_owned());
+        headers
+    }
+
+    /// The two phrases this module needs. `browser-fingerprint`'s `StatusText`
+    /// is the real source and unit 14 will use it directly; the façade does not
+    /// depend on that crate for tests, so the table is inlined here.
+    fn reason_phrase(status: u16) -> &'static str {
+        match status {
+            301 => "Moved Permanently",
+            302 => "Found",
+            other => panic!("no phrase for {other} in this fixture"),
+        }
+    }
+
+    /// Anything that reads a response reads *one* type, whoever produced it.
+    ///
+    /// This is the actual assertion of this module: the function is monomorphic
+    /// in `browser_http::response::Response`, and both engines feed it.
+    fn extract_prices(response: &Response) -> Vec<String> {
+        response
+            .css("p.price::text")
+            .expect("css")
+            .texts()
+            .into_iter()
+            .map(|text| text.trim().to_owned())
+            .collect()
+    }
+
+    #[tokio::test]
+    async fn a_browser_response_and_an_http_response_are_the_same_type() {
+        // --- the browser half: a String and a header map, no socket ---------
+        let rendered = from_browser_page(
+            "https://shop.test/catalogue",
+            200,
+            // Chrome reports the charset quoted often enough that the reference implementation's
+            // browser regex accepts quotes; the HTTP one does not.
+            html_headers(r#"text/html; charset="utf-8""#),
+            RENDERED.to_owned(),
+            &[("https://shop.test/", 301, "https://shop.test/catalogue")],
+            SelectorConfig::default(),
+            None,
+        );
+
+        // --- the HTTP half: unit 12's real driver over a mock transport -----
+        let backend = Arc::new(MockBackend::always(
+            MockReply::new(200)
+                .header("Content-Type", "text/html; charset=utf-8")
+                .body(RENDERED),
+        ));
+        let session = AsyncFetcherSession::builder()
+            .backend(backend)
+            .build()
+            .expect("session");
+        session.open().await.expect("open");
+        let fetched = session
+            .get("https://shop.test/catalogue")
+            .send()
+            .await
+            .expect("send");
+        session.close().await.expect("close");
+
+        // One reader, two producers. If unit 14 needed its own `Response` this
+        // line would not compile.
+        assert_eq!(extract_prices(&rendered), ["$9.99"]);
+        assert_eq!(extract_prices(&fetched), extract_prices(&rendered));
+
+        // Everything the metadata half promises is filled in on both sides.
+        for response in [&rendered, &fetched] {
+            assert_eq!(response.status, 200);
+            assert_eq!(response.reason, "OK");
+            assert_eq!(response.url, "https://shop.test/catalogue");
+            assert_eq!(response.method, Method::Get);
+            assert_eq!(response.encoding, "utf-8");
+            assert!(response
+                .header("content-type")
+                .is_some_and(|value| value.starts_with("text/html")));
+            assert_eq!(
+                response.xpath("//a/@href").expect("xpath").texts(),
+                ["/p/1", "/p/2"]
+            );
+            assert_eq!(response.urljoin("/p/3"), "https://shop.test/p/3");
+            assert_eq!(response.to_string(), "<200 https://shop.test/catalogue>");
+        }
+
+        // The browser side is the one that carries a redirect chain built from
+        // `redirectResponse`; the mock transport had nothing to redirect.
+        assert_eq!(rendered.history.len(), 1);
+        assert_eq!(rendered.history[0].status, 301);
+        assert_eq!(rendered.history[0].to_string(), "<301 https://shop.test/>");
+        assert!(fetched.history.is_empty());
+    }
+
+    /// The browser charset regex is the looser of the two, and it is public.
+    #[test]
+    fn the_browser_charset_regex_is_the_one_unit_14_needs() {
+        use browser_http::response::charset_from_content_type_http;
+
+        // the reference implementation's `__CHARSET_RE__` — `charset=["']?([\w-]+)` — accepts a
+        // quoted value; `curl_cffi`'s does not, and unit 12 is bound by
+        // `curl_cffi`'s because that is what resolved the charset in Python.
+        assert_eq!(
+            charset_from_content_type(r#"text/html; charset="windows-1252""#),
+            Some("windows-1252")
+        );
+        assert_eq!(
+            charset_from_content_type_http(r#"text/html; charset="windows-1252""#),
+            None
+        );
+        // Unquoted, they agree.
+        assert_eq!(
+            charset_from_content_type("text/html; charset=windows-1252"),
+            charset_from_content_type_http("text/html; charset=windows-1252"),
+        );
+    }
+
+    /// A browser response drives the adaptive layer exactly like an HTTP one.
+    ///
+    /// `StealthyFetcher` is the fetcher people point at the pages that break,
+    /// so this is the path adaptive selectors matter most on.
+    #[test]
+    fn a_browser_response_saves_and_relocates_through_shared_storage() {
+        let storage: Arc<dyn StorageSystem> =
+            Arc::new(SqliteStorage::in_memory(Some("https://shop.test/")).expect("opens"));
+        let selector_config = SelectorConfig::default()
+            .with("adaptive", true.into())
+            .with_adaptive_domain("shop.test");
+
+        let monday = from_browser_page(
+            "https://shop.test/catalogue?page=1",
+            200,
+            html_headers("text/html; charset=utf-8"),
+            RENDERED.to_owned(),
+            &[],
+            selector_config.clone(),
+            Some(Arc::clone(&storage)),
+        );
+        assert!(monday.adaptive_enabled());
+        assert!(monday.has_storage());
+        assert_eq!(monday.url, "https://shop.test/catalogue?page=1");
+        assert_eq!(monday.selector_url(), "shop.test");
+
+        let price = monday
+            .css("div#wrap > p.price")
+            .expect("css")
+            .at(0)
+            .cloned()
+            .expect("the price is on the rendered page");
+        monday.save(&price, "price").expect("saves");
+
+        // Tomorrow's render, through the *same* storage.
+        let tuesday = from_browser_page(
+            "https://shop.test/catalogue?page=1",
+            200,
+            html_headers("text/html; charset=utf-8"),
+            RERENDERED.to_owned(),
+            &[],
+            selector_config,
+            Some(Arc::clone(&storage)),
+        );
+        assert!(tuesday.css("div#wrap > p.price").expect("css").is_empty());
+
+        let relocated = tuesday
+            .css_with(
+                "div#wrap > p.price",
+                &CssOpts::new().identifier("price").adaptive(true),
+            )
+            .expect("css");
+        assert_eq!(relocated.texts(), ["$10.99"]);
+        assert_eq!(relocated.at(0).map(Node::tag), Some("p"));
+    }
+
+    /// The narrowing unit 17 reads, from a response unit 14 produced.
+    #[test]
+    fn a_browser_response_narrows_into_a_fetched_response_and_back() {
+        use browser_spider::session::FetchedResponse;
+
+        let rendered = from_browser_page(
+            "https://shop.test/catalogue",
+            200,
+            html_headers("text/html; charset=utf-8"),
+            RENDERED.to_owned(),
+            &[("https://shop.test/", 302, "https://shop.test/catalogue")],
+            SelectorConfig::default(),
+            None,
+        );
+
+        // `impl From<&Response> for FetchedResponse` — unit 15 owed this and it
+        // now exists in `browser-spider`, which is the crate that may name
+        // both types.
+        let narrowed = FetchedResponse::from(&rendered);
+        assert_eq!(narrowed.status, 200);
+        assert_eq!(narrowed.url, "https://shop.test/catalogue");
+        assert_eq!(narrowed.encoding, "utf-8");
+        assert_eq!(narrowed.history, ["https://shop.test/"]);
+        assert_eq!(narrowed.body.as_ref(), RENDERED.as_bytes());
+        assert_eq!(narrowed.to_string(), "<200 https://shop.test/catalogue>");
+
+        // …and widening again gives a callback the same document. This is the
+        // dev-mode cache replay path: no live exchange ever happened.
+        let replayed = narrowed.response_builder().build();
+        assert_eq!(extract_prices(&replayed), ["$9.99"]);
+        assert_eq!(replayed.encoding, "utf-8");
+        assert_eq!(replayed.url, narrowed.url);
+        // The two documented losses.
+        assert!(replayed.history.is_empty());
+        assert!(replayed.meta.is_empty());
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Wave 4 seam (b): unit 17's crawl loop, written from the parts that exist.
+//
+// `CrawlerEngine` (unit 17) is the last big piece of the spider, and it owns no
+// mechanism of its own — it is an *ordering* over unit 15's `Scheduler` and
+// `SessionManager`, unit 16's `AutoThrottle`, `RobotsTxtManager` and response
+// cache, and unit 12's fetcher. `_process_request`'s order (spec §5.4) is:
+//
+//     robots -> cache replay -> limiter -> delay -> fetch -> cache write
+//     -> block detection -> autothrottle feedback -> retry-or-callback
+//
+// This module writes that order out by hand against a loopback server. It is
+// deliberately *not* a `CrawlerEngine`: the point is that unit 17 has nothing
+// left to invent, only to arrange. Anything the loop could not express would be
+// an API gap to fix now — which is how `From<&Response> for FetchedResponse`,
+// `FetchedResponse::response_builder` and `Method: From<HttpMethod>` came to
+// exist this wave.
+//
+// No public network: the fixture is a `std::net::TcpListener` on 127.0.0.1.
+// ---------------------------------------------------------------------------
+mod crawl_loop_seam {
+    use std::collections::BTreeSet;
+    use std::io::{BufRead, BufReader, Write};
+    use std::net::{Shutdown, TcpListener, TcpStream};
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
+
+    use async_trait::async_trait;
+    use browser_http::backend::Method;
+    use browser_http::config::{FetcherConfig, SelectorConfig};
+    use browser_http::session::AsyncFetcherSession;
+    use browser_spider::cache::ResponseCacheManager;
+    use browser_spider::error::{Result as SpiderResult, SpiderError};
+    use browser_spider::request::{FingerprintOptions, Request, SessionKwargs};
+    use browser_spider::robots::{effective_domain_delay, fetcher_fn, RobotsTxtManager};
+    use browser_spider::scheduler::Scheduler;
+    use browser_spider::session::{AddOptions, CrawlSession, FetchedResponse, SessionManager};
+    use browser_spider::stats::CrawlStats;
+    use browser_spider::throttle::{parse_retry_after, AutoThrottle, AutoThrottleConfig};
+
+    // -- the fixture ------------------------------------------------------
+
+    /// A four-page site plus a `robots.txt` that forbids `/admin`.
+    ///
+    /// `/a` links back to `/` and forward to `/b`, so the crawl has to
+    /// de-duplicate; `/admin/secret` is linked from `/` and must never be
+    /// requested; `/throttled` answers `429` with a `Retry-After`.
+    fn route(path: &str) -> Option<(u16, &'static str, String)> {
+        let page = |links: &[&str], item: &str| {
+            let anchors: String = links
+                .iter()
+                .map(|href| format!(r#"<a href="{href}">{href}</a>"#))
+                .collect();
+            format!(
+                r#"<!doctype html><html><body><h1 class="item">{item}</h1>{anchors}</body></html>"#
+            )
+        };
+        match path {
+            "/robots.txt" => Some((
+                200,
+                "text/plain; charset=utf-8",
+                // A tiny non-zero `Crawl-delay` so the floor is observable
+                // without making the test slow.
+                "User-agent: *\nDisallow: /admin\nCrawl-delay: 0.01\n".to_owned(),
+            )),
+            "/" => Some((
+                200,
+                "text/html; charset=utf-8",
+                page(&["/a", "/b", "/admin/secret", "/a"], "home"),
+            )),
+            "/a" => Some((200, "text/html; charset=utf-8", page(&["/", "/b"], "alpha"))),
+            "/b" => Some((200, "text/html; charset=utf-8", page(&[], "beta"))),
+            "/admin/secret" => Some((200, "text/html; charset=utf-8", page(&[], "SECRET"))),
+            "/throttled" => Some((429, "text/html; charset=utf-8", page(&[], "slow down"))),
+            _ => None,
+        }
+    }
+
+    /// The loopback fixture. Raw sockets, one connection per request.
+    struct Fixture {
+        port: u16,
+        hits: Arc<Mutex<Vec<String>>>,
+        running: Arc<AtomicBool>,
+    }
+
+    impl Fixture {
+        fn start() -> Self {
+            let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+            let port = listener.local_addr().expect("addr").port();
+            let hits = Arc::new(Mutex::new(Vec::new()));
+            let running = Arc::new(AtomicBool::new(true));
+
+            let thread_hits = Arc::clone(&hits);
+            let thread_running = Arc::clone(&running);
+            std::thread::spawn(move || {
+                for stream in listener.incoming() {
+                    if !thread_running.load(Ordering::Acquire) {
+                        break;
+                    }
+                    match stream {
+                        Ok(stream) => serve(stream, &thread_hits),
+                        Err(_) => break,
+                    }
+                }
+            });
+
+            Self {
+                port,
+                hits,
+                running,
+            }
+        }
+
+        fn url(&self, path: &str) -> String {
+            format!("http://127.0.0.1:{}{path}", self.port)
+        }
+
+        fn hits(&self) -> Vec<String> {
+            self.hits.lock().expect("not poisoned").clone()
+        }
+
+        fn hit_count(&self, path: &str) -> usize {
+            self.hits().iter().filter(|hit| *hit == path).count()
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            self.running.store(false, Ordering::Release);
+            // Unblock the `accept` so the thread notices and exits.
+            let _ = TcpStream::connect(("127.0.0.1", self.port));
+        }
+    }
+
+    fn serve(mut stream: TcpStream, hits: &Arc<Mutex<Vec<String>>>) {
+        let mut reader = BufReader::new(stream.try_clone().expect("clone"));
+        let mut request_line = String::new();
+        if reader.read_line(&mut request_line).is_err() || request_line.trim().is_empty() {
+            return;
+        }
+        // Drain the headers; nothing here reads a body.
+        loop {
+            let mut line = String::new();
+            match reader.read_line(&mut line) {
+                Ok(0) => break,
+                Ok(_) if line == "\r\n" || line == "\n" => break,
+                Ok(_) => {}
+                Err(_) => return,
+            }
+        }
+
+        let path = request_line
+            .split_whitespace()
+            .nth(1)
+            .unwrap_or("/")
+            .to_owned();
+        hits.lock().expect("not poisoned").push(path.clone());
+
+        let (status, content_type, body, extra) = match route(&path) {
+            Some((429, content_type, body)) => (429_u16, content_type, body, "Retry-After: 0\r\n"),
+            Some((status, content_type, body)) => (status, content_type, body, ""),
+            None => (404, "text/plain; charset=utf-8", "not found".to_owned(), ""),
+        };
+        let reason = match status {
+            200 => "OK",
+            429 => "Too Many Requests",
+            _ => "Not Found",
+        };
+        let head = format!(
+            "HTTP/1.1 {status} {reason}\r\nContent-Type: {content_type}\r\n\
+             Content-Length: {}\r\n{extra}Connection: close\r\n\r\n",
+            body.len()
+        );
+        let _ = stream.write_all(head.as_bytes());
+        let _ = stream.write_all(body.as_bytes());
+        let _ = stream.flush();
+        let _ = stream.shutdown(Shutdown::Both);
+    }
+
+    // -- the adapter unit 17 will promote into `browser-spider` ----------
+
+    /// Unit 12's pooled session behind unit 15's [`CrawlSession`] trait.
+    ///
+    /// Thirty lines, all of them mechanical — which is the finding. Unit 17
+    /// should move this into `browser-spider` verbatim; it is written here so
+    /// that the *test* proves it needs nothing that is not already public.
+    struct HttpCrawlSession {
+        sid: String,
+        inner: AsyncFetcherSession,
+    }
+
+    #[async_trait]
+    impl CrawlSession for HttpCrawlSession {
+        fn is_alive(&self) -> bool {
+            self.inner.is_alive()
+        }
+
+        async fn open(&self) -> SpiderResult<()> {
+            self.inner
+                .open()
+                .await
+                .map_err(|error| SpiderError::SessionLifecycle {
+                    sid: self.sid.clone(),
+                    action: "open",
+                    message: error.to_string(),
+                })
+        }
+
+        async fn close(&self) -> SpiderResult<()> {
+            self.inner
+                .close()
+                .await
+                .map_err(|error| SpiderError::SessionLifecycle {
+                    sid: self.sid.clone(),
+                    action: "close",
+                    message: error.to_string(),
+                })
+        }
+
+        async fn fetch(&self, url: &str, kwargs: &SessionKwargs) -> SpiderResult<FetchedResponse> {
+            // `kwargs` is borrowed and stays untouched — the pinned invariant
+            // that stops a retried POST from decaying into a GET.
+            let method: Method = kwargs.method().into();
+            let mut builder = self.inner.request(method, url);
+            if let Some(headers) = kwargs.effective_headers() {
+                for (name, value) in headers {
+                    builder = builder.header(name.clone(), value.clone());
+                }
+            }
+            if let Some(json) = kwargs.json.as_ref() {
+                builder = builder.json(json.clone());
+            }
+            let response = builder.send().await.map_err(|error| SpiderError::Fetch {
+                sid: self.sid.clone(),
+                url: url.to_owned(),
+                message: error.to_string(),
+            })?;
+            // The narrowing unit 15 asked for, now a real `From` impl.
+            Ok(FetchedResponse::from(&response))
+        }
+    }
+
+    /// `CrawlerEngine._is_blocked`, in its status-code half.
+    fn is_blocked(response: &FetchedResponse) -> bool {
+        matches!(response.status, 403 | 429 | 503)
+    }
+
+    // -- the loop ----------------------------------------------------------
+
+    #[tokio::test]
+    async fn a_whole_crawl_composes_from_units_12_15_and_16() {
+        let fixture = Fixture::start();
+        let cache_dir = tempfile::tempdir().expect("tempdir");
+
+        // --- unit 12: the transport ---------------------------------------
+        let session = AsyncFetcherSession::builder()
+            .config(
+                FetcherConfig::default()
+                    .with_retries(Some(1))
+                    .with_timeout(Some(Duration::from_secs(5))),
+            )
+            .build()
+            .expect("a session over the default backend");
+
+        // --- unit 15: routing and the frontier ----------------------------
+        let mut manager = SessionManager::new();
+        manager
+            .add(
+                "http",
+                Arc::new(HttpCrawlSession {
+                    sid: "http".to_owned(),
+                    inner: session,
+                }),
+                AddOptions::default(),
+            )
+            .expect("registers");
+        let manager = Arc::new(manager);
+        manager.start().await.expect("opens every session");
+
+        let mut scheduler = Scheduler::new(FingerprintOptions::default());
+
+        // --- unit 16: robots, throttle, cache -----------------------------
+        let robots_manager = Arc::clone(&manager);
+        let robots = Arc::new(RobotsTxtManager::new(Arc::new(fetcher_fn(
+            move |url: String, sid: String| {
+                let manager = Arc::clone(&robots_manager);
+                async move { manager.fetch(&Request::new(url).with_sid(sid)).await }
+            },
+        ))));
+
+        let throttle = AutoThrottle::new(AutoThrottleConfig {
+            start_delay: 0.0,
+            max_delay: 0.2,
+            target_concurrency: 1.0,
+            block_backoff: true,
+        })
+        .expect("a valid config");
+        let cache = ResponseCacheManager::new(cache_dir.path());
+
+        // --- the engine's own state ---------------------------------------
+        let stats = CrawlStats::new();
+        let download_delay = 0.0_f64;
+        let selector_config = SelectorConfig::default();
+
+        // `CrawlerEngine._prefetch_robots_txt`, verbatim: one fetch per seed
+        // netloc before the loop starts.
+        let seeds = vec![fixture.url("/"), fixture.url("/throttled")];
+        robots
+            .prefetch(&browser_spider::robots::prefetch_urls(&seeds), "http")
+            .await;
+        assert_eq!(fixture.hit_count("/robots.txt"), 1, "one netloc, one fetch");
+
+        for seed in &seeds {
+            assert!(scheduler.enqueue(Request::new(seed.clone()).with_sid("http")));
+        }
+
+        let mut items: Vec<String> = Vec::new();
+        let mut refused: Vec<String> = Vec::new();
+        let mut blocked: Vec<String> = Vec::new();
+        let mut replayed = 0_usize;
+
+        while let Some((ticket, request)) = scheduler.dequeue() {
+            // 1. robots.txt.
+            if !robots.can_fetch(&request.url, "*").await {
+                refused.push(request.url.clone());
+                scheduler.complete(ticket);
+                continue;
+            }
+
+            // 2. the delay floor `robots.txt` imposes, then AutoThrottle's view
+            //    of the domain. Unit 16 owns both halves of this expression.
+            let (crawl_delay, request_rate) =
+                robots.get_delay_directives(&request.url, "http").await;
+            let floor = effective_domain_delay(download_delay, crawl_delay, request_rate);
+            assert!(floor >= 0.01, "the fixture's Crawl-delay reaches the floor");
+            let delay = throttle.delay_for(request.domain(), floor);
+            tokio::time::sleep(Duration::from_secs_f64(delay)).await;
+
+            // 3. the cache replay, keyed on unit 15's fingerprint.
+            let fingerprint = request.update_fingerprint(scheduler.options());
+            let started = Instant::now();
+            let (response, from_cache) = match cache.get(&fingerprint).await {
+                Some(mut hit) => {
+                    hit.attach_request(&request);
+                    replayed += 1;
+                    (hit, true)
+                }
+                None => {
+                    let fetched = manager.fetch(&request).await.expect("the fixture answers");
+                    cache
+                        .put(
+                            &fingerprint,
+                            &fetched,
+                            request.session_kwargs.method().as_str(),
+                        )
+                        .await;
+                    (fetched, false)
+                }
+            };
+
+            // 4. bookkeeping — the stats a crawl reports.
+            stats.increment_requests_count(&request.sid);
+            stats.increment_status(response.status);
+            stats.increment_response_bytes(request.domain(), response.body.len() as u64);
+
+            // 5. block detection feeding AutoThrottle.
+            let ok = (200..300).contains(&response.status) && !is_blocked(&response);
+            let retry_after = parse_retry_after(&response.headers);
+            if !from_cache {
+                throttle.record(
+                    request.domain(),
+                    started.elapsed().as_secs_f64(),
+                    ok,
+                    floor,
+                    retry_after,
+                );
+            }
+            if !ok {
+                blocked.push(request.url.clone());
+                assert_eq!(retry_after, Some(0.0), "the fixture sends `Retry-After: 0`");
+                scheduler.complete(ticket);
+                continue;
+            }
+
+            // 6. the callback: parse through unit 12's `Response`, yield items,
+            //    enqueue links. A cache replay takes the same path, which is
+            //    what `FetchedResponse::response_builder` is for.
+            let parsed = response
+                .response_builder()
+                .selector_config(selector_config.clone())
+                .build();
+            items.extend(parsed.css("h1.item::text").expect("css").texts());
+            for href in parsed.css("a").expect("css").attrs("href") {
+                let absolute = parsed.urljoin(&href);
+                scheduler.enqueue(Request::new(absolute).with_sid("http"));
+            }
+
+            scheduler.complete(ticket);
+        }
+
+        // --- what the loop proves -----------------------------------------
+        assert!(scheduler.is_empty() && scheduler.inflight_len() == 0);
+
+        // `/admin/secret` was linked from `/` and never fetched: the robots
+        // check runs *before* the fetch, not after it.
+        assert_eq!(refused, [fixture.url("/admin/secret")]);
+        assert_eq!(fixture.hit_count("/admin/secret"), 0);
+
+        // Every allowed page was visited exactly once, however many times it
+        // was linked — unit 15's fingerprint de-duplication.
+        assert_eq!(
+            items,
+            ["home", "alpha", "beta"],
+            "`/throttled` yielded nothing and `/admin/secret` was never fetched"
+        );
+        assert_eq!(fixture.hit_count("/"), 1);
+        assert_eq!(fixture.hit_count("/a"), 1, "`/a` is linked twice from `/`");
+        assert_eq!(
+            fixture.hit_count("/b"),
+            1,
+            "`/b` is linked from `/` and `/a`"
+        );
+        assert_eq!(blocked, [fixture.url("/throttled")]);
+        assert_eq!(replayed, 0, "a cold cache replays nothing");
+
+        // AutoThrottle learned a delay for the domain, and the 429 pushed it up
+        // to the configured ceiling rather than down towards the latency.
+        let domain = format!("127.0.0.1:{}", fixture.port);
+        assert!(throttle.contains(&domain));
+        stats.set_autothrottle_delays(throttle.delays());
+        assert_eq!(
+            stats.autothrottle_delay(&domain),
+            Some(throttle.delays()[&domain])
+        );
+
+        // The stats a crawl reports are all reachable.
+        assert_eq!(stats.session_requests("http"), 4);
+        assert_eq!(stats.status_count(200), 3);
+        assert_eq!(stats.status_count(429), 1);
+        assert!(stats.domain_bytes(&domain) > 0);
+
+        manager.close().await.expect("closes every session");
+        drop(fixture);
+    }
+
+    /// The same loop, second run: every page is a cache hit and the server is
+    /// never touched again.
+    #[tokio::test]
+    async fn the_second_pass_replays_from_the_unit_16_cache() {
+        let fixture = Fixture::start();
+        let cache_dir = tempfile::tempdir().expect("tempdir");
+        let cache = ResponseCacheManager::new(cache_dir.path());
+
+        let session = AsyncFetcherSession::builder()
+            .config(FetcherConfig::default().with_retries(Some(1)))
+            .build()
+            .expect("session");
+        let mut manager = SessionManager::new();
+        manager
+            .add(
+                "http",
+                Arc::new(HttpCrawlSession {
+                    sid: "http".to_owned(),
+                    inner: session,
+                }),
+                AddOptions::default(),
+            )
+            .expect("registers");
+        let manager = Arc::new(manager);
+        manager.start().await.expect("start");
+
+        let options = FingerprintOptions::default();
+        let mut seen_bodies: Vec<BTreeSet<String>> = Vec::new();
+
+        for pass in 0..2 {
+            let mut scheduler = Scheduler::new(options);
+            scheduler.enqueue(Request::new(fixture.url("/")).with_sid("http"));
+            let mut bodies = BTreeSet::new();
+
+            while let Some((ticket, request)) = scheduler.dequeue() {
+                let fingerprint = request.update_fingerprint(options);
+                let response = match cache.get(&fingerprint).await {
+                    Some(mut hit) => {
+                        assert_eq!(pass, 1, "nothing is cached on the first pass");
+                        hit.attach_request(&request);
+                        hit
+                    }
+                    None => {
+                        assert_eq!(pass, 0, "everything is cached by the second pass");
+                        let fetched = manager.fetch(&request).await.expect("fetch");
+                        cache.put(&fingerprint, &fetched, "GET").await;
+                        fetched
+                    }
+                };
+                // A replayed response carries the request the engine attached,
+                // and reparses into the same document as the live one.
+                assert_eq!(
+                    response.request.as_ref().map(|r| r.url.clone()),
+                    Some(request.url.clone())
+                );
+                let parsed = response.response_builder().build();
+                bodies.extend(parsed.css("h1.item::text").expect("css").texts());
+                for href in parsed.css("a").expect("css").attrs("href") {
+                    // `/admin` is not consulted here; this pass is about the
+                    // cache, so every link is followed.
+                    scheduler.enqueue(Request::new(parsed.urljoin(&href)).with_sid("http"));
+                }
+                scheduler.complete(ticket);
+            }
+            seen_bodies.push(bodies);
+        }
+
+        assert_eq!(
+            seen_bodies[0], seen_bodies[1],
+            "a replay is not a downgrade"
+        );
+        assert!(seen_bodies[0].contains("home"));
+        // Four distinct URLs, fetched on pass 0 and replayed on pass 1.
+        let hits = fixture.hits();
+        let paths: BTreeSet<&str> = hits.iter().map(String::as_str).collect();
+        assert_eq!(
+            paths,
+            BTreeSet::from(["/", "/a", "/b", "/admin/secret"]),
+            "the first pass fetched every link"
+        );
+        assert_eq!(hits.len(), 4, "the second pass touched the server not once");
+
+        manager.close().await.expect("close");
+        drop(fixture);
+    }
+}

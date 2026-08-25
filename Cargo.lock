@@ -2472,6 +2472,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "browser-rs"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "bytes",
  "indexmap",
  "regex",
@@ -2486,7 +2487,9 @@ dependencies = [
  "browser-templates",
  "browser-xpath",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.20",
+ "tokio",
 ]
 
 [[package]]

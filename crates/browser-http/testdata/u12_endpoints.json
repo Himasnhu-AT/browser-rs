@@ -1,0 +1,1443 @@
+{
+ "/binary/bytes": {
+  "body_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "application/octet-stream"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/binary/invalid-utf8": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c703efffe802062726f6b656e3c2f703e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/binary/png": {
+  "body_hex": "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789c636000000200010005fe02fe0000000049454e44ae426082",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "image/png"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/both-agree": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c6d65746120636861727365743d227574662d38223e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223ec39c6ec3af63c3b864c3a920636166c3a920e28094206e61c3af76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/both-disagree": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c6d65746120636861727365743d2277696e646f77732d31323532223e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223ec39c6ec3af63c3b864c3a920636166c3a920e28094206e61c3af76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/header-1252": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223edc6eef63f864e920636166e9206e61ef76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=windows-1252"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/header-latin1": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223edc6eef63f864e920636166e9206e61ef76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=iso-8859-1"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/header-sjis": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223e938c8b9e82cc93568b433c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=shift_jis"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/header-utf8": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223ec39c6ec3af63c3b864c3a920636166c3a920e28094206e61c3af76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/meta-only": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c6d65746120636861727365743d2277696e646f77732d31323532223e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223edc6eef63f864e920636166e9206e61ef76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/none": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223ec39c6ec3af63c3b864c3a920636166c3a920e28094206e61c3af76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/quoted": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223edc6eef63f864e920636166e9206e61ef76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=\"windows-1252\""
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/unknown-label": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e436861727365743c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c7020636c6173733d2274223ec39c6ec3af63c3b864c3a920636166c3a920e28094206e61c3af76653c2f703e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=definitely-not-a-charset"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/charset/utf16": {
+  "body_hex": "fffe3c00210064006f00630074007900700065002000680074006d006c003e003c00680074006d006c003e003c0068006500610064003e003c007400690074006c0065003e0043006800610072007300650074003c002f007400690074006c0065003e003c002f0068006500610064003e003c0062006f00640079003e003c006400690076002000690064003d0022006d00610069006e0022003e003c007000200063006c006100730073003d002200740022003e007167ac4e6e302959176c3c002f0070003e003c006100200068007200650066003d0022002f006e0065007800740022003e006e006500780074003c002f0061003e003c002f006400690076003e003c002f0062006f00640079003e003c002f00680074006d006c003e00",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-16"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/attrs": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "b=2; Path=/; HttpOnly; SameSite=Lax"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/deleted": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "l=12; Max-Age=0"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/domain": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "c=3; Domain=127.0.0.1; Path=/cookie"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/echo-path": {
+  "body_hex": "",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "application/json"
+   ]
+  ],
+  "mode": "echo",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/empty-value": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "j="
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/expired": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "d=4; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/maxage": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "e=5; Max-Age=3600"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/multi": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "f=6; Path=/"
+   ],
+   [
+    "Set-Cookie",
+    "g=7; Path=/cookie"
+   ],
+   [
+    "Set-Cookie",
+    "h=8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/quoted": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "k=\"quoted value\""
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/secure": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "i=9; Secure"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/set-then-echo": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "sess=abc123; Path=/"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/cookie/simple": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "a=1"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/br": {
+  "body_hex": "500f103c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e03",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "br"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/deflate": {
+  "body_hex": "789c558fb10ec2300c447f25784751991d8f88df70895123dca66a5d68ff9e94c0d0e5a4bccbd9673cc57cb76d14d759af843f158e84964c85ae69b56512f4f589be9a6d8e1b614c2f9762809ed30025d7b8bbf23c07d83f01dd443597444338fe1d03621d3b463f1e692b56e1521a6872918dcfcf000d501eca7e4d077c01b277aed8ef1176dd248f007e90b58cdb153d17b3942c5a0bfbef811f156c5152",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "deflate"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/deflate-raw": {
+  "body_hex": "558fb10ec2300c447f25784751991d8f88df70895123dca66a5d68ff9e94c0d0e5a4bccbd9673cc57cb76d14d759af843f158e84964c85ae69b56512f4f589be9a6d8e1b614c2f9762809ed30025d7b8bbf23c07d83f01dd443597444338fe1d03621d3b463f1e692b56e1521a6872918dcfcf000d501eca7e4d077c01b277aed8ef1176dd248f007e90b58cdb153d17b3942c5a0bfbef811f",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "deflate"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/gzip": {
+  "body_hex": "1f8b08000000000002ff558fb10ec2300c447f25784751991d8f88df70895123dca66a5d68ff9e94c0d0e5a4bccbd9673cc57cb76d14d759af843f158e84964c85ae69b56512f4f589be9a6d8e1b614c2f9762809ed30025d7b8bbf23c07d83f01dd443597444338fe1d03621d3b463f1e692b56e1521a6872918dcfcf000d501eca7e4d077c01b277aed8ef1176dd248f007e90b58cdb153d17b3942c5a0bfbef811ffce6fe60f6000000",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "gzip"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/gzip-chunked": {
+  "body_hex": "1f8b08000000000002ff558fb10ec2300c447f25784751991d8f88df70895123dca66a5d68ff9e94c0d0e5a4bccbd9673cc57cb76d14d759af843f158e84964c85ae69b56512f4f589be9a6d8e1b614c2f9762809ed30025d7b8bbf23c07d83f01dd443597444338fe1d03621d3b463f1e692b56e1521a6872918dcfcf000d501eca7e4d077c01b277aed8ef1176dd248f007e90b58cdb153d17b3942c5a0bfbef811ffce6fe60f6000000",
+  "chunks": 4,
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "gzip"
+   ]
+  ],
+  "mode": "chunked",
+  "reason": "OK",
+  "status": 200
+ },
+ "/encoding/identity": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Content-Encoding",
+    "identity"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/end/echo": {
+  "body_hex": "",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "application/json"
+   ]
+  ],
+  "mode": "echo",
+  "reason": "OK",
+  "status": 200
+ },
+ "/end/plain": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/end/plain2": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e476f6f646279653c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/flap/2": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "flap_fail": 2,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "flap",
+  "reason": "OK",
+  "status": 200
+ },
+ "/flap/9": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "flap_fail": 9,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "flap",
+  "reason": "OK",
+  "status": 200
+ },
+ "/headers/dup": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "X-Dup",
+    "first"
+   ],
+   [
+    "X-Dup",
+    "second"
+   ],
+   [
+    "x-lower-case",
+    "low"
+   ],
+   [
+    "X-MIXED-Case",
+    "mixed"
+   ],
+   [
+    "X-Empty",
+    ""
+   ],
+   [
+    "X-Spaces",
+    "  padded  "
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/headers/folded": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "X-Folded",
+    "one\r\n two"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/headers/many": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "X-N-0",
+    "0"
+   ],
+   [
+    "X-N-1",
+    "1"
+   ],
+   [
+    "X-N-2",
+    "2"
+   ],
+   [
+    "X-N-3",
+    "3"
+   ],
+   [
+    "X-N-4",
+    "4"
+   ],
+   [
+    "X-N-5",
+    "5"
+   ],
+   [
+    "X-N-6",
+    "6"
+   ],
+   [
+    "X-N-7",
+    "7"
+   ],
+   [
+    "X-N-8",
+    "8"
+   ],
+   [
+    "X-N-9",
+    "9"
+   ],
+   [
+    "X-N-10",
+    "10"
+   ],
+   [
+    "X-N-11",
+    "11"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/redirect/301echo": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Moved Permanently",
+  "status": 301
+ },
+ "/redirect/302echo": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/303": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "See Other",
+  "status": 303
+ },
+ "/redirect/303echo": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "See Other",
+  "status": 303
+ },
+ "/redirect/307": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Temporary Redirect",
+  "status": 307
+ },
+ "/redirect/308": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Permanent Redirect",
+  "status": 308
+ },
+ "/redirect/abs301": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "{A}/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Moved Permanently",
+  "status": 301
+ },
+ "/redirect/chain1": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/chain2": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/redirect/chain1"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/chain3": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/redirect/chain2"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/chain4": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/redirect/chain3"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/chain5": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/redirect/chain4"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/close": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": true,
+  "headers": [
+   [
+    "Location",
+    "/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/cross": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "{B}/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/crossecho": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "{B}/end/echo"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/dotrel302": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "../end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/loop": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/redirect/loop"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/nolocation": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/query": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/echo?from=redirect"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/rel302": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/tofile": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "file:///etc/hosts"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/toftp": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "ftp://127.0.0.1:9/x"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/tolinklocal": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "http://169.254.169.254/latest/meta-data/"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/toloopbackport": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "http://127.0.0.1:9/x"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/toprivate": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "http://10.1.2.3/x"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/tov6loopback": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "http://[::1]:9/x"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/redirect/withcookie": {
+  "body_hex": "3c68746d6c3e3c626f64793e7265646972656374696e673c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Location",
+    "/end/plain"
+   ],
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ],
+   [
+    "Set-Cookie",
+    "hop=1; Path=/"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Found",
+  "status": 302
+ },
+ "/slow/2000": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "delay_ms": 2000,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "slow",
+  "reason": "OK",
+  "status": 200
+ },
+ "/slow/300": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "delay_ms": 300,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "slow",
+  "reason": "OK",
+  "status": 200
+ },
+ "/status/200": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3230303c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/status/201": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3230313c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Created",
+  "status": 201
+ },
+ "/status/202": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3230323c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Accepted",
+  "status": 202
+ },
+ "/status/204": {
+  "body_hex": "",
+  "close": false,
+  "headers": [],
+  "mode": "nolength",
+  "reason": "No Content",
+  "status": 204
+ },
+ "/status/222": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "",
+  "status": 222
+ },
+ "/status/299": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Totally Fine",
+  "status": 299
+ },
+ "/status/301": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3330313c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Moved Permanently",
+  "status": 301
+ },
+ "/status/304": {
+  "body_hex": "",
+  "close": false,
+  "headers": [
+   [
+    "ETag",
+    "\"abc\""
+   ]
+  ],
+  "mode": "nolength",
+  "reason": "Not Modified",
+  "status": 304
+ },
+ "/status/400": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3430303c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Bad Request",
+  "status": 400
+ },
+ "/status/401": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3430313c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Unauthorized",
+  "status": 401
+ },
+ "/status/403": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3430333c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Forbidden",
+  "status": 403
+ },
+ "/status/404": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3430343c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Not Found",
+  "status": 404
+ },
+ "/status/410": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3431303c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Gone",
+  "status": 410
+ },
+ "/status/418": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3431383c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "I'm a teapot",
+  "status": 418
+ },
+ "/status/429": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3432393c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Too Many Requests",
+  "status": 429
+ },
+ "/status/500": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3530303c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Internal Server Error",
+  "status": 500
+ },
+ "/status/503": {
+  "body_hex": "3c68746d6c3e3c626f64793e3c68313e3530333c2f68313e3c2f626f64793e3c2f68746d6c3e",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "Service Unavailable",
+  "status": 503
+ },
+ "/transfer/chunked": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "chunks": 3,
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "chunked",
+  "reason": "OK",
+  "status": 200
+ },
+ "/transfer/chunked-many": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "chunks": 17,
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "chunked",
+  "reason": "OK",
+  "status": 200
+ },
+ "/transfer/chunked1": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "chunks": 1,
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "chunked",
+  "reason": "OK",
+  "status": 200
+ },
+ "/transfer/empty": {
+  "body_hex": "",
+  "close": false,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "normal",
+  "reason": "OK",
+  "status": 200
+ },
+ "/transfer/eof": {
+  "body_hex": "3c21646f63747970652068746d6c3e3c68746d6c3e3c686561643e3c7469746c653e466978747572653c2f7469746c653e3c2f686561643e3c626f64793e3c6469762069643d226d61696e223e3c683120636c6173733d2268656164223e48656c6c6f3c2f68313e3c7020636c6173733d2274223e616c7068613c2f703e3c7020636c6173733d2274223e626574613c2f703e3c756c3e3c6c6920646174612d6b3d2231223e6f6e653c2f6c693e3c6c6920646174612d6b3d2232223e74776f3c2f6c693e3c2f756c3e3c6120687265663d222f6e657874223e6e6578743c2f613e3c2f6469763e3c2f626f64793e3c2f68746d6c3e",
+  "close": true,
+  "headers": [
+   [
+    "Content-Type",
+    "text/html; charset=utf-8"
+   ]
+  ],
+  "mode": "nolength",
+  "reason": "OK",
+  "status": 200
+ }
+}

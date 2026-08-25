@@ -11,28 +11,32 @@
 | | |
 |---|---|
 | Build | `cargo build --workspace --all-features` ✅ green |
-| Tests | **1268 passing, 0 failing, 1 ignored** (same under `--all-features`) |
-| Clippy | `--workspace --all-targets -D warnings` ✅ clean, with and without `--all-features` |
-| Code written | ~65k lines across 14 crates |
-| Plan progress | **13 of 20 work units done** (units 1–11, 13, 15) |
-| Last commit | `3824cbb Wave 3: the public document API, the spider data plane, and the Response seam` |
+| Tests | **1529 passing, 0 failing, 2 ignored** (same under `--all-features` and `--no-default-features`) |
+| Clippy | `--workspace --all-targets -D warnings` ✅ clean with default, `--all-features` and `--no-default-features` |
+| Format | `cargo fmt --all --check` ✅ clean |
+| Code written | ~81k lines across 14 crates (~58k of it `src/`) |
+| Plan progress | **15 of 20 work units done** (units 1–13, 15, 16) |
+| Last commit | see `git log` — wave 4 is the commit titled *"Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams"* |
 
-The one ignored test is `browser-markdown`'s `emit_rust_answers` — a **corpus regeneration aid**,
-not a check: it reads `$MD_CASES` and writes `$MD_OUT` for `tools/corpus/mdgold/step2_golden.py`.
-It is meant to stay ignored. (Housekeeping item 6, closed.)
+The two ignored tests are both regeneration aids, not checks, and are meant to stay ignored:
+`browser-markdown`'s `emit_rust_answers` (reads `$MD_CASES`, writes `$MD_OUT` for
+`tools/corpus/mdgold/step2_golden.py`) and one `ignore`d doc fence.
 
 Commits so far:
 
 ```
-3824cbb  Wave 3: the public document API, the spider data plane, and the Response seam
-9a29998  handoff: mark the two preservation TODOs done
-e837c0b  Preserve specs, corpus generators and the session handoff in-repo
-8228e99  Wave 2: selectors, XPath, storage, markdown, HTTP policy, browser config
-8cc1f38  Units 2/3/4/9: core, dom and fingerprint foundation crates
-fe30e17  Unit 1: workspace scaffolding for the Rust port of the reference implementation
+(wave 4)  Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams
+d78c06e   handoff: record the wave-3 commit hash
+3824cbb   Wave 3: the public document API, the spider data plane, and the Response seam
+9a29998   handoff: mark the two preservation TODOs done
+e837c0b   Preserve specs, corpus generators and the session handoff in-repo
+8228e99   Wave 2: selectors, XPath, storage, markdown, HTTP policy, browser config
+8cc1f38   Units 2/3/4/9: core, dom and fingerprint foundation crates
+fe30e17   Unit 1: workspace scaffolding for the Rust port of the reference implementation
 ```
 
-Working tree is clean. Nothing is red. Pick up at **Unit 12**, in parallel with **Unit 16**.
+Working tree is clean. Nothing is red. Pick up at **Unit 14** (the CDP browser driver) —
+**unit 17** (the crawler engine) is unblocked and parallel-safe with it.
 
 ---
 
@@ -44,11 +48,14 @@ Working tree is clean. Nothing is red. Pick up at **Unit 12**, in parallel with 
 2. **Subsystem specs** — `docs/specs/`: `parser.md`, `core-types.md`, `http-fetch.md`, `browser.md`,
    `toolbelt.md`, `spider-core.md`, `spider-support.md`, `cli-ai.md` (60–90 KB each, generated from
    the Python source; the implementers work from these, not from the Python).
-3. **`crates/browser-parser/API.md`** — the public `Document`/`Node`/`Nodes` surface. Every crate
-   from unit 12 onwards codes against this one.
+3. **`crates/browser-parser/API.md`** — the public `Document`/`Node`/`Nodes` surface, and
+   **`crates/browser-spider/API.md`** — the crawl core, now including `throttle`/`robots`/`cache`
+   and the `Response` ⇄ `FetchedResponse` seam. Every crate from unit 12 onwards codes against these.
 4. **`crates/browser-dom/API.md`** — the DOM cheat sheet underneath it.
-5. **`crates/browser-rs/tests/integration.rs`** — the cross-crate seam tests. `response_seam` is the
-   skeleton of unit 12's `Response`.
+5. **`crates/browser-rs/tests/integration.rs`** — the 18 cross-crate seam tests, and the best map of
+   how the crates fit together. `response_seam` is the executable spec unit 12 was written against;
+   `browser_response_seam` is unit 14's, and `crawl_loop_seam` is unit 17's — the latter runs a real
+   crawl (robots → cache → throttle → fetch → parse → enqueue) against a loopback server.
 6. **`docs/DIVERGENCES.md`** — every intentional behavioural difference from Python, in one place.
 
 ### The reference implementation is installed — use it
@@ -70,8 +77,10 @@ $PYREF -c "from reference.parser import Selector; print(Selector('<p>hi</p>').cs
 install lxml cssselect markdownify w3lib the reference implementation`. The Python source is then readable at
 `<venv>/lib/python3.14/site-packages/browser-rs` (or re-clone Himasnhu-AT/browser-rs from GitHub).
 
-All 49 corpus generators are in-repo at `tools/corpus/` with a `README.md` mapping each directory to
-the `testdata/` it regenerates. Their path constants were fixed for `mdgold` and `xconf` during wave 3;
+All 69 corpus generator scripts (15 directories) are in-repo at `tools/corpus/` with a `README.md` mapping each directory to
+the `testdata/` it regenerates. `u12/` and `u16/` were added in wave 4 and both carry their own
+`README.md`; `u12/`'s endpoint table is *also* interpreted by the Rust fixture server, so the two
+implementations cannot drift. Their path constants were fixed for `mdgold` and `xconf` during wave 3;
 the rest may still carry absolute paths from an older session — check before re-running.
 
 ---
@@ -81,21 +90,21 @@ the rest may still carry absolute paths from an older session — check before r
 | Crate | LOC | Status | What it is |
 |---|---:|---|---|
 | `browser-core` | 4338 | ✅ done | `Override<T>`, `TextExt` (Python `findall` group-flattening), w3lib entity port + cp1252 remap, `AttributeMap`, `round_half_even`, cookie/header parsing, tracing `LevelCounter` — **plus** a bit-exact CPython `difflib.SequenceMatcher` port, `ElementFingerprint`, `similarity_score`, `dict_diff` |
-| `browser-dom` | 4584 | ✅ done | html5ever → ego-tree arena, `ParseOptions` with the libxml2-compat passes (incl. libxml2's real `areBlanks()`), byte bodies **decoded with the caller's encoding**, `NodeRef` navigation, lxml `text`/`tail` view, libxml2-faithful serialization, edit ops |
+| `browser-dom` | 4585 | ✅ done | html5ever → ego-tree arena, `ParseOptions` with the libxml2-compat passes (incl. libxml2's real `areBlanks()`), byte bodies **decoded with the caller's encoding**, `NodeRef` navigation, lxml `text`/`tail` view, libxml2-faithful serialization, edit ops |
 | `browser-fingerprint` | 2825 | ✅ done | impersonation profiles + aliases, precomputed header sampler (replaces browserforge), `AD_DOMAINS` as a build.rs `phf::Set`, `StatusText`, launch-arg constants |
 | `browser-selectors` | 5847 | ✅ done | native CSS via Servo `selectors`+`cssparser`, `::text`/`::attr()`/`:contains()`, selector-group splitting for adaptive identifiers |
 | `browser-xpath` | 8039 | ✅ done | **hand-written XPath 1.0 engine** — 13 axes, 27 functions, full type coercion, over a `TreeModel` trait |
 | `browser-storage` | 6147 | ✅ done | `StorageSystem` trait, `SqliteStorage` (schema byte-identical to Python's, DBs interoperate both directions), `registrable_domain`, `identifier_hash` |
 | `browser-markdown` | 3651 | ✅ done | markdownify port at the reference implementation's defaults, `strip_noise_tags`, `sanitize_for_ai` |
-| `browser-parser` | 7991 | ✅ done | **unit 10** — the public `Document`/`Node`/`Nodes` API, `FindQuery`, `find_similar`, `find_by_text`/`_regex`, the four selector generators, the adaptive save/relocate branch. `API.md` is the downstream contract |
-| `browser-spider` | 7662 | 🟡 **data plane done** | **unit 15** — `Request` + SHA-1 fingerprint, `canonicalize_url`, `Scheduler`, `SessionManager` + the `CrawlSession` trait, `CrawlStats`, `ItemList` exporters, `CheckpointManager`. **`throttle.rs`, `robots.rs`, `cache.rs` (16) and `engine.rs`, `spider.rs` (17) are still stubs** |
-| `browser-http` | 6172 | 🟡 **half** | Unit 11 (config/merge/headers_job/retry/proxy — pure policy, zero I/O) done. **`backend/`, `response.rs`, `session.rs`, `redirect_safe.rs`, `blocking.rs` are still stubs** |
+| `browser-parser` | 7992 | ✅ done | **unit 10** — the public `Document`/`Node`/`Nodes` API, `FindQuery`, `find_similar`, `find_by_text`/`_regex`, the four selector generators, the adaptive save/relocate branch. `API.md` is the downstream contract |
+| `browser-http` | 15473 | ✅ done | **units 11 + 12** — policy (config/merge/headers_job/retry/proxy), the `HttpBackend` trait + `wreq` driver, the hand-rolled `follow_redirects="safe"` SSRF guard, `Response` (lazy parse, `OnceLock`), `ResponseBuilder`/`ResponseFactory`, the RFC 6265 `CookieJar`, `AsyncFetcherSession`/`AsyncFetcherClient`/`AsyncFetcher` and the blocking façade |
+| `browser-spider` | 13569 | 🟡 **all but the engine** | **units 15 + 16** — `Request` + SHA-1 fingerprint, `canonicalize_url`, `Scheduler`, `SessionManager` + `CrawlSession`, `CrawlStats`, `ItemList` exporters, `CheckpointManager`, `AutoThrottle` + `Retry-After`, the `protego` port + `RobotsTxtManager`, `ResponseCacheManager`, and the `Response` ⇄ `FetchedResponse` conversions. **`engine.rs` and `spider.rs` (unit 17) are still stubs** |
 | `browser-cdp` | 6687 | 🟡 **half** | Unit 13 (config/flags/pool/route) done. **`cdp/`, `session.rs`, `response.rs`, `cloudflare.rs` are still stubs** |
 | `browser-templates` | 49 | ❌ stub | Unit 18 |
 | `browser-cli` | 49 | ❌ stub | Unit 19 |
-| `browser-rs` (façade) | 1225 | 🟡 partial | 12 cross-crate seam tests, all passing; the re-export surface is unit 20 |
+| `browser-rs` (façade) | 2074 | 🟡 partial | 18 cross-crate seam tests, all passing; the re-export surface is unit 20 |
 
-**~65k lines across 14 crates.**
+**~81k lines across 14 crates** (~58k of it `src/`).
 
 All 14 crates are **pre-scaffolded**: every module file exists, every `pub mod` is declared, every
 dependency is wired in `[workspace.dependencies]`. Implementers fill in files; they never touch
@@ -136,6 +145,28 @@ Every finished unit was adversarially differential-tested against the real Pytho
   w3lib (plus the 4 where w3lib itself raises, pinned rather than skipped), 1605 fingerprint digests
   across 100 hand-written + 1500 seeded-fuzz rows, 22 scheduler replays, 22 `SessionManager`, 20
   `CrawlStats`, 83 byte-identical exports, 21/23 checkpoint.
+- **HTTP driver (unit 12): 2271/2271 field checks (100%)** across 188 corpus rows / 210
+  observations against `the reference implementation` + `curl_cffi==0.16.1`, driven over a two-port loopback
+  fixture. 15 rows are *declared* divergences (each asserted to still differ) and 2 fields get an
+  explicit either-of allowance because the **host** decides them. It started at 1925/2060 (93.45%)
+  and the gap was nine real bugs — the largest being the `"safe"` SSRF guard refusing *every*
+  redirect served by a private host (curl only checks a hop that needs a new connection, so the
+  guard now exempts same-origin hops), `Response.cookies` being jar-matched instead of built from
+  the final reply's `Set-Cookie` lines, a 301/302/303 keeping its request body, and `Authorization`
+  not actually being stripped cross-origin because `auth` lives outside the headers.
+  The Rust fixture server **interprets the same endpoint JSON the Python one does**, so replaying
+  the corpus needs neither Python nor a network.
+- **Spider support services (unit 16): 172,311/172,447 assertions (99.92%)** over 6,322 corpus rows
+  in nine files, against `the reference implementation` + `protego` + CPython 3.14. Per corpus: `Retry-After`
+  2858/2858, AutoThrottle 873 ops + 167 final-delay dicts + 167 constructor outcomes all bit-exact,
+  `protego` 166,839/166,848, `RobotsTxtManager` 387/392 + 21/21 cache-keying, `bytes.decode`
+  891/1000 (109 rows in nine declared codecs), cache `put` 25/25 byte-identical to `orjson`, cache
+  `get` 42/55, engine helpers 41/41. Out-of-corpus confidence runs (generated, run, reverted):
+  47,858 `Retry-After` rows → 0 mismatches; 553,948 `protego` assertions over 7,012 groups → only
+  the same 9 declared keys. Eleven bugs fixed, including CPython's `str.isspace()` covering
+  `\x1c`–`\x1f`, `_PyUnicode_TransformDecimalAndSpaceToASCII` (so `float("٣.٥") == 3.5` — a
+  previously *declared* divergence, now implemented), and a from-scratch port of
+  `email._parseaddr._parsedate_tz` that fixed eight classes of wrongly rejected HTTP date.
 - **Storage:** identical SQLite schema; a DB written by Python reads in Rust and vice-versa.
 - **difflib:** f64 bit-equality against CPython on a generated corpus.
 - **Markdown / HTTP policy / browser config:** golden corpora generated from the reference interpreter.
@@ -162,41 +193,32 @@ read it before writing anything downstream.** It also lists the 333 declared div
 documents the nine deliberate API deviations (`xpath()` rejects a scalar; `relocate` has no
 `selector_type`; `::text`/`::attr()` are optional because `Nodes::texts()`/`attrs()` exist; …).
 
-### Unit 12 — `browser-http` driver, `Response`, sessions ⬅️ **START HERE**
-*Deps: 11, 10. Parallel-safe with unit 16.*
-Files: `backend/{mod,wreq}.rs`, `response.rs`, `session.rs`, `redirect_safe.rs`, `blocking.rs`
-- `HttpBackend` trait + `wreq` impl (**pinned 0.15.3** — 0.16 needs rustc 1.98, we're on 1.97)
-- the hand-rolled `follow_redirects="safe"` SSRF guard; `max_redirects = -1` → `u32::MAX`
-- `Response { status, reason, headers, request_headers, cookies, history, meta, url, encoding, body,
-  doc: OnceLock<Document> }`, **lazy** parsing (documented deviation — Python parses eagerly), the
-  `adaptive_domain`-replaces-`url` rule
-- `AsyncFetcherSession` (pooled, cookie jar) + one-shot `AsyncFetcher`/`Fetcher` + blocking facade
+### ~~Unit 12 — `browser-http` driver, `Response`, sessions~~ ✅ **done** (wave 4)
+`backend/{mod,wreq}.rs`, `response.rs`, `session.rs`, `redirect_safe.rs`, `blocking.rs` —
+2271/2271 corpus field checks, 305 in-crate tests. What downstream units must know:
 
-**The seam is proven — read `crates/browser-rs/tests/integration.rs::response_seam` first.** It builds
-the exact `Response` shape above out of raw bytes + headers + a `SelectorConfig`, parses it lazily
-through `Document::parse_content`, runs css/xpath/find_all on it, drives a full adaptive
-save-then-relocate across **two separate responses sharing one `SqliteStorage`**, and races the lazy
-parse from two threads. Five things it settles for you:
-
-1. **`Document::parse_content(Option<&Body>, &DocumentConfig)`** is `Selector.__init__`'s
-   "content or root" check — use it, so a redirect hop with an empty body is representable.
-2. **`SelectorConfig` → `DocumentConfig` is yours to write**; it cannot live in either crate without
-   a new dependency edge. The seam test has a working version, and
-   `every_fetcher_parser_keyword_lands_somewhere_in_document_config` pins that all seven
-   `PARSER_KEYWORDS` have a home.
-3. **`adaptive_domain` replaces the URL only for storage**, via `DocumentConfig::effective_url()`;
-   `Response.url` keeps the fetched URL.
-4. **`charset=` now matters.** `browser-dom` decodes a byte body with `ParseOptions::encoding` as of
-   this wave; before it did not, and the label was dead metadata. Port
-   `__CHARSET_RE__` = `charset=["']?([\w-]+)` (the seam test carries a copy) for backends that do not
-   resolve a charset themselves.
-5. The policy types compose into an attempt loop —
-   `the_http_policy_types_compose_into_one_attempt_loop`.
-
-Owed to unit 15: `impl From<Response> for FetchedResponse` (and the reverse construction for the
-dev-mode cache replay). `a_fetched_response_round_trips_to_a_parsed_document` writes both by hand.
-`CrawlSession::fetch` takes `&Request` and **must not mutate `request.session_kwargs`** — Python had a
-bug there that turned a retried POST into a GET.
+- **`Response` is the only response type in the workspace.** `Response::builder(status, url)`
+  takes a `String` or `Bytes` body, headers, an explicit `encoding`, `history: Vec<RedirectHop>`,
+  a `SelectorConfig` and an optional `DocumentHook` (which is how adaptive storage is injected).
+  Unit 14 builds its browser responses through it — proven by
+  `crates/browser-rs/tests/integration.rs::browser_response_seam`.
+- **Two charset regexes, deliberately.** `charset_from_content_type` is the reference implementation's
+  `__CHARSET_RE__` (accepts a quoted value) and is the **browser** one unit 14 wants;
+  `charset_from_content_type_http` is `curl_cffi`'s stricter one and is what the HTTP path uses,
+  because `curl_cffi` is what resolved the charset in Python.
+- **`Response.url` is the fetched URL**; `adaptive_domain` replaces it only as the storage key,
+  readable via `Response::selector_url()`. `Response::body_text()` is the decoded body —
+  there is deliberately no `text()`, because Python's means something else.
+- **`follow_redirects="safe"`** exempts same-origin hops (scheme+host+port) from the
+  private-address check, because curl implements `CURLFOLLOW_SAFE` inside connection setup and a
+  reused connection is never re-checked. One measured difference remains, declared as corpus row
+  `redirect-close-safe`.
+- **Still open, cheap:** a non-canonical reason phrase (`299 Totally Fine`) is lost because it
+  lives in `hyper::ext::ReasonPhrase` and `wreq` does not re-export it. Adding `hyper` to
+  `crates/browser-http/Cargo.toml` closes rows `status-299` and `status-222`.
+- **Untested by the corpus and out of reach of a loopback fixture:** proxies, TLS/`verify=false`,
+  client certificates, HTTP/3, and the impersonation fingerprint itself (profiles are exercised,
+  but the JA3/JA4 bytes are never compared).
 
 ### Unit 14 — `browser-cdp` CDP driver + Cloudflare solver
 *Deps: 13, 12. Not parallel. The hardest unit left.*
@@ -210,9 +232,34 @@ Files: `cdp/{mod,networkidle,fetch_domain,isolated_world,history}.rs`, `session.
   100×100 ms, click offsets x+26..28 / y+25..27, hold 100..200 ms)
 - **deliberate deviation:** Python's `frame_element().is_visible()` loop is unbounded; give it the
   request `timeout` as a deadline — an unbounded loop in an async task is a hang, not a slow request
-- its `Response` is the same shape as unit 12's; share the `SelectorConfig` → `DocumentConfig` mapping
-  rather than writing a second one. `__extract_browser_encoding` is *only* used on this side in
-  Python (`curl_cffi` resolves the charset for the HTTP engines), and it now has real effect.
+
+**The response half is already settled — do not write a second `Response`.**
+`crates/browser-rs/tests/integration.rs::browser_response_seam` builds a browser-shaped response
+out of exactly what CDP gives you (a rendered `String`, a status, a `Network.responseReceived`
+header map and `redirectResponse` hops), drives it through the same reader as an HTTP-driven one,
+and runs a full adaptive save-then-relocate on it. Copy `from_browser_page` out of that test:
+
+```rust
+let encoding = headers.get("content-type")
+    .and_then(|v| browser_http::response::charset_from_content_type(v))   // __CHARSET_RE__
+    .unwrap_or("utf-8");
+let mut builder = browser_http::response::Response::builder(status, url)
+    .method(Method::Get)
+    .body(rendered_html)          // a String; the declared encoding round-trips it
+    .headers(headers)
+    .encoding(encoding)
+    .history(hops)                // Vec<RedirectHop> from redirectResponse
+    .selector_config(selector_config);
+if let Some(storage) = storage {                     // adaptive storage goes in through the hook
+    builder = builder.document_hook(Arc::new(move |c| c.storage(Arc::clone(&storage))));
+}
+builder.build()
+```
+
+Use `charset_from_content_type` (the quote-tolerant `__CHARSET_RE__`), **not**
+`charset_from_content_type_http`: `__extract_browser_encoding` is only used on this side in
+Python, because `curl_cffi` resolves the charset for the HTTP engines — and now that
+`browser-dom` really decodes with the label, it has a real effect.
 
 ### ~~Unit 15 — `browser-spider` data plane~~ ✅ **done** (wave 3)
 `request.rs`, `canonicalize.rs`, `scheduler.rs`, `session.rs`, `stats.rs`, `items.rs`, `checkpoint.rs`
@@ -223,17 +270,50 @@ Files: `cdp/{mod,networkidle,fetch_domain,isolated_world,history}.rs`, `session.
 - **`CheckpointManager` is JSON, not pickle** (declared divergence): a `checkpoint.pkl` written by
   Python is not resumable, by design. `save` re-raises, `cleanup` swallows.
 
-### Unit 16 — spider support services *(deps 15; parallel-safe with 12 and 14)*
-`throttle.rs` (AutoThrottle: exact `record` formula, `[2,4,8,16,32]` doubling, per-domain DashMap entry
-lock **not** a global lock), `robots.rs` (netloc-keyed cache, any-failure-degrades-to-permissive,
-`Request-rate` pre-scan), `cache.rs` (base64 JSON, never raises from put, no TTL).
+### ~~Unit 16 — spider support services~~ ✅ **done** (wave 4)
+`throttle.rs`, `robots.rs`, `cache.rs` — 172,311/172,447 differential assertions, 246 tests.
+Three things unit 17 must know:
 
-### Unit 17 — spider engine *(deps 15, 16)*
+- **`AutoThrottle::delay_for` is a write** (it seeds the domain), and `record` holds the domain's
+  `DashMap` entry guard for the whole read-modify-write — so **never call `delay_for` from inside
+  `record`**; that deadlocks.
+- **`RobotsTxtManager` has no single-flight.** Two concurrent misses for one netloc both fetch and
+  the last writer wins, faithfully to Python. The fetch-count corpus pins it; adding one would be
+  a strict improvement and no test forbids it.
+- **`ResponseCacheManager::put` never fails a crawl** — every error is logged and swallowed, and
+  the `bool` only reports whether the entry landed. Any unreadable or type-mismatched entry is an
+  ordinary miss.
+
+Six divergence families are written up in `docs/DIVERGENCES.md` under "Unit 16"; the one that is
+really a **to-do for unit 17** is item 3: default `FetchedResponse::encoding` to `"utf-8"` instead
+of `""`, which is in `session.rs` and removes a whole declared divergence.
+
+### Unit 17 — spider engine ⬅️ **UNBLOCKED, and parallel-safe with 14**
+*Deps: 15, 16 — both done.*
 `engine.rs`, `spider.rs`. The `Spider` trait replacing Python subclassing; `CrawlerEngine` with the
 Notify-driven loop, global spawn cap + per-domain semaphores, the exact `_process_request` ordering
 (robots → cache replay → limiter → delay → fetch → cache write → block detection → autothrottle
 feedback → retry-or-callback), Request-before-Item dispatch, the pause/force-stop ladder with
 **checkpoint saved before cancel**, streaming via `mpsc::channel(100)`, `ctrl_c()` in the select loop.
+
+**The whole loop already runs.** `crates/browser-rs/tests/integration.rs::crawl_loop_seam` writes
+`_process_request`'s ordering out by hand against a **real** `AsyncFetcherSession` and a loopback
+HTTP server, using `Scheduler`, `SessionManager`, `RobotsTxtManager`, `AutoThrottle`,
+`ResponseCacheManager`, `CrawlStats` and unit 12's fetcher — and asserts that a `robots.txt`
+`Disallow` stops a fetch *before* it happens, that de-duplication holds, that a 429 feeds
+`Retry-After` into `AutoThrottle::record`, and that a second pass replays entirely from cache
+without touching the server. Unit 17 has nothing left to invent, only to arrange. Three concrete
+starting jobs:
+
+1. **Promote `crawl_loop_seam::HttpCrawlSession` into `browser-spider`** — `CrawlSession` over
+   `AsyncFetcherSession`, about thirty mechanical lines. Then extend its `SessionKwargs` →
+   `RequestOverrides` mapping past `method`/`headers`/`json` to `proxy`, `proxies`, `timeout` and
+   the opaque `extra`, which the test does not need and a real crawl does.
+2. **Default `FetchedResponse::encoding` to `"utf-8"`** in `session.rs`, which deletes a declared
+   unit-16 divergence (`docs/DIVERGENCES.md`, unit 16 item 3).
+3. **Drop `httpdate` and `texting_robots`** from `crates/browser-spider/Cargo.toml`. Both are now
+   unused — unit 16 replaced the date parser with a `_parsedate_tz` port over `chrono::NaiveDate`,
+   and `texting_robots` was never used at all. That file was off-limits to unit 16; it is yours.
 
 ### Unit 18 — `browser-templates` *(parallel-safe with 19)*
 `LinkExtractor` (13 kwargs, `IGNORED_EXTENSIONS`, `strip_html5_whitespace` — the five HTML5 space chars
@@ -249,7 +329,7 @@ with the `.md`/`.html`/`.txt` mode map, `--ai-targeted`, `BROWSER_RS_EXECUTABLE_
 
 ### Unit 20 — façade, docs, conformance, benchmarks
 `crates/browser-rs/src/{lib,prelude}.rs` re-export surface + feature flags, end-to-end tests against a
-`wiremock` server, criterion benches (`parse`, `relocate`, `markdown` — the spec pins parse of 5000
+local server, criterion benches (`parse`, `relocate`, `markdown` — the spec pins parse of 5000
 nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), finished README,
 `DIVERGENCES.md`, runnable examples for the four entry points.
 
@@ -258,11 +338,11 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
 ## Housekeeping TODOs (small, do them early)
 
 1. ~~Copy `specs/` into the repo~~ — **done**, commit `e837c0b`. Now at `docs/specs/` (684 KB).
-2. ~~Move the corpus generators into the repo~~ — **done**, commit `e837c0b`. All 49 scripts now at
+2. ~~Move the corpus generators into the repo~~ — **done**, commit `e837c0b`. All 69 scripts now at
    `tools/corpus/`, with a `README.md` mapping each directory to the testdata it regenerates.
    `mdgold` and `xconf` had their absolute paths fixed in wave 3 and were re-run successfully;
-   `u10` and `u15` were written in-repo. The rest may still carry paths from the original session —
-   check the constants at the top before re-running.
+   `u10`, `u12`, `u15` and `u16` were written in-repo and carry no absolute paths. The rest may
+   still carry paths from the original session — check the constants at the top before re-running.
 3. ~~Fix `browser-dom`'s `remove_blank_text`~~ — **done.** It now implements libxml2's
    `areBlanks()`, established empirically against libxml2 2.14.6 rather than read off a header.
    That closed 5 CSS `:empty` rows, 3 XPath conformance divergences and all 7 markdown pipeline
@@ -281,6 +361,15 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
    its golden files store only the stripped form and its generator is **not** in `tools/corpus/`.
    Now mostly moot (the inputs in `testdata/normalized/` are minified), but if anyone regenerates
    that corpus, tighten the comparison at the same time.
+8. **`wiremock` is declared in `[workspace.dependencies]` and is not in `Cargo.lock`.** Nothing uses
+   it, and pulling it in needs crates.io, which is not reachable here. The two local-server test
+   fixtures written so far are hand-rolled `std::net` listeners
+   (`crates/browser-http/tests/u12_support/mod.rs` and `crawl_loop_seam::Fixture` in the façade's
+   integration test); unit 20 should either vendor `wiremock` deliberately or drop the line.
+9. **`hyper` is not a `browser-http` dependency**, which is the only reason a non-canonical reason
+   phrase is lost (corpus rows `status-299`, `status-222`). One line in `Cargo.toml` closes it.
+10. **`httpdate` and `texting_robots` are unused** by `browser-spider` and still listed in its
+    `Cargo.toml`. Unit 17 owns that file now — see its TODO.
 
 ---
 
@@ -300,8 +389,18 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
   unassigned).
 - **Checkpoints are JSON, not pickle.** Directory layout, atomic write, `interval` semantics and log
   lines all preserved.
-- **Lazy `Response` parsing** (Python parses eagerly, even for binary bodies). Proven to work end to
-  end by `response_seam` before unit 12 exists.
+- **Lazy `Response` parsing** (Python parses eagerly, even for binary bodies). Designed by
+  `response_seam` before unit 12 existed, and shipped in unit 12's real `Response` behind a
+  `OnceLock`, which is what keeps it `Send + Sync`.
+- **`follow_redirects="safe"` exempts same-origin hops.** curl runs `CURLFOLLOW_SAFE` inside
+  connection setup, so a hop that reuses the open connection is never checked; a port that does not
+  own the connection pool cannot see reuse. The security property is unchanged — a redirect still
+  cannot pivot to an address the caller had not already reached. Corpus row `redirect-close-safe`.
+- **`Response.url` is the fetched URL, not `adaptive_domain`.** Python's substitution quietly breaks
+  `urljoin`; here the domain is only the adaptive storage key (`Response::selector_url()`).
+- **Nine `robots.txt` text codecs decode as UTF-8** (all ASCII supersets, so the ruleset is
+  identical), and a `Request-rate` denominator larger than `i64` is ignored. See `DIVERGENCES.md`
+  §"Unit 16".
 - **Encoding labels go through WHATWG, not `iconv`** — `iso-8859-1`/`latin1`/`ascii` are aliases of
   windows-1252, so the 32 bytes `0x80..=0x9F` differ; and an encoding problem never destroys the
   document (Python raises `LookupError`, or lxml returns an empty tree, where we warn and degrade to
@@ -334,9 +433,14 @@ The pattern that worked, and is worth repeating:
    `build`/`test`/`clippy`/`fmt`, write a composition test proving the next wave's seam works, append
    to `DIVERGENCES.md`, and commit.
 
-Waves 1–3 are done (units 1–11, 13, 15). Remaining: **12 + 16 in parallel**, then **14**, then **17**,
-then **18 + 19**, then **20**. Unit 12 is the one everything else waits on — 14 needs its `Response`
-shape and 17 needs a real `CrawlSession`.
+Waves 1–4 are done (units 1–13, 15, 16). Remaining: **14 + 17 in parallel** (they touch disjoint
+crates and 17 no longer waits on 14), then **18 + 19** in parallel, then **20**.
+
+Wave 4 added a fourth job to the green agent's list that is worth keeping: **write the next wave's
+seam test before the next wave starts.** `browser_response_seam` and `crawl_loop_seam` in
+`crates/browser-rs/tests/integration.rs` are what turned three vague API questions into three small
+commits (`From<&Response> for FetchedResponse`, `FetchedResponse::response_builder`, and
+`Method`/`HttpMethod` conversions) instead of into a merge conflict two weeks later.
 
 ```bash
 cd /Users/himanshu/codes/browser-rs

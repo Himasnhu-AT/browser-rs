@@ -484,6 +484,14 @@ read off the reference interpreter.
 
 ## Local abstractions unit 12 still has to wire up
 
+> **Status after unit 12 landed:** the `SelectorConfig` → `DocumentConfig` mapping is
+> `browser_http::response::document_config`, and the `__CHARSET_RE__` seam is
+> `charset_from_content_type` (the browser pattern) plus `charset_from_content_type_http`
+> (`curl_cffi`'s, which is what `Response.encoding` uses — see unit 12's list below).
+> `impl From<Response> for FetchedResponse` is still open and belongs to unit 17, because
+> `browser-spider` depends on `browser-http` and not the reverse.
+
+
 Not divergences — open seams, recorded so the next session does not rediscover them:
 
 * **`FetchedResponse` is unit 15's stand-in for `Response`.** `browser-spider` does not
@@ -506,3 +514,223 @@ Not divergences — open seams, recorded so the next session does not rediscover
   re-exports, so the session pool implements `CrawlSession` without a translation layer.
   The one contract to honour is the pinned invariant in `spider/session.rs`:
   `fetch` takes `&Request` and must not mutate `request.session_kwargs`.
+
+---
+
+## Unit 12 — `browser-http` (the driver, `Response`, sessions, the `"safe"` guard)
+
+Everything below was **measured**, not reasoned about: `tools/corpus/u12` serves a
+declarative ~90-endpoint fixture over two loopback ports, drives 188
+(endpoint × fetcher-argument) rows through the real `the reference implementation` /
+`curl_cffi==0.16.1`, and `crates/browser-http/tests/u12_http_golden.rs` replays the same
+rows against the same fixture in Rust and compares 2271 fields. **2271/2271 agree**, with
+the 15 divergences below declared in the test — each one asserted to *still* differ, so the
+test fails if the port ever starts matching and nobody notices.
+
+### What `follow_redirects="safe"` actually does — and where this port differs
+
+`CURLFOLLOW_SAFE` (=4) is a curl-impersonate extension, documented only as "reject
+redirects to internal/private IP addresses". Probing the reference pins it down much
+further, and two of the findings are load-bearing:
+
+1. **The check runs only when the hop needs a new connection.** `Fetcher.get` with the
+   default `follow_redirects="safe"` follows `http://127.0.0.1:P/r` → `/end` happily, and
+   refuses the identical hop the moment the host *or the port* changes —
+   `127.0.0.1:P` → `127.0.0.1:Q` and `127.0.0.1:P` → `localhost:P` are both refused with
+   `curl: (7) Redirect to internal IP 127.0.0.1 rejected (SSRF protection)`. The guard here
+   reproduces that as a **same-origin exemption** (scheme + host + port), which is the
+   closest a port that does not own the connection pool can get.
+2. **Consequence, and the one declared difference:** curl checks a same-origin hop when the
+   reply carried `Connection: close`, because it must dial again; this port does not.
+   Corpus row `redirect-close-safe`. The security property that matters is unchanged — a
+   redirect still cannot *pivot* to an address the caller had not already reached.
+
+Two smaller guard differences, both declared:
+
+3. **Non-HTTP(S) redirect targets are refused in every mode.** curl_cffi's build enables
+   FTP in redirects, so `follow_redirects=True` really does dial `ftp://127.0.0.1:9`; this
+   port refuses it, matching curl's own `CURLOPT_REDIR_PROTOCOLS` default. Rows
+   `redirect-toftp-true`, `redirect-toftp-safe` (where curl also orders the two checks the
+   other way round and reports `ssrf` rather than `protocol`). `file:` is refused by both.
+4. **Four extra non-routable ranges** beyond `ARCHITECTURE.md` §2.3's ten (IPv4 multicast
+   `224/4`, the limited broadcast address, `198.18/15`, and the unspecified `::`). No
+   corpus row separates them; they are strictly a superset.
+
+### `Response` fidelity fixes this unit made (not divergences — bugs found and closed)
+
+Recorded because each was wrong before the differential run and each is now pinned:
+
+* **`Response.cookies` is the final reply's `Set-Cookie` lines, not the jar.** `curl_cffi`
+  builds it with `http.cookies.SimpleCookie` from the last response alone: no expiry check
+  (a `Max-Age=0` cookie *appears*), no domain/path/`Secure` matching (a `Secure` cookie
+  delivered over plain HTTP appears), and nothing from a redirect hop. The jar is a separate
+  thing and keeps its own, correct RFC 6265 rules.
+* **Repeated headers fold on `", "` — cookies included.** `dict(response.headers)` joins the
+  multidict that way without special-casing `Set-Cookie`, `Expires` comma and all, so
+  `WireResponse` reports the unfolded lines separately in `set_cookies` and both the jar and
+  `Response.cookies` read *that*.
+* **`Response.encoding` uses `curl_cffi`'s `charset=([\w-]+)`, which does not accept a
+  quoted value.** `Content-Type: text/html; charset="windows-1252"` resolves to **`utf-8`**
+  over HTTP. the reference implementation's own `__CHARSET_RE__` (`charset=["\']?([\w-]+)`) *does* accept
+  quotes, but it is only ever applied to browser responses; both are now separate functions.
+* **A 301/302/303 always drops the body, even when the method survives.** `PUT` with `data=`
+  through a 303 arrives as a bodiless `PUT` — the method table said the body survived.
+* **The `Content-Type` the dropped body implied stays on the wire.** curl clears the payload
+  but not the headers.
+* **A raw `data=` payload is labelled `application/octet-stream`,** which is what `curl_cffi`
+  sends; the port sent no `Content-Type` at all.
+* **Cookies are not stripped on a cross-origin hop; `Authorization` is.** Cookies are scoped
+  by the jar's domain and path rules rather than by origin, so curl sends a `127.0.0.1`
+  cookie to `127.0.0.1:9999` (cookies ignore ports) and never sends it to another host. A
+  per-request `cookies=` is now seeded into a request-scoped overlay jar with `Path=/` at the
+  request host, which is exactly what `Cookies.get_cookies_for_curl` does. `WireRequest.auth`
+  is cleared alongside the `Authorization` header, which it was not before.
+* **obs-fold header continuations are accepted.** libcurl still reads them; hyper rejects
+  them by default and the whole exchange failed. `wreq`'s
+  `allow_obsolete_multiline_headers_in_responses` is now on.
+
+### Transport-level divergences that cannot be closed under the `wreq` 0.15.3 pin
+
+5. **A non-canonical reason phrase is lost.** hyper keeps it in
+   `hyper::ext::ReasonPhrase`, a type this crate cannot name without a direct hyper
+   dependency (wreq does not re-export it). `299 Totally Fine` and an empty reason phrase
+   both read as `StatusText`'s `Unknown Status Code`. Every status with a canonical phrase
+   matches exactly. Rows `status-299`, `status-222`.
+6. **`Content-Encoding` and `Content-Length` disappear once the body is decoded.** wreq's
+   transparent decoder removes both, on the grounds that neither still describes what
+   `body()` holds; curl leaves them in place. The decoded bytes match byte for byte. Rows
+   `encoding-gzip`, `encoding-deflate`, `encoding-br`, `encoding-gzip-chunked`.
+7. **A raw (headerless) deflate stream is rejected.** libcurl sniffs zlib-vs-raw; wreq
+   decodes `deflate` strictly as zlib. RFC 9110 says `deflate` means zlib, so the *fixture*
+   is the non-conforming party — but Python accepts it and this port does not. Row
+   `encoding-deflate-raw`.
+8. **The `Cookie:` header carries the same pairs in a different order.** libcurl emits its
+   cookie list in reverse insertion order (a list-prepend artifact); the jar here emits
+   insertion order. RFC 6265 §5.4 makes the order non-semantic and mimicking the artifact is
+   not worth pinning. Rows `echo-cookies`, `session-cookie-multi`.
+9. **An unknown charset label does not raise.** `Content-Type: charset=definitely-not-a-charset`
+   makes Python raise `LookupError` out of `Selector.__init__`; this port warns and decodes as
+   UTF-8. Already listed above as a `browser-dom` decoding divergence; row
+   `charset-unknown-label` is where it becomes observable on a `Response`.
+10. **`cert=`, `http3=`, `interface=` and SOCKS proxies.** wreq 0.15.3 has no `ClientBuilder`
+    entry point for client certificates (refused with `TransportError::Build` rather than
+    silently ignored), no QUIC (a `http3=true` warns and sends HTTP/2, which is what Python
+    does for `http3` + `impersonate` anyway), `interface=` is `#[cfg]`-gated upstream so it is
+    not offered at all, and SOCKS needs a wreq feature the workspace pin does not enable.
+
+### Non-transport notes
+
+11. **`Response.url` is the URL actually fetched.** Python passes
+    `url=(adaptive_domain or url)` into `Selector.__init__`, which makes `response.url` report
+    the *domain* when `adaptive_domain` is set — and quietly breaks `urljoin`. Here
+    `adaptive_domain` replaces the URL only as the adaptive **storage key**
+    (`DocumentConfig::effective_url`); `Response::selector_url()` returns what Python's
+    `Response.url` would have said.
+12. **`Response::text()` does not exist.** Python's `Response.text` is inherited from
+    `Selector` and returns the *root element's* text, usually empty — not the body. The
+    decoded body is `Response::body_text()`, so one name cannot mean two things.
+13. **Parsing is lazy** (already declared): the first `css`/`xpath`/`find_all` parses, behind
+    a `OnceLock`, so `Response` stays `Send + Sync`. lxml runs in `recover=True`, so the eager
+    parse never raised and nothing observable changes.
+14. **`request_headers` reports the set, not the sequence.** The on-the-wire order is the
+    emulation profile's `headers_order`, which is the fingerprint-correct choice; Python
+    reports dict insertion order.
+15. **The one-shot `Fetcher` shares a pooled connection cache** instead of building and
+    closing a client per call (`ARCHITECTURE.md` §6.5 sanctions this). The observable half is
+    preserved: every one-shot request gets a brand-new, empty `CookieJar`, pinned by corpus
+    row `oneshot-cookie-isolation`.
+
+---
+
+## Unit 16 — `browser-spider` support services (`throttle.rs`, `robots.rs`, `cache.rs`)
+
+Verified against `the reference implementation` + `protego` + CPython 3.14 over 6,322 corpus rows in nine
+files, 172,447 differential assertions, 172,311 of them exact (**99.92 %**). Everything below is
+one of the 136 that are not, and every one is pinned by a `DIVERGENCES` table in
+`crates/browser-spider/tests/u16_*_golden.rs` that **fails the test if it ever starts
+reproducing**.
+
+1. **`Request-rate` with an integer no `i64` can hold.** `Request-rate: 1/99999999999999999999`
+   gives Python (whose ints are unbounded) a per-request delay of roughly three thousand years;
+   `RequestRate::seconds` is an `i64`, so the port ignores the directive instead. 9 corpus keys,
+   one cause. Pinned in `u16_robots_golden.rs::DIVERGENCES`.
+2. **Nine text codecs resolve but decode as UTF-8.** `cp1251`, `koi8_r`, `iso8859_15`,
+   `mac_roman`, `big5`, `gb2312`, `shift_jis`, `utf_7` and `unicode_escape` are accepted as
+   labels — so a body carrying them is *not* treated as the `LookupError` that would make the
+   domain allow everything — but the bytes are read as UTF-8. Every one is an ASCII superset and
+   every `robots.txt` directive is ASCII, so the resulting **ruleset is identical**; only
+   non-ASCII bytes inside comments and paths differ. 109 corpus rows. Implementing them properly
+   means carrying ~90 single- and double-byte tables into this crate for no behavioural gain.
+   (UTF-16 and UTF-32 *are* implemented, BOMs included — those change the ruleset.)
+3. **An empty `FetchedResponse::encoding` is read as "unset", not as the empty codec label.**
+   Python's `Response.encoding` defaults to `"utf-8"` and can never be empty; `FetchedResponse`
+   derives `Default` and gets `""`. Treating that as a label would make `bytes.decode("")` raise
+   and every such `robots.txt` silently allow everything — the dangerous direction — so
+   `RobotsTxtManager::parser_for` decodes UTF-8 instead. `decode_robots_body(body, "")` called
+   directly still answers `None`, exactly like CPython. 5 corpus keys. **The real fix belongs to
+   unit 17:** default `FetchedResponse::encoding` to `"utf-8"` at construction.
+4. **A hand-corrupted cache file whose values Python leaves untyped is a miss, not a replay.**
+   `status: null` / `"200"` / `200.5` / `-1` / `1e20`, `url: null`, `reason: null`,
+   `encoding: null`, `headers: []`, `method: 7` and friends all deserialise into Python's
+   `Response(**data)` and produce *something*; a typed `FetchedResponse` cannot represent them,
+   so the entry is treated as a cache miss and the request is re-fetched. 13 rows. None of these
+   files is reachable from `ResponseCacheManager::put` — they only exist if something else wrote
+   the directory.
+5. **`AutoThrottle::delays()` is sorted by domain, not insertion-ordered.** Python hands the
+   engine `dict(autothrottle.delays)`. The port's store is a `DashMap`, which has no insertion
+   order at all, so the snapshot is a `BTreeMap` — deterministic rather than arrival-order
+   dependent. Only observable in `stats.autothrottle_delays`.
+6. **A NaN `autothrottle_target_concurrency` is rejected.** Python's guard is
+   `target_concurrency <= 0`, and `nan <= 0` is `False`, so a NaN slips through and then poisons
+   every delay for the rest of the crawl by way of `latency / nan`. `AutoThrottleConfig::validate`
+   rejects NaN with the same `TargetConcurrency` error. Pinned by `u16_throttle_golden.rs`.
+7. **`RobotsTxtManager` has no in-flight de-duplication** — two concurrent misses for one netloc
+   both fetch and the last writer wins. Faithful to Python, which has no lock either, and the
+   fetch-count corpus pins it. A single-flight would be a strict improvement and no test forbids
+   one.
+
+### Fixed here, not divergences
+
+The differential pass closed eleven real bugs, the largest of which were: CPython's
+`str.isspace()` covering `\x1c`–`\x1f` (which `char::is_whitespace` does not, so
+`Retry-After: "\x1c5"` answered `None`); every CPython string→number conversion running
+`_PyUnicode_TransformDecimalAndSpaceToASCII` first, so `float("٣.٥") == 3.5` and
+`Crawl-delay: ٥` is `5.0` — this had previously been *declared* a permanent divergence and is
+now implemented; the HTTP-date branch being replaced by a direct port of CPython's
+`email._parseaddr._parsedate_tz`, which fixed eight separate classes of wrongly rejected header
+(a mismatched day-of-week name, trailing junk, a parenthesised comment, RFC 850 with a four-digit
+year, the `dd-mmm-yy` form, `asctime` with a zone, the `_timezones` names, and the POSIX 69/68
+two-digit-year window); `decode_body` falling back to UTF-8 for an unknown label, which made the
+port *apply* rules Python ignores; `prefetch_urls` dropping start URLs with no netloc and
+defaulting a missing scheme to `https`, neither of which `_prefetch_robots_txt` does; and
+`b64decode(validate=False)` silently discarding non-alphabet characters, so `" aGk= "` is a cache
+**hit** in Python and had been a miss here.
+
+---
+
+## Wave 4 integration — the seams for units 14 and 17
+
+Nothing below is a difference from Python; they are the port's own cross-crate decisions, made
+while proving that units 14 and 17 can be written from what exists. All three are exercised by
+`crates/browser-rs/tests/integration.rs`.
+
+1. **There is exactly one `Response` type.** Unit 14's CDP driver produces an already-rendered
+   `String`, a status and a header map — never bytes off a socket — and it still builds
+   `browser_http::response::Response` through `Response::builder(...)`, with
+   `charset_from_content_type` (the quote-tolerant *browser* regex, the reference implementation's
+   `__CHARSET_RE__`) supplying the encoding and `RedirectHop`s assembled from
+   `redirectResponse` events. `browser_response_seam` drives a browser-built and an
+   HTTP-driven response through the same monomorphic reader, the same adaptive
+   save-then-relocate and the same `DocumentHook`. A second `Response` type would be a bug.
+2. **`Response` ⇄ `FetchedResponse` lives in `browser-spider`.** `browser-spider` depends on
+   `browser-http` and not the reverse, so `impl From<&Response> for FetchedResponse` and
+   `FetchedResponse::response_builder()` are in `crates/browser-spider/src/session.rs`. The
+   round trip drops two fields on purpose: `history`, because `RedirectHop` carries each hop's
+   status/reason/headers and a `FetchedResponse` only kept the URLs (Python's cache replay also
+   rebuilds with `history=[]`), and `meta`, because it is the crawl's merged metadata rather than
+   the transport's and `attach_request` rebuilds it.
+3. **`browser_http::backend::Method` and `browser_core::types::HttpMethod` stay separate,
+   with a `From` in both directions.** They name the same closed set of four verbs, but
+   `browser-spider`'s `Request` is serialised into a checkpoint file and a transport type has
+   no business in that format. The conversions in `crates/browser-http/src/backend/mod.rs` are
+   the single seam between them.

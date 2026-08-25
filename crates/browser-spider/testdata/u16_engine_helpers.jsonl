@@ -1,0 +1,41 @@
+{"kind": "prefetch_urls", "name": "prefetch_0", "seed_urls": [], "start_urls": []}
+{"kind": "prefetch_urls", "name": "prefetch_1", "seed_urls": ["https://a.com/"], "start_urls": ["https://a.com/one"]}
+{"kind": "prefetch_urls", "name": "prefetch_2", "seed_urls": ["https://a.com/"], "start_urls": ["https://a.com/one", "https://a.com/two"]}
+{"kind": "prefetch_urls", "name": "prefetch_3", "seed_urls": ["https://a.com/"], "start_urls": ["https://a.com/one", "http://a.com/two"]}
+{"kind": "prefetch_urls", "name": "prefetch_4", "seed_urls": ["https://a.com/", "https://b.com/"], "start_urls": ["https://a.com/one", "https://b.com/two", "https://a.com/three"]}
+{"kind": "prefetch_urls", "name": "prefetch_5", "seed_urls": ["http://b.com:8080/", "http://b.com/"], "start_urls": ["http://b.com:8080/x", "http://b.com/y"]}
+{"kind": "prefetch_urls", "name": "prefetch_6", "seed_urls": ["https://A.com/", "https://a.com/"], "start_urls": ["https://A.com/x", "https://a.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_7", "seed_urls": ["https://user:pw@a.com/", "https://a.com/"], "start_urls": ["https://user:pw@a.com/x", "https://a.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_8", "seed_urls": ["://a.com/"], "start_urls": ["//a.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_9", "seed_urls": [":///"], "start_urls": ["a.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_10", "seed_urls": [":///"], "start_urls": ["/relative"]}
+{"kind": "prefetch_urls", "name": "prefetch_11", "seed_urls": [":///"], "start_urls": ["relative/path"]}
+{"kind": "prefetch_urls", "name": "prefetch_12", "seed_urls": [":///"], "start_urls": [""]}
+{"kind": "prefetch_urls", "name": "prefetch_13", "seed_urls": [":///", "https://a.com/"], "start_urls": ["", "https://a.com/x", ""]}
+{"kind": "prefetch_urls", "name": "prefetch_14", "seed_urls": ["ftp://a.com/"], "start_urls": ["ftp://a.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_15", "seed_urls": ["https://[::1]:8080/"], "start_urls": ["https://[::1]:8080/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_16", "seed_urls": ["https://a.com/"], "start_urls": ["https://a.com"]}
+{"kind": "prefetch_urls", "name": "prefetch_17", "seed_urls": ["https://a.com/"], "start_urls": ["https://a.com?q=1", "https://a.com#f"]}
+{"kind": "prefetch_urls", "name": "prefetch_18", "seed_urls": ["https://a.com/", ":///", "https://b.com/"], "start_urls": ["https://a.com/x", "/relative", "https://b.com/y", "relative"]}
+{"kind": "prefetch_urls", "name": "prefetch_19", "seed_urls": ["mailto:///"], "start_urls": ["mailto:someone@example.com"]}
+{"kind": "prefetch_urls", "name": "prefetch_20", "seed_urls": ["https://exämple.com/"], "start_urls": ["https://exämple.com/x"]}
+{"kind": "prefetch_urls", "name": "prefetch_21", "seed_urls": ["https://a.com./", "https://a.com/"], "start_urls": ["https://a.com./x", "https://a.com/x"]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.0, "delay_bits": 0, "download_delay": 0.0, "download_delay_bits": 0, "kind": "domain_delay", "name": "delay_0", "request_rate": null}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_1", "request_rate": null}
+{"crawl_delay": 2.0, "crawl_delay_bits": 4611686018427387904, "delay": 2.0, "delay_bits": 4611686018427387904, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_2", "request_rate": null}
+{"crawl_delay": 0.5, "crawl_delay_bits": 4602678819172646912, "delay": 2.0, "delay_bits": 4611686018427387904, "download_delay": 2.0, "download_delay_bits": 4611686018427387904, "kind": "domain_delay", "name": "delay_3", "request_rate": null}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 10.0, "delay_bits": 4621819117588971520, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_4", "request_rate": [1, 10]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_5", "request_rate": [10, 1]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_6", "request_rate": [0, 10]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_7", "request_rate": [-1, 10]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_8", "request_rate": [3, 0]}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 0.5, "delay_bits": 4602678819172646912, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_9", "request_rate": [1, -10]}
+{"crawl_delay": 2.0, "crawl_delay_bits": 4611686018427387904, "delay": 10.0, "delay_bits": 4621819117588971520, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_10", "request_rate": [1, 10]}
+{"crawl_delay": 20.0, "crawl_delay_bits": 4626322717216342016, "delay": 20.0, "delay_bits": 4626322717216342016, "download_delay": 0.5, "download_delay_bits": 4602678819172646912, "kind": "domain_delay", "name": "delay_11", "request_rate": [1, 10]}
+{"crawl_delay": 0.0, "crawl_delay_bits": 0, "delay": 0.0, "delay_bits": 0, "download_delay": 0.0, "download_delay_bits": 0, "kind": "domain_delay", "name": "delay_12", "request_rate": [1, 0]}
+{"crawl_delay": "inf", "crawl_delay_bits": 9218868437227405312, "delay": "inf", "delay_bits": 9218868437227405312, "download_delay": 1.0, "download_delay_bits": 4607182418800017408, "kind": "domain_delay", "name": "delay_13", "request_rate": null}
+{"crawl_delay": "nan", "crawl_delay_bits": 9221120237041090560, "delay": 1.0, "delay_bits": 4607182418800017408, "download_delay": 1.0, "download_delay_bits": 4607182418800017408, "kind": "domain_delay", "name": "delay_14", "request_rate": null}
+{"crawl_delay": 1.0, "crawl_delay_bits": 4607182418800017408, "delay": "nan", "delay_bits": 9221120237041090560, "download_delay": "nan", "download_delay_bits": 9221120237041090560, "kind": "domain_delay", "name": "delay_15", "request_rate": null}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": 1e+18, "delay_bits": 4876203697187506176, "download_delay": 1.0, "download_delay_bits": 4607182418800017408, "kind": "domain_delay", "name": "delay_16", "request_rate": [1, 1000000000000000000]}
+{"crawl_delay": -5.0, "crawl_delay_bits": 13840687554816376832, "delay": 1.0, "delay_bits": 4607182418800017408, "download_delay": 1.0, "download_delay_bits": 4607182418800017408, "kind": "domain_delay", "name": "delay_17", "request_rate": null}
+{"crawl_delay": null, "crawl_delay_bits": null, "delay": -1.0, "delay_bits": 13830554455654793216, "download_delay": -1.0, "download_delay_bits": 13830554455654793216, "kind": "domain_delay", "name": "delay_18", "request_rate": null}

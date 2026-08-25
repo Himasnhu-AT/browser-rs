@@ -193,10 +193,134 @@ impl SessionManager {
 `start`, `close` and `fetch` take `&self`, so the engine can hold an `Arc<SessionManager>`;
 only `add` / `remove` / `pop` need `&mut`, which is exactly the `configure_sessions` phase.
 
-**`FetchedResponse` is the seam for work unit 12.** When `browser_http::response::Response`
-exists, implement `CrawlSession` for the pooled HTTP session and convert on the way out
-(`From<Response> for FetchedResponse`), and add the reverse conversion for the dev-mode cache.
-Nothing in this crate needs to change.
+**The unit-12 seam is wired.** `browser-spider` depends on `browser-http`, so both
+conversions live here:
+
+```rust
+impl From<&browser_http::response::Response> for FetchedResponse;
+impl From<browser_http::response::Response>  for FetchedResponse;
+impl FetchedResponse {
+    /// Widen back into unit 12's `Response`, for a spider callback or a cache replay.
+    pub fn response_builder(&self) -> browser_http::response::ResponseBuilder;
+}
+```
+
+`response_builder` hands back the *builder* rather than a finished response so the caller can
+attach its `selector_config` and adaptive-storage `document_hook` before the (lazy) parse is
+configured. Two fields do not survive the round trip, both deliberately: `history` (a
+`RedirectHop` carries each hop's status/reason/headers and a `FetchedResponse` only kept the
+URLs — Python's cache replay also rebuilds with `history=[]`) and `meta` (the crawl's merged
+metadata, which `attach_request` rebuilds).
+
+What is **not** here yet, and is unit 17's first job: the `CrawlSession` implementation over
+`browser_http::session::AsyncFetcherSession`. It is about thirty mechanical lines and a
+working copy is in `crates/browser-rs/tests/integration.rs::crawl_loop_seam::HttpCrawlSession`
+— promote it, then extend the `SessionKwargs` → `RequestOverrides` mapping past
+`method`/`headers`/`json` to `proxy`, `proxies`, `timeout` and `extra`.
+
+## `throttle` — `Retry-After` and AutoThrottle
+
+```rust
+pub fn parse_retry_after(headers: &IndexMap<String, String>) -> Option<f64>;
+pub fn parse_retry_after_iter<'a, I>(headers: I) -> Option<f64>;      // any (&str, &str) iterator
+pub fn parse_retry_after_value(raw: &str) -> Option<f64>;            // delta-seconds OR HTTP-date
+
+pub struct AutoThrottleConfig {
+    pub start_delay: f64,        // 5.0
+    pub max_delay: f64,          // 60.0
+    pub target_concurrency: f64, // 1.0
+    pub block_backoff: bool,     // true
+}
+impl AutoThrottleConfig {
+    pub fn resolve_target_concurrency(autothrottle: Option<f64>, per_domain: Option<f64>) -> f64;
+    pub fn validate(&self) -> Result<(), AutoThrottleConfigError>;
+}
+
+pub struct AutoThrottle;         // every method takes &self; share as Arc<AutoThrottle>
+impl AutoThrottle {
+    pub fn new(config: AutoThrottleConfig) -> Result<Self, AutoThrottleConfigError>;
+    pub fn seed_delay(&self, floor: f64) -> f64;
+    pub fn delay_for(&self, domain: &str, floor: f64) -> f64;   // seeds on first ask — a WRITE
+    pub fn record(&self, domain: &str, latency: f64, ok: bool, floor: f64,
+                  retry_after: Option<f64>) -> f64;
+    pub fn reset(&self);
+    pub fn delays(&self) -> BTreeMap<String, f64>;              // sorted, see DIVERGENCES
+}
+```
+
+`parse_retry_after` returns the **first** header whose lower-case spelling matches, so the map's
+insertion order is load-bearing. `record` runs the whole read-modify-write under one `DashMap`
+entry guard, which is why `delay_for` must not be called from inside it (that deadlocks).
+
+## `robots` — a `protego` port plus the per-netloc cache
+
+```rust
+pub struct RobotsRules;
+impl RobotsRules {
+    pub fn parse(content: &str) -> Self;
+    pub fn can_fetch(&self, url: &str, user_agent: &str) -> bool;
+    pub fn crawl_delay(&self, user_agent: &str) -> Option<f64>;
+    pub fn request_rate(&self, user_agent: &str) -> Option<RequestRate>;
+    pub fn visit_time(&self, user_agent: &str) -> Option<VisitTime>;
+    pub fn sitemaps(&self) -> &[String];
+    pub fn host(&self) -> Option<&str>;
+}
+
+#[async_trait]
+pub trait RobotsFetcher: Send + Sync + 'static {
+    async fn fetch_robots(&self, url: &str, sid: &str) -> Result<FetchedResponse>;
+}
+pub fn fetcher_fn<F, Fut>(function: F) -> FnFetcher<F>;   // async closure -> RobotsFetcher
+
+pub struct RobotsTxtManager;     // every method takes &self
+impl RobotsTxtManager {
+    pub fn new(fetcher: Arc<dyn RobotsFetcher>) -> Self;
+    pub async fn parser_for(&self, url: &str, sid: &str) -> Arc<RobotsRules>;
+    pub async fn can_fetch(&self, url: &str, sid: &str) -> bool;                  // UA is always "*"
+    pub async fn get_delay_directives(&self, url: &str, sid: &str)
+        -> (Option<f64>, Option<(i64, i64)>);
+    pub async fn sitemaps(&self, url: &str, sid: &str) -> Vec<String>;
+    pub async fn prefetch(&self, urls: &[String], sid: &str);
+    pub fn cached_domains(&self) -> Vec<String>;  pub fn is_cached(&self, domain: &str) -> bool;
+    pub fn clear(&self);  pub fn insert(&self, domain: impl Into<String>, rules: RobotsRules);
+}
+
+pub fn prefetch_urls(start_urls: &[String]) -> Vec<String>;      // `_prefetch_robots_txt`'s list
+pub fn effective_domain_delay(download_delay: f64, crawl_delay: Option<f64>,
+                              request_rate: Option<(i64, i64)>) -> f64;
+pub fn decode_robots_body(body: &[u8], encoding: &str) -> Option<String>;
+```
+
+The cache key is `urlparse(url).netloc` — host **and port**, no scheme — so `http://a.com/` and
+`https://a.com/` share one entry. Every failure mode (non-200, transport error, undecodable
+body, parse failure) degrades to an empty allow-everything ruleset; a broken `robots.txt` never
+stops a crawl. `decode_robots_body` returns `None` exactly where CPython's
+`bytes.decode(label, errors="replace")` would raise, which is the path that leaves the domain
+permissive.
+
+## `cache` — the dev-mode response replay
+
+```rust
+pub fn default_cache_dir(spider_name: &str) -> PathBuf;
+pub struct CacheEntry { pub response: FetchedResponse, pub method: String }
+
+pub struct ResponseCacheManager;   // every method takes &self; Clone is cheap
+impl ResponseCacheManager {
+    pub fn new(cache_dir: impl Into<PathBuf>) -> Self;
+    pub fn cache_dir(&self) -> &Path;
+    pub fn cache_path(&self, fingerprint: &Fingerprint) -> PathBuf;   // <dir>/<hex>.json
+    pub async fn get(&self, fingerprint: &Fingerprint) -> Option<FetchedResponse>;
+    pub async fn get_entry(&self, fingerprint: &Fingerprint) -> Option<CacheEntry>;
+    pub async fn put(&self, fingerprint: &Fingerprint, response: &FetchedResponse,
+                     method: &str) -> bool;
+    pub async fn clear(&self);
+    pub async fn len(&self) -> usize;  pub async fn is_empty(&self) -> bool;
+}
+```
+
+Base64 JSON, no TTL, temp-file-plus-atomic-rename on write. **`put` never fails the crawl** —
+every error is logged at `warn` and swallowed, and the `bool` only says whether the entry
+landed. Any unreadable, truncated or type-mismatched entry is a plain cache miss.
 
 ## `stats` — live counters
 
@@ -305,8 +429,18 @@ type and let unit 20 unify.
 
 ## Where the engine (unit 17) plugs in
 
-`tests/data_plane_composition.rs` is a working miniature of `CrawlerEngine`: seeds → dequeue →
-`SessionManager::fetch` → stats → callback → enqueue → checkpoint → resume → export. Start
-from it. What is *not* here and belongs to unit 17: the `Spider` trait, `SpiderSettings`,
-`BLOCKED_CODES`, the concurrency limiters, the `_process_request` ordering, the pause ladder
-and the streaming channel.
+Two working miniatures of `CrawlerEngine` exist; start from them rather than from the spec.
+
+* `tests/data_plane_composition.rs` — seeds → dequeue → `SessionManager::fetch` → stats →
+  callback → enqueue → checkpoint → resume → export, against a mock session.
+* `crates/browser-rs/tests/integration.rs::crawl_loop_seam` — the full `_process_request`
+  ordering (robots → cache replay → delay → fetch → cache write → block detection →
+  AutoThrottle feedback → callback) against a **real** `AsyncFetcherSession` and a loopback
+  HTTP server, using every module in this crate plus unit 12.
+
+What is *not* here and belongs to unit 17: the `Spider` trait, `SpiderSettings`,
+`BLOCKED_CODES`, the concurrency limiters (global spawn cap + per-domain semaphores), the
+pause/force-stop ladder with the checkpoint-before-cancel rule, and the streaming channel.
+Two small fixes it should also make: default `FetchedResponse::encoding` to `"utf-8"` (see
+`docs/DIVERGENCES.md`, unit 16 item 3), and drop the now-unused `httpdate` and
+`texting_robots` workspace dependencies from `Cargo.toml`.

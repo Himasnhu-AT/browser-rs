@@ -39,10 +39,18 @@ browser-storage.workspace = true
 browser-http.workspace = true
 browser-parser = { workspace = true, features = ["adaptive"] }
 browser-spider.workspace = true
+async-trait.workspace = true
 bytes.workspace = true
 indexmap.workspace = true
 regex.workspace = true
 serde_json.workspace = true
+tempfile.workspace = true
+# Wave 4's seam tests drive a real `AsyncFetcherSession` against a loopback
+# server started by the test itself. No `wiremock`: it is not in `Cargo.lock`
+# and the open internet is not reachable here, so the fixture is ~90 lines of
+# `std::net` on a scratch thread — the same shape `browser-http`'s own
+# `tests/u12_support` uses.
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "sync"] }
 
 [features]
 default = ["http", "parser"]
