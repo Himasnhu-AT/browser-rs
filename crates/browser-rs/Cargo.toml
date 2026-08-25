@@ -36,11 +36,17 @@ browser-dom.workspace = true
 browser-selectors.workspace = true
 browser-xpath.workspace = true
 browser-storage.workspace = true
-browser-http.workspace = true
-browser-parser = { workspace = true, features = ["adaptive"] }
-browser-spider.workspace = true
+# `markdown` is switched on here (and only here) so the wave-5 seam tests can call
+# `Response::markdown()` on an HTTP-driven *and* a browser-driven response —
+# `SiteToMarkdownSpider`'s whole premise — under a plain `cargo test`.
+browser-http = { workspace = true, features = ["markdown"] }
+browser-cdp = { workspace = true, features = ["markdown"] }
+browser-markdown.workspace = true
+browser-parser = { workspace = true, features = ["adaptive", "markdown"] }
+browser-spider = { workspace = true, features = ["markdown"] }
 async-trait.workspace = true
 bytes.workspace = true
+futures.workspace = true
 indexmap.workspace = true
 regex.workspace = true
 serde_json.workspace = true
@@ -58,8 +64,25 @@ parser = ["dep:browser-parser"]
 http = ["dep:browser-http", "parser"]
 browser = ["dep:browser-cdp", "http"]
 spider = ["dep:browser-spider", "dep:browser-templates", "http"]
-markdown = ["browser-parser/markdown"]
-adaptive = ["browser-parser/adaptive"]
+# `markdown` and `adaptive` gate methods on *several* member crates, not just the
+# parser: `Response::markdown()` lives in `browser-http`, and a `CrawlResponse`
+# derefs to it. The `dep?/feature` form only fires when the member is already in
+# the graph, so enabling `markdown` alone still does not pull in the browser or
+# the spider.
+markdown = [
+    "browser-parser/markdown",
+    "browser-http?/markdown",
+    "browser-cdp?/markdown",
+    "browser-spider?/markdown",
+    "browser-templates?/markdown",
+]
+adaptive = [
+    "browser-parser/adaptive",
+    "browser-http?/adaptive",
+    "browser-cdp?/adaptive",
+    "browser-spider?/adaptive",
+    "browser-templates?/adaptive",
+]
 blocking = ["browser-http/blocking"]
 full = ["browser", "spider", "markdown", "adaptive", "blocking"]
 

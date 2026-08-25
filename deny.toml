@@ -25,8 +25,29 @@ allow = [
     "CC0-1.0",
     "OpenSSL",
     "BSL-1.0",
+    # `webpki-root-certs` — the Mozilla root store, redistributed under the
+    # Community Data License Agreement. A permissive *data* licence with no
+    # copyleft reach into the code that reads the bundle.
+    "CDLA-Permissive-2.0",
 ]
 confidence-threshold = 0.9
+# DELIBERATELY EMPTY, and `cargo deny check licenses` DELIBERATELY FAILS.
+#
+# `wreq-util 0.1.0` — the emulation-profile tables behind `browser-http`'s
+# `impersonate` feature, which is ON BY DEFAULT — is **GPL-3.0**, while this
+# workspace is MIT. (`wreq` itself is Apache-2.0; only the profile crate is
+# copyleft.) Adding an `exceptions` entry here would hide a genuine licence
+# incompatibility rather than resolve it, so the check is left red until a human
+# picks one of:
+#
+#   1. relicense the workspace to GPL-3.0;
+#   2. take `impersonate` out of `browser-http`'s default features, ship the
+#      JA3/JA4 profiles as an opt-in GPL build, and document it;
+#   3. replace `wreq-util` with permissively licensed profile tables — the
+#      mapping in `crates/browser-http/src/backend/wreq.rs` is ours, only the
+#      profile data is theirs.
+#
+# See handoff.md §"Housekeeping TODOs" item 5.
 exceptions = []
 
 [bans]

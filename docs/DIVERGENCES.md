@@ -667,8 +667,10 @@ reproducing**.
    derives `Default` and gets `""`. Treating that as a label would make `bytes.decode("")` raise
    and every such `robots.txt` silently allow everything — the dangerous direction — so
    `RobotsTxtManager::parser_for` decodes UTF-8 instead. `decode_robots_body(body, "")` called
-   directly still answers `None`, exactly like CPython. 5 corpus keys. **The real fix belongs to
-   unit 17:** default `FetchedResponse::encoding` to `"utf-8"` at construction.
+   directly still answers `None`, exactly like CPython. 5 corpus keys. **Half fixed in unit 17:**
+   `FetchedResponse::encoding` now defaults to `"utf-8"`, as Python's `Response.encoding` does, so
+   an empty label is no longer reachable from an ordinary construction. The 5 corpus rows still
+   diverge because they set `""` deliberately, which is why the row stays here.
 4. **A hand-corrupted cache file whose values Python leaves untyped is a miss, not a replay.**
    `status: null` / `"200"` / `200.5` / `-1` / `1e20`, `url: null`, `reason: null`,
    `encoding: null`, `headers: []`, `method: 7` and friends all deserialise into Python's
@@ -734,3 +736,394 @@ while proving that units 14 and 17 can be written from what exists. All three ar
    `browser-spider`'s `Request` is serialised into a checkpoint file and a transport type has
    no business in that format. The conversions in `crates/browser-http/src/backend/mod.rs` are
    the single seam between them.
+
+---
+
+## Unit 17 — `browser-spider` engine (`engine.rs`, `spider.rs`)
+
+Verified against `the reference implementation`'s own `reference/spiders/engine.py` by running **36 real
+crawls** on both implementations over the same two-host loopback fixture and comparing 1,255
+fields: the URLs the *servers* saw (in arrival order where the scenario is serial), the items and
+their depths, `CrawlStats.to_dict()` key by key, the lifecycle-hook call records, the checkpoint
+contents and the pause/resume round trips. **1255/1255 reproduce.** The corpus, the fixture and
+the scenario table are in `tools/corpus/u17/`; the comparison is
+`crates/browser-spider/tests/u17_engine_golden.rs`.
+
+Everything below is either a field the corpus cannot compare verbatim — each one still asserted,
+and the last one asserted to *keep* differing — or a structural difference the port could not
+avoid.
+
+### Fields the corpus relaxes, and how
+
+1. **`elapsed_seconds` / `requests_per_second` are wall-clock** readings of two different runs on
+   two different runtimes. Both are still asserted finite and non-negative, and for the three
+   scenarios where a *mandated* sleep dominates the clock (`robots.txt`'s `Crawl-delay: 0.05`, in
+   `s03` / `s06` / `s15`) a **lower bound** is asserted on both sides — `MINIMUM_ELAPSED`. That
+   bound is what catches an engine that resolves the delay and then never sleeps; nothing else in
+   the corpus would.
+2. **`autothrottle_delays` values are latency-derived**, so only the *domains the controller
+   learned* are compared. (The port's snapshot is also sorted rather than insertion-ordered —
+   unit 16, item 5.)
+3. **`log_count` counts `tracing` events, not `logging` records.** The port emits the message
+   text Python's tests pin but not the same *set* of lines, and `tracing` has no level above
+   `ERROR`, so `critical` is always `0`. Compared on Python's exact five-key shape, and asserted
+   to still differ in value.
+4. **An item's `depth` under `concurrent_requests > 1` is a discovery-order race.** `depth` is
+   `parent.depth + 1` of whichever parent enqueued it *first*, and `/cat/1` is linked both from
+   `/` (depth 1) and from `/cat/0` (depth 2). The reference implementation is stable here only
+   because CPython's `lxml` parse is much quicker than the fetch it races; the port lost that race
+   once in five runs of `s06`, whose two seeds start 50 ms apart because one host has a
+   `Crawl-delay` and the other does not. The five concurrent scenarios therefore compare items
+   with `depth` elided and bound each depth by `max_depth`; the 31 serial ones compare it
+   verbatim. `DEPTH_IS_A_DISCOVERY_ORDER_RACE`.
+5. **Three rows are timing-dependent in their *content*** — a force stop (`s18`) and the two
+   halves of a concurrent pause (`s28`) — because how much got done before the axe fell is a race
+   in both implementations. They are not skipped: `paused`, `start_requests_calls`, the
+   lifecycle hooks and the checkpoint's existence are still compared, and `RESUME_PAIRS` requires
+   that the paused run plus its resume fetched exactly what the uninterrupted crawl fetched.
+
+### Structural differences
+
+6. **`Ctrl-C` is watched with one long-lived `tokio::signal::ctrl_c()` future** pinned across loop
+   iterations. Re-creating it per wait would deregister the receiver in between, and tokio's
+   installed SIGINT handler silently drops a signal nobody is listening for — the press would be
+   lost *and* the process would no longer die from it. The consequence with no Python analogue:
+   tokio never uninstalls the OS handler, so after a crawl that watched for `Ctrl-C` the process
+   keeps ignoring the default SIGINT action. Python restores the previous handler in `start()`'s
+   `finally`. `RunOptions::handle_ctrl_c = false` — what streaming uses, matching Python's
+   handler-free `stream()` — never installs it.
+7. **Dropping a stream aborts the crawl** (Python's `_stream` nests the crawl in a task group
+   *inside* the generator, so abandoning the generator cancels it). Unlike anyio's cancel, a tokio
+   abort drops the future rather than unwinding it, so `on_close` and the session shutdown are
+   skipped when the stream is abandoned. Drain the stream when that matters.
+   `u17_engine_invariants.rs::dropping_a_stream_stops_the_crawl`.
+8. **A closed item stream is logged, not raised.** Python's `send` on a closed memory stream
+   raises `BrokenResourceError`, which its `except Exception` turns into an `on_error` call that
+   abandons the rest of the callback; the port logs at DEBUG and keeps consuming. Unreachable in
+   practice, because dropping the stream aborts the crawl first (7).
+9. **`_restore_from_checkpoint` re-binds callbacks *before* `Scheduler::restore`, not after.**
+   Python re-binds afterwards because its scheduler holds the very same `Request` objects; the
+   port's scheduler clones them into the queue, so the order has to flip for the effect to
+   survive. An unknown name still falls back to `parse` — `s26` pins a *known* one surviving a
+   pause/resume round trip.
+10. **`concurrent_requests` is clamped to at least 1.** `CapacityLimiter(0)` raises in Python; a
+    zero-permit `Semaphore` would deadlock and the spawn check `active >= 0` would spin.
+    `stats.concurrent_requests` still reports the configured value.
+11. **Blocked retries use `priority.saturating_sub(1)`.** Python's ints are unbounded;
+    `i32::MIN - 1` is not.
+12. **`Yielded::Error` is a value, where Python raises.** `Yielded` makes "the spider returned
+    something that is neither a `Request`, a `dict` nor `None`" unrepresentable, so Python's
+    `log.error("Spider must return Request, dict or None…")` branch has no counterpart, and
+    `Yielded::Error` carries what Python would have raised. Because it is a *value*, a callback
+    can keep yielding after it — and the engine must not act on anything that follows, which is
+    what Python's `except Exception` around the `async for` does. Pinned twice: by
+    `a_callback_failure_calls_on_error_once_and_stops_that_stream`, whose callback yields an item
+    and a request after the error, and by `s09`, where the Python side `raise`s and the Rust side
+    keeps yielding.
+13. **`on_error` receives a `CrawlError`, not the original exception.** The corpus compares the
+    request *paths* that reached the hook; the exception class name (`RuntimeError`,
+    `ConnectionError`) has no analogue.
+14. **`SessionKwargs` cannot express `data=None` as an explicit clear.** Python's
+    `{**inherited, **kwargs}` puts a literal `None` in `_session_kwargs["data"]`; a typed
+    `Option` cannot tell "explicitly `None`" from "absent", so the port says the same thing with
+    an **empty** body — `RequestBody::is_falsy` is true for it, which is exactly how Python's
+    `if post_data:` reads `None`. Same fingerprint, same wire bytes. `s23` drives both.
+15. **`SpiderSettings::logging_level` and `log_file` are declarative.** `tracing` has no
+    per-logger `%`-format, so Python's `logging_format` / `logging_date_format` are dropped and a
+    runner or CLI builds the subscriber from the two fields that survive. The engine itself only
+    reads `RunOptions::log_counter`.
+16. **`Spider` behaviour and `SpiderSettings` state are split, and a separate `SpiderRunner` owns
+    the `SessionManager`,** because Rust has no subclassing. The invariants that mattered survive:
+    one `SessionManager` for the runner's lifetime, so `configure_sessions` runs once and pools
+    are reused, and a fresh `CrawlerEngine` per run —
+    `u17_engine_invariants.rs::the_same_runner_can_crawl_twice`.
+17. **`SpiderRunner::start_blocking` builds a current-thread runtime** and refuses to run inside
+    an existing one rather than deadlocking. Callers who want worker threads build their own
+    runtime and `run().await`.
+18. **The busy-wait is gone.** Python polls the queue every 10–50 ms; the port waits on a
+    `tokio::sync::Notify` signalled by every enqueue, every finished task and every pause request,
+    with `Notified::enable()` claiming a stored permit so no wakeup can be lost. The *observable*
+    completion condition (queue empty **and** zero in flight) is unchanged. Periodic checkpoints
+    are a `sleep_until` deadline in the same select, not a poll.
+19. **`complete()` runs on cancellation and on a panic too.** Python relies on a `finally:` inside
+    the task; the port puts the same bookkeeping in a `Drop` guard *owned by the spawned future*,
+    so a task aborted by a force stop — even one aborted before its first poll — still releases
+    its ticket and its concurrency slot. A panicking callback has no Python analogue at all and is
+    pinned separately (`a_panicking_callback_still_completes_its_request`).
+
+### Fixed here, not divergences
+
+Three gaps the differential opened and closed. Each is a mutation the tests **did not** catch
+before the fix and do now:
+
+* **A callback error did not have to stop the stream.** `Behaviour::Fail` yielded only the error,
+  so "and stops that stream" was in the test's name and not in its assertions; removing the
+  `break` in `_run_callbacks` passed the whole suite. The callback now yields an item and a
+  request *after* the error, and the corpus scenario keeps yielding where Python raises.
+* **A force stop did not have to checkpoint what it was cancelling.**
+  `a_force_stop_saves_before_it_cancels` pressed the ladder from inside the only callback there
+  was, which had already returned by the time the loop reacted — so `abort_all` had nothing to
+  abort and cancelling first changed nothing.
+  `a_force_stop_checkpoints_the_requests_it_is_about_to_cancel` now blocks a second callback for
+  30 s, and asserts the in-flight request is *in* the saved checkpoint.
+* **The `robots.txt` `Crawl-delay` did not have to reach the sleep.** Every count, every URL and
+  every stat is identical whether the engine sleeps or not; only the clock differs. Hence
+  `MINIMUM_ELAPSED` above.
+
+Unit 16 item 3 is also **closed here**: `FetchedResponse::encoding` now defaults to `"utf-8"`, as
+Python's `Response.encoding` does, so the empty label is no longer reachable from an ordinary
+construction. (The declared unit-16 corpus rows still diverge, because they set `""`
+deliberately.)
+
+---
+
+## Unit 14 — `browser-cdp` (the CDP driver, the `Response` factory, the Cloudflare solver)
+
+Verified against **real Google Chrome** driven by `the reference implementation` +
+Playwright 1.62 over a local fixture — see `tools/corpus/u14/README.md` and
+`crates/browser-cdp/src/live_u14/`. Everything below is a difference that
+survived that comparison.
+
+### Still divergent
+
+1. **`route.abort()` maps to `Fetch.failRequest{errorReason: "Failed"}`**, not
+   `BlockedByClient` as `ARCHITECTURE.md` §13.4 suggests. This is not really a
+   divergence from Python at all — Playwright's `Route.abort()` defaults to the
+   error code `"failed"` — and the live corpus confirms it: blocking the
+   document host makes Python report `Page.goto: net::ERR_FAILED`, and so does
+   the port (`blocking_the_document_itself_aborts_the_navigation_with_err_failed`).
+   Constant: `cdp::fetch_domain::ABORT_ERROR_REASON`.
+2. **A navigation that turns into a download** fails with the navigation
+   timeout rather than Playwright's immediate
+   `Page.goto: Download is starting`. Playwright reads `isDownload` off the
+   `Page.navigate` reply; `chromiumoxide` intercepts `Page.navigate` and
+   withholds the reply until its own navigation watcher sees a `load` lifecycle
+   event, and a download commits no document, so the reply never arrives. Both
+   engines fail the request; the port takes one `timeout` to do it. The
+   `isDownload` branch is written and ready in `CdpPage::goto`, and
+   `live_u14::tests::a_download_is_a_declared_divergence_not_pythons_download_is_starting`
+   **fails if the divergence ever closes**, so a driver upgrade cannot silently
+   leave the dead branch behind. Corpus row: `a_download_is_not_a_navigation`.
+3. **`page_setup` / `page_action` hooks take `CdpPage` by value**
+   (`PageHook = Arc<dyn Fn(CdpPage) -> BoxFuture<'static, Result<()>>>`), not
+   `&Page` as §13.4 note 6 sketches. `CdpPage` is an `Arc` handle, so cloning is
+   free, and a higher-ranked closure returning a borrow-capturing boxed future
+   is close to unwritable in stable Rust. `session::page_hook` builds one from
+   an async fn.
+4. **`Response.captured_xhr` rides alongside the response**, in
+   `BrowserFetch { response, captured_xhr }`, which `Deref`s to `Response`.
+   Unit 12's `Response` is a fixed struct with no such field. `fetch()` returns
+   the plain `Response`; `fetch_detailed()` returns the pair.
+5. **`additional_args` is accepted and validated but not applied** — there is no
+   Playwright context object to merge arbitrary options into. The session logs a
+   `warn!` naming the key count and pointing at `page_setup`. (§13.4 note 7
+   anticipated this.)
+6. **`--disable-extensions` is unavoidably present**, one of Playwright's five
+   `HARMFUL_ARGS`. `chromiumoxide` 0.9.1's launcher appends it whenever no
+   extension is loaded and keeps its `Arg`/`ArgsBuilder` types private. The
+   other four are never added, because the launch uses `disable_default_args()`
+   and supplies `DEFAULT_ARGS`/`STEALTH_ARGS` explicitly.
+7. **`chromiumoxide`'s `FrameManager` issues `Runtime.enable` on attach.**
+   Upstream, unsuppressable without forking. Nothing in this crate emits it,
+   nothing uses `Runtime.addBinding`, and every script runs in an isolated
+   world — but the one CDP tell patchright exists to remove is still there at
+   attach time. Documented at the top of `cdp/isolated_world.rs`, and
+   demonstrated to be otherwise real by the solver's click test, which can only
+   see the page's clicks through the DOM.
+8. **Non-stealth sessions get a 1280×720 viewport** (Playwright's default for a
+   context that does not ask for one) with `device_scale_factor: 2`; stealth
+   sessions get 1920×1080. the reference implementation only sets `viewport` for stealth sessions,
+   so the dynamic value is inherited from Playwright rather than stated anywhere
+   in the reference implementation.
+9. **`page.is_closed()` is a bounded CDP probe** (`Page.getFrameTree`, 5 s
+   `TEARDOWN_TIMEOUT`), not the local flag Playwright maintains from
+   `Target.targetDestroyed`, which `chromiumoxide` does not expose. One round
+   trip per completed request — pinned at exactly one per request by
+   `the_per_request_reset_runs_with_the_call_counts_test_page_reuse_pins`.
+10. **`capture_xhr` is compiled eagerly** when the capture window opens, so an
+    invalid pattern is a clean `BrowserError::InvalidXhrPattern` from `fetch()`
+    rather than a `re.search` raising inside a response listener on whichever
+    response happens to arrive first.
+11. **A per-request `proxy` against a *persistent* session raises
+    `BrowserNotInitialized`**, reproducing Python bug-for-bug:
+    `launch_persistent_context` never assigns `self.browser`, so
+    `_page_generator`'s `if not self.browser: raise` fires. Kept rather than
+    fixed — a persistent profile and a per-request proxy are genuinely
+    incompatible, since the profile's cookies would leak across proxies.
+12. **The sync sessions' fixed pool of one tab is a façade concern** (§13.2):
+    `BrowserSession::new` honours `max_pages`, and
+    `BrowserSession::with_pool_size(config, hooks, 1)` is the seam the blocking
+    façade uses to reproduce `session.max_pages == 1`.
+13. **`Response.cookies` is unit 12's `IndexMap<String, String>`** (name to
+    value), not Python's tuple of full cookie dicts, so `httpOnly` / `sameSite`
+    / `partitionKey` are dropped for browser responses. **`Response.method` is
+    always `GET`** for a browser response, which is what Python's
+    `Response.__init__` default produces, since the browser factory never passes
+    `method`.
+14. **The Cloudflare solver takes a deadline.** `_cloudflare_solver` has two
+    `while` loops that poll forever in Python — `frame_element().is_visible()`
+    (the one §7 names) and the `non-interactive` wait-page loop. An unbounded
+    loop in an async task is a hang, not a slow request, so `solve_cloudflare`
+    takes one deadline (the request `timeout`) and bounds both. Every *bounded*
+    loop keeps Python's exact counts (20 × 500 ms, 100 × 100 ms, 3 attempts).
+15. **An *embedded* Turnstile with no challenge iframe returns without ever
+    clicking**, because `_challenge_cleared` is unconditionally true for
+    `embedded` and the `if not iframe or not outer_box:` branch reports success
+    first. Faithful to Python, and surprising enough to have its own pinned
+    test.
+
+### Not divergences after all — behaviours the live corpus pinned
+
+* **`Page.navigate` carries `referrerPolicy: "unsafeUrl"`**, matching
+  Playwright's `crPage.js`. Without it Chrome's default
+  `strict-origin-when-cross-origin` drops the referer on any HTTPS-to-HTTP
+  navigation, which would make `google_search=True` a no-op for every `http://`
+  target. Pinned live by
+  `google_search_sends_the_referer_across_an_https_to_http_downgrade`, which
+  reads the `Referer` **the fixture server received**.
+* **Favicon requests are excluded from the `networkidle` in-flight count**
+  (`Request._isFavicon = url.endsWith('/favicon.ico')`) and **a committed
+  new-document navigation clears the previous document's in-flight set**
+  (`_onClearLifecycle`). Neither is in the spec; both are in Playwright's
+  shipped `frames.js`, and the first is now confirmed against real the reference implementation —
+  `network_idle_ignores_a_hanging_favicon` returns in ~2.9 s where an ordinary
+  hanging XHR takes the whole budget.
+* **`load_dom` is a no-op.** `_wait_for_page_stability` waits for `load`
+  *unconditionally* and only then, optionally, for `domcontentloaded` — which
+  `load` already implies. The corpus rows `load_waits_for_the_image` and
+  `load_dom_off` are identical, and the port reproduces both.
+
+### Fixed here, not divergences
+
+Four defects the live differential opened and closed. Each is a behaviour the
+pre-existing tests did **not** catch and now do:
+
+* **`timeout` did not bound `page.goto`.** `Page.navigate` was awaited with only
+  `chromiumoxide`'s own budget, so a server that accepts a connection and never
+  answers took **30 s** where Python raises `Page.goto: Timeout 3000ms exceeded`
+  at 3 s. `CdpPage::goto` now carries one deadline across both halves — the
+  command *and* the wait for `load` — exactly as Playwright's single navigation
+  timeout does. Corpus rows `navigation_timeout` and `load_never_fires`;
+  tests `a_navigation_that_never_commits_fails_at_the_configured_timeout` and
+  `a_document_that_commits_but_never_reaches_load_fails_at_the_timeout_too`.
+* **A `referer` in `extra_headers` made Chrome refuse the navigation.**
+  `Referer` is a forbidden header for Chrome's network service: a request whose
+  `ResourceRequest.headers` carry one — which is where
+  `Network.setExtraHTTPHeaders` puts it — is rejected with
+  `net::ERR_BLOCKED_BY_CLIENT`. Playwright's `gotoImpl` lifts it out of the
+  extra headers into `Page.navigate`'s own `referrer` parameter, and the reference implementation
+  depends on that: `fetch()` passes `referer=None` to `goto` precisely when the
+  caller supplied one in `extra_headers`. `CdpPage::goto` now does the same
+  merge. Corpus row `an_explicit_referer_beats_google_search`.
+* **A same-document (fragment) navigation burned the whole timeout.** Python
+  fails in 0.02 s with `RuntimeError: Failed to get response for <url>`, because
+  Playwright sees no `loaderId` and waits for no lifecycle event. The port waited
+  `timeout` for a `load` that cannot fire. `CdpPage::goto` now races
+  `Page.navigate` against `Page.navigatedWithinDocument` for the main frame and
+  returns immediately, restoring the previous document's lifecycle so the
+  `_wait_for_page_stability` that follows still has its `load`. As part of that,
+  `clear_request_state` no longer resets the lifecycle: it belongs to the
+  document, not the request, and Playwright clears it only from
+  `_onClearLifecycle`. Corpus row `a_fragment_on_the_same_document`.
+* **`Response.headers` silently lost every `Set-Cookie`.**
+  `Network.responseReceived` reports the headers the *renderer* is allowed to
+  see; the unredacted ones arrive on `Network.responseReceivedExtraInfo`, and
+  `hasExtraInfo` on the first event says whether they are coming. Playwright's
+  `Response.allHeaders()` — which is what `convertor.py` reads for both
+  `Response.headers` and `Response.request_headers` — is a *promise* that stays
+  pending until that event resolves it. The port built the response eagerly from
+  the redacted headers, so whether `Set-Cookie` survived was a race it usually
+  lost. The ledger now consumes both `…ExtraInfo` events, pairs them to hops by
+  position (as Playwright's `ResponseExtraInfoTracker` does), and
+  `CdpPage::await_raw_headers` waits — bounded by `RAW_HEADERS_TIMEOUT` — for
+  every response whose `hasExtraInfo` was true. Test
+  `the_headers_come_from_the_first_response_and_the_request_headers_from_its_request`.
+
+---
+
+# Wave 5 integration — the seams for units 18 and 19
+
+Written by the wave's green agent in `crates/browser-rs/tests/integration.rs`
+(modules `crawl_spider_seam`, `site_to_markdown_seam`, `cli_extract_seam`), in
+the same spirit as `browser_response_seam` and `crawl_loop_seam` before them:
+answer the next wave's API questions in a test, against the crates as they
+actually are, rather than in a merge conflict later.
+
+## Fixed here, not divergences
+
+* **The `markdown` and `adaptive` feature flags did not reach
+  `browser-http`.** `Response::markdown()` / `markdown_with()` are
+  `#[cfg(feature = "markdown")]` **in `browser-http`**, because `Response` is
+  unit 12's type and is the only response type in the workspace. But every
+  downstream crate forwarded the flag only to `browser-parser`:
+
+  ```toml
+  markdown = ["browser-parser/markdown"]   # browser-spider, before
+  ```
+
+  So `browser-spider --features markdown` compiled and yet a `CrawlResponse`
+  had no `.markdown()` — and the façade's own `markdown` feature had the same
+  hole, which would have hit unit 19 first (`browser-cli` depends on
+  `browser-rs` with `features = ["markdown"]`, and `extract get out.md` is
+  exactly that call). `browser-cdp` had no `markdown` feature at all, so
+  `SiteToMarkdownSpider` could never have been pointed at the browser engine.
+
+  Now: `browser-cdp` gains `markdown` / `adaptive`, and every forwarding
+  list names `browser-http` as well as `browser-parser`. The façade uses the
+  `dep?/feature` form, so enabling `markdown` alone still does not pull the
+  browser or the spider into the graph. Two tests pin it, and neither *compiles*
+  if the forwarding is removed:
+  `browser-spider`'s `the_markdown_feature_reaches_the_response_through_deref`
+  and `browser-cdp`'s `a_browser_response_converts_to_markdown`.
+
+* **`crawl_loop_seam::Fixture::serve` half-closes and drains.** It used to
+  `shutdown(Shutdown::Both)` straight after writing, which can RST a response
+  the client has not read yet. Now `Shutdown::Write` followed by a
+  `read_to_end`. Carried over into the new `local_site::Site` fixture, which
+  additionally serves each connection on its own thread — a browser opens
+  several at once and keeps them alive, so the single-threaded accept loop the
+  wave-4 fixture used would have deadlocked the unit-18 markdown seam.
+
+## Notes the unit-18 and unit-19 implementers must not rediscover
+
+* **A `CrawlRule` must set `FollowOptions::callback` explicitly, even for a
+  follow-only rule.** `Response.follow` *inherits* the originating request's
+  callback when the option is `None` (`spider.md` §"follow"), so a rule that
+  leaves it unset makes every page reached from a product page get parsed **as a
+  product**. `requests_to_follow` in the seam test therefore writes
+  `Some(rule.callback.clone().unwrap_or(CallbackId::PARSE))`. This is faithful
+  to Python — `Rule(callback=None)` there means "use `parse`", not "use whatever
+  the parent used" — but the two spellings look identical at the call site.
+* **`strip_html5_whitespace` is not `str::trim`.** It strips exactly
+  `\t`, `\n`, `\x0c`, `\r` and ` `. `str::trim` also strips U+00A0, U+2028,
+  U+180E and the rest of Unicode `White_Space`, which would silently change
+  which `href`s a `LinkExtractor` accepts. The seam test carries the correct
+  implementation.
+* **`Nodes::get()`, not `Nodes::first()`, is Python's `.get()`.** `first()`
+  returns `Option<&Node>` (the element); `get()` returns `Option<String>` (the
+  `::text` / `::attr()` result). Unit 18's extractors want `get()` / `texts()` /
+  `attrs()`.
+* **`_extract_content`'s trailing `""` is real and is asserted.** The generator
+  always yields one final empty string, so `pieces.len() == matches + 1`. It
+  does not change `"".join(...)`, and unit 19 should keep it so that a future
+  test of the *generator* shape still matches Python.
+* **`text` mode collapses `\n`, `\r`, `\t`, ` ` independently and in that
+  order**, each with its own `[c]+ -> c` substitution. Doing it in one pass over
+  a character class would merge a `"\n \n"` into a single space and is wrong.
+* **The unknown-suffix case is an error, not a default.** `output.invalid` and
+  `output` both raise; only `.md`, `.html` and `.txt` are accepted, matched by
+  suffix and not by `Path::extension`.
+* **Seconds versus milliseconds.** The seam test's `GetArgs::timeout_secs` is
+  deliberately named: `extract get/post/put/delete` take **seconds** and hand a
+  `Duration` to `RequestBuilder::timeout`, while `fetch` / `stealthy-fetch` take
+  **milliseconds** and hand an `f64` to `BrowserConfig::timeout_ms`. Two units,
+  one flag name, and unit 19 owns the split.
+
+## Still divergent
+
+Nothing new. The browser half of `site_to_markdown_seam` asserts that a
+*rendered* DOM and a *raw* body converge on one markdown document for a static
+page — which is an assertion about this fixture, not a law: a page whose DOM
+JavaScript rewrites cannot agree, and that is the entire reason the browser
+engine exists. It is asserted anyway because drift there would be a real
+regression in one of the two paths.

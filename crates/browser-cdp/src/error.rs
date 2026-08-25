@@ -333,6 +333,108 @@ pub enum BrowserError {
     /// Unreachable in practice; Python raises the same `RuntimeError`.
     #[error("Request failed")]
     RequestFailed,
+
+    // -- unit 14: the CDP transport ---------------------------------------
+    /// A CDP command failed, or the connection to the browser dropped.
+    ///
+    /// `chromiumoxide::error::CdpError` is neither `Clone` nor `PartialEq`, so
+    /// its `Display` text is captured instead — which is also what
+    /// [`browser_http::proxy::is_proxy_error`] needs, since Chrome reports
+    /// proxy failures as `net::ERR_PROXY_CONNECTION_FAILED` inside that text.
+    #[error("{context}: {message}")]
+    Cdp {
+        /// The CDP method or operation that failed, for the log line.
+        context: String,
+        /// The driver's message, verbatim.
+        message: String,
+    },
+
+    /// The browser process could not be started.
+    #[error("Failed to launch the browser: {0}")]
+    Launch(String),
+
+    /// `cdp_url` was well-formed but nothing answered on it.
+    #[error("Failed to connect to the browser at {url}: {message}")]
+    Connect {
+        /// The `cdp_url` that was tried.
+        url: String,
+        /// The driver's message.
+        message: String,
+    },
+
+    /// No browser binary could be found for the configured channel.
+    ///
+    /// Python never raises this: Playwright ships its own Chromium and resolves
+    /// `channel="chrome"` through its registry. Driving CDP directly, the
+    /// binary has to be located on this machine.
+    #[error(
+        "No {channel} executable found. Set `executable_path`, or install the browser \
+         with `browser-rs install`."
+    )]
+    ExecutableNotFound {
+        /// `"chrome"` or `"chromium"`.
+        channel: &'static str,
+    },
+
+    /// `page.goto()` failed — a DNS failure, a refused connection, a dead
+    /// proxy.
+    ///
+    /// The message keeps Chrome's `net::ERR_…` text so
+    /// [`browser_http::proxy::is_proxy_error`] can classify it for the retry
+    /// warning, exactly as it classifies Playwright's.
+    #[error("page.goto: {message} at {url}")]
+    NavigationFailed {
+        /// The URL that was navigated to.
+        url: String,
+        /// Chrome's `errorText`, e.g. `net::ERR_PROXY_CONNECTION_FAILED`.
+        message: String,
+    },
+
+    /// A wait ran out of time.
+    ///
+    /// Playwright's `TimeoutError` text is
+    /// `Timeout 30000ms exceeded.`; the operation is appended so a log line
+    /// says *which* wait gave up.
+    #[error("Timeout {timeout_ms}ms exceeded while waiting for {operation}.")]
+    Timeout {
+        /// What was being waited for.
+        operation: String,
+        /// The budget that elapsed, in milliseconds.
+        timeout_ms: u64,
+    },
+
+    /// `capture_xhr` is not a valid regular expression.
+    ///
+    /// Python only finds out when the first `xhr`/`fetch` response arrives and
+    /// `re.search` raises; compiling up front turns a mid-flight crash into a
+    /// clean `fetch()` error.
+    #[error("Invalid `capture_xhr` pattern {pattern:?}: {message}")]
+    InvalidXhrPattern {
+        /// The pattern as configured.
+        pattern: String,
+        /// The regex engine's message.
+        message: String,
+    },
+
+    /// An evaluated script threw.
+    ///
+    /// Playwright surfaces this as `Error: <text>` from `page.evaluate`; the
+    /// text is whatever `Runtime.exceptionDetails.text` said.
+    #[error("Evaluation failed: {message}")]
+    JavaScript {
+        /// The exception text Chrome reported.
+        message: String,
+    },
+
+    /// A filesystem operation failed: reading `init_script`, or creating the
+    /// temporary user-data directory.
+    #[error("{context}: {message}")]
+    Io {
+        /// What was being done.
+        context: String,
+        /// The OS error text.
+        message: String,
+    },
 }
 
 /// `Result` alias for this crate.

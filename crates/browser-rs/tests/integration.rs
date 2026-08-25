@@ -1487,7 +1487,7 @@ mod browser_response_seam {
 // ---------------------------------------------------------------------------
 mod crawl_loop_seam {
     use std::collections::BTreeSet;
-    use std::io::{BufRead, BufReader, Write};
+    use std::io::{BufRead, BufReader, Read, Write};
     use std::net::{Shutdown, TcpListener, TcpStream};
     use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::{Arc, Mutex};
@@ -1642,7 +1642,12 @@ mod crawl_loop_seam {
         let _ = stream.write_all(head.as_bytes());
         let _ = stream.write_all(body.as_bytes());
         let _ = stream.flush();
-        let _ = stream.shutdown(Shutdown::Both);
+        // Half-close, then drain to EOF. `Shutdown::Both` here would let the
+        // kernel RST a response the client has not finished reading — rare
+        // because this fixture is driven sequentially, but a real race.
+        let _ = stream.shutdown(Shutdown::Write);
+        let mut sink = Vec::new();
+        let _ = reader.read_to_end(&mut sink);
     }
 
     // -- the adapter unit 17 will promote into `browser-spider` ----------
@@ -1995,5 +2000,1028 @@ mod crawl_loop_seam {
 
         manager.close().await.expect("close");
         drop(fixture);
+    }
+}
+
+// ===========================================================================
+// Wave 5 → wave 6 seams: unit 18 (`browser-templates`) and unit 19
+// (`browser-cli`).
+//
+// Same contract as `browser_response_seam` and `crawl_loop_seam` before them:
+// the next wave's hardest API questions are answered *here*, in a test, against
+// the crates as they actually are, so that unit 18 and unit 19 are assembly and
+// not API archaeology. Every one of these modules is a working sketch of a
+// wave-6 deliverable:
+//
+// * `crawl_spider_seam`      → `LinkExtractor` + `CrawlRule` + `CrawlSpider`
+// * `site_to_markdown_seam`  → `SiteToMarkdownSpider`
+// * `cli_extract_seam`       → `browser-rs extract get <url> <output>`
+//
+// All three run against a loopback server this file starts. Nothing reaches the
+// public internet, and the browser half skips cleanly when there is no Chrome.
+// ===========================================================================
+
+/// A loopback site the wave-6 seam tests crawl.
+///
+/// The same shape as [`crawl_loop_seam::Fixture`], generalised over the route
+/// table so the three modules below can each declare their own pages.
+mod local_site {
+    use std::io::{BufRead, BufReader, Read, Write};
+    use std::net::{Shutdown, TcpListener, TcpStream};
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::{Arc, Mutex};
+
+    /// One reply.
+    pub struct Page {
+        /// HTTP status.
+        pub status: u16,
+        /// The `Content-Type` header, charset included.
+        pub content_type: &'static str,
+        /// The body.
+        pub body: String,
+    }
+
+    impl Page {
+        /// A `200 text/html; charset=utf-8` reply.
+        pub fn html(body: impl Into<String>) -> Self {
+            Self {
+                status: 200,
+                content_type: "text/html; charset=utf-8",
+                body: body.into(),
+            }
+        }
+
+        /// A `200 text/plain; charset=utf-8` reply.
+        pub fn text(body: impl Into<String>) -> Self {
+            Self {
+                status: 200,
+                content_type: "text/plain; charset=utf-8",
+                body: body.into(),
+            }
+        }
+    }
+
+    /// The route table: a path in, a reply (or `None` for a 404) out.
+    pub type Route = fn(&str) -> Option<Page>;
+
+    /// A running loopback server, stopped when it is dropped.
+    pub struct Site {
+        port: u16,
+        hits: Arc<Mutex<Vec<String>>>,
+        running: Arc<AtomicBool>,
+    }
+
+    impl Site {
+        /// Bind an ephemeral port and start serving `route`.
+        pub fn start(route: Route) -> Self {
+            let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+            let port = listener.local_addr().expect("addr").port();
+            let hits = Arc::new(Mutex::new(Vec::new()));
+            let running = Arc::new(AtomicBool::new(true));
+
+            let thread_hits = Arc::clone(&hits);
+            let thread_running = Arc::clone(&running);
+            std::thread::spawn(move || {
+                for stream in listener.incoming() {
+                    if !thread_running.load(Ordering::Acquire) {
+                        break;
+                    }
+                    match stream {
+                        Ok(stream) => {
+                            let hits = Arc::clone(&thread_hits);
+                            // One thread per connection: a browser opens
+                            // several at once and keeps them alive.
+                            std::thread::spawn(move || serve(stream, route, &hits));
+                        }
+                        Err(_) => break,
+                    }
+                }
+            });
+
+            Self {
+                port,
+                hits,
+                running,
+            }
+        }
+
+        /// An absolute URL for `path`.
+        pub fn url(&self, path: &str) -> String {
+            format!("http://127.0.0.1:{}{path}", self.port)
+        }
+
+        /// `host:port`, which is what `Request::domain()` reports.
+        pub fn netloc(&self) -> String {
+            format!("127.0.0.1:{}", self.port)
+        }
+
+        /// Every path the socket saw, in arrival order.
+        pub fn hits(&self) -> Vec<String> {
+            self.hits.lock().expect("not poisoned").clone()
+        }
+
+        /// How many times `path` was requested.
+        pub fn hit_count(&self, path: &str) -> usize {
+            self.hits().iter().filter(|hit| *hit == path).count()
+        }
+    }
+
+    impl Drop for Site {
+        fn drop(&mut self) {
+            self.running.store(false, Ordering::Release);
+            let _ = TcpStream::connect(("127.0.0.1", self.port));
+        }
+    }
+
+    fn serve(mut stream: TcpStream, route: Route, hits: &Arc<Mutex<Vec<String>>>) {
+        let mut reader = BufReader::new(stream.try_clone().expect("clone"));
+        let mut request_line = String::new();
+        if reader.read_line(&mut request_line).is_err() || request_line.trim().is_empty() {
+            return;
+        }
+        loop {
+            let mut line = String::new();
+            match reader.read_line(&mut line) {
+                Ok(0) => break,
+                Ok(_) if line == "\r\n" || line == "\n" => break,
+                Ok(_) => {}
+                Err(_) => return,
+            }
+        }
+
+        let path = request_line
+            .split_whitespace()
+            .nth(1)
+            .unwrap_or("/")
+            .to_owned();
+        hits.lock().expect("not poisoned").push(path.clone());
+
+        // The query string is not part of the route key; `?a=1` still lands on
+        // the page, which is what the CLI seam's `params=` needs.
+        let key = path.split('?').next().unwrap_or("/");
+        let page = route(key).unwrap_or(Page {
+            status: 404,
+            content_type: "text/plain; charset=utf-8",
+            body: "not found".to_owned(),
+        });
+        let reason = if page.status == 200 {
+            "OK"
+        } else {
+            "Not Found"
+        };
+        let head = format!(
+            "HTTP/1.1 {} {reason}\r\nContent-Type: {}\r\nContent-Length: {}\r\n\
+             Connection: close\r\n\r\n",
+            page.status,
+            page.content_type,
+            page.body.len(),
+        );
+        let _ = stream.write_all(head.as_bytes());
+        let _ = stream.write_all(page.body.as_bytes());
+        let _ = stream.flush();
+        // Half-close and drain, so the peer is never RST before it has read.
+        let _ = stream.shutdown(Shutdown::Write);
+        let mut sink = Vec::new();
+        let _ = reader.read_to_end(&mut sink);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// (a) Unit 18's `CrawlSpider`: a user-written `Spider` with rules, run to
+//     completion by `CrawlerEngine` over a loopback site.
+// ---------------------------------------------------------------------------
+
+/// Proof that `CrawlSpider` is expressible on the unit-17 `Spider` trait.
+///
+/// Everything unit 18 has to build is sketched here against the *real* API:
+/// `strip_html5_whitespace`, a `LinkExtractor` with `allow`/`deny`, a
+/// `CrawlRule` carrying a callback name, and — the design point spelled out in
+/// the plan — **rule dispatch as a free function**, so a user can call it from
+/// their own `parse` instead of inheriting behaviour they cannot see.
+///
+/// If any of this stopped compiling, unit 18 would be blocked.
+mod crawl_spider_seam {
+    use std::sync::Arc;
+
+    use std::sync::Mutex;
+
+    use async_trait::async_trait;
+    use regex::Regex;
+    use serde_json::Value;
+
+    use browser_spider::request::{CallbackId, Item, Request};
+    use browser_spider::spider::{
+        CallbackStream, CrawlError, CrawlResponse, FollowOptions, RunOptions, Spider, SpiderRunner,
+        SpiderSettings, Yielded,
+    };
+
+    use super::local_site::{Page, Site};
+
+    // -- the fixture ------------------------------------------------------
+
+    /// A four-page shop plus a `robots.txt` that forbids `/private`.
+    fn shop(path: &str) -> Option<Page> {
+        let product = |name: &str, price: &str| {
+            Page::html(format!(
+                r#"<!doctype html><html><head><title>{name}</title></head><body>
+                   <h1 class="name">{name}</h1><span class="price">{price}</span>
+                   <a href="/">home</a></body></html>"#
+            ))
+        };
+        match path {
+            "/robots.txt" => Some(Page::text("User-agent: *\nDisallow: /private\n")),
+            "/" => Some(Page::html(
+                r#"<!doctype html><html><body><ul>
+                   <li><a href="/p/1">one</a></li>
+                   <li><a href="/p/2">two</a></li>
+                   <li><a href="/p/1">one again</a></li>
+                   <li><a href="/about">about</a></li>
+                   <li><a href="/tag/sale">sale</a></li>
+                   <li><a href="/private/ledger">ledger</a></li>
+                   </ul></body></html>"#,
+            )),
+            "/p/1" => Some(product("Widget", "$9.99")),
+            "/p/2" => Some(product("Gadget", "$19.99")),
+            "/about" => Some(Page::html(
+                r#"<!doctype html><html><body><p>About us</p><a href="/tag/sale">sale</a>
+                   </body></html>"#,
+            )),
+            "/tag/sale" => Some(Page::html(
+                r#"<!doctype html><html><body><a href="/p/2">two</a></body></html>"#,
+            )),
+            "/private/ledger" => Some(Page::html("<html><body>SECRET</body></html>")),
+            _ => None,
+        }
+    }
+
+    // -- the pieces unit 18 will own --------------------------------------
+
+    /// The five HTML5 space characters, and **only** those.
+    ///
+    /// `str::trim` would also strip U+00A0, U+2028, the Mongolian vowel
+    /// separator and every other Unicode `White_Space` code point, which would
+    /// silently change which `href`s a `LinkExtractor` accepts. Unit 18 must
+    /// use this, not `trim`.
+    fn strip_html5_whitespace(value: &str) -> &str {
+        const HTML5_SPACE: [char; 5] = ['\t', '\n', '\u{0c}', '\r', ' '];
+        value.trim_matches(|c| HTML5_SPACE.contains(&c))
+    }
+
+    /// The `allow` / `deny` core of `LinkExtractor`.
+    ///
+    /// Unit 18 grows the other eleven kwargs (`allow_domains`, `deny_domains`,
+    /// `restrict_css`, `restrict_xpath`, `tags`, `attrs`, `canonicalize`,
+    /// `unique`, `process_value`, `strip`, `IGNORED_EXTENSIONS`) on top; the
+    /// point of the sketch is that everything it needs — `css`, `attrs`,
+    /// `urljoin` — is already on `CrawlResponse` through its `Deref`.
+    struct LinkExtractor {
+        allow: Vec<Regex>,
+        deny: Vec<Regex>,
+    }
+
+    impl LinkExtractor {
+        fn new(allow: &[&str], deny: &[&str]) -> Self {
+            let compile = |patterns: &[&str]| {
+                patterns
+                    .iter()
+                    .map(|p| Regex::new(p).expect("a valid pattern"))
+                    .collect()
+            };
+            Self {
+                allow: compile(allow),
+                deny: compile(deny),
+            }
+        }
+
+        /// Absolute, de-duplicated, document-ordered links this extractor keeps.
+        fn extract(&self, response: &CrawlResponse) -> Vec<String> {
+            let mut kept: Vec<String> = Vec::new();
+            for href in response.css("a[href]").expect("css").attrs("href") {
+                let absolute = response.urljoin(strip_html5_whitespace(&href));
+                let allowed =
+                    self.allow.is_empty() || self.allow.iter().any(|rule| rule.is_match(&absolute));
+                let denied = self.deny.iter().any(|rule| rule.is_match(&absolute));
+                if allowed && !denied && !kept.contains(&absolute) {
+                    kept.push(absolute);
+                }
+            }
+            kept
+        }
+    }
+
+    /// One `Rule(LinkExtractor(...), callback=..., follow=...)`.
+    struct CrawlRule {
+        extractor: LinkExtractor,
+        /// `None` means "route it to `parse`", which is also what makes the
+        /// followed page get its own links extracted.
+        callback: Option<CallbackId>,
+    }
+
+    /// **Rule dispatch as a free function.**
+    ///
+    /// Python's `CrawlSpider._requests_to_follow` is a method, so a user who
+    /// wants rules *and* their own `parse` has to call `super()`. Here it is a
+    /// plain function over `&[CrawlRule]`, so a spider composes it — which is
+    /// exactly what `ShopSpider::parse` below does.
+    ///
+    /// # Errors
+    ///
+    /// [`CrawlError::NoRequestOnResponse`] when `response` was built by hand and
+    /// has no originating request to inherit from.
+    fn requests_to_follow(
+        rules: &[CrawlRule],
+        response: &CrawlResponse,
+    ) -> Result<Vec<Request>, CrawlError> {
+        let mut requests = Vec::new();
+        for rule in rules {
+            for url in rule.extractor.extract(response) {
+                let options = FollowOptions {
+                    // Never inherited: a rule names its callback, and a rule
+                    // with none means `parse`. Leaving it `None` would inherit
+                    // the *current* callback, so a product page would try to
+                    // parse the pages it links to as products.
+                    callback: Some(rule.callback.clone().unwrap_or(CallbackId::PARSE)),
+                    ..FollowOptions::default()
+                };
+                requests.push(response.follow_with(&url, &options)?);
+            }
+        }
+        Ok(requests)
+    }
+
+    // -- the user's spider -------------------------------------------------
+
+    /// The named callback `Rule(callback="parse_product")` points at.
+    const PRODUCT: CallbackId = CallbackId::from_static("parse_product");
+
+    struct ShopSpider {
+        settings: SpiderSettings,
+        rules: Vec<CrawlRule>,
+        /// Every URL that reached a callback, in arrival order.
+        visited: Mutex<Vec<String>>,
+    }
+
+    impl ShopSpider {
+        /// `Rule(callback="parse_product")`'s target: one item per product page.
+        fn parse_product(&self, response: &CrawlResponse) -> Option<Item> {
+            let name = response.css("h1.name::text").ok()?.get()?;
+            let price = response.css("span.price::text").ok()?.get()?;
+            let mut item = Item::new();
+            item.insert("url".to_owned(), Value::String(response.url.clone()));
+            item.insert("name".to_owned(), Value::String(name));
+            item.insert("price".to_owned(), Value::String(price));
+            Some(item)
+        }
+    }
+
+    #[async_trait]
+    impl Spider for ShopSpider {
+        fn name(&self) -> &str {
+            "shop"
+        }
+
+        fn settings(&self) -> &SpiderSettings {
+            &self.settings
+        }
+
+        async fn parse(self: Arc<Self>, response: CrawlResponse) -> CallbackStream {
+            self.visited
+                .lock()
+                .expect("not poisoned")
+                .push(response.url.clone());
+            let requests = requests_to_follow(&self.rules, &response).expect("a crawled response");
+            Box::pin(futures::stream::iter(
+                requests.into_iter().map(Yielded::request),
+            ))
+        }
+
+        async fn dispatch(
+            self: Arc<Self>,
+            callback: CallbackId,
+            response: CrawlResponse,
+        ) -> CallbackStream {
+            if callback.as_str() == PRODUCT.as_str() {
+                self.visited
+                    .lock()
+                    .expect("not poisoned")
+                    .push(response.url.clone());
+                let yielded: Vec<Yielded> = self
+                    .parse_product(&response)
+                    .into_iter()
+                    .map(Yielded::item)
+                    .collect();
+                return Box::pin(futures::stream::iter(yielded));
+            }
+            self.parse(response).await
+        }
+
+        fn has_callback(&self, callback: &CallbackId) -> bool {
+            callback.as_str() == CallbackId::PARSE.as_str() || callback.as_str() == PRODUCT.as_str()
+        }
+    }
+
+    // -- the test ----------------------------------------------------------
+
+    #[tokio::test]
+    async fn a_rule_driven_spider_runs_to_completion_on_the_real_engine() {
+        let site = Site::start(shop);
+
+        let spider = Arc::new(ShopSpider {
+            settings: SpiderSettings::default()
+                .with_start_urls([site.url("/")])
+                .with_robots_txt_obey(true)
+                // Serial, so `visited` is a deterministic sequence rather than
+                // a race between four workers.
+                .with_concurrent_requests(1),
+            rules: vec![
+                CrawlRule {
+                    extractor: LinkExtractor::new(&[r"/p/\d+$"], &[]),
+                    callback: Some(PRODUCT),
+                },
+                CrawlRule {
+                    // `/private/` is *allowed by the rule* on purpose: the only
+                    // thing that can stop it is the robots.txt gate, so this row
+                    // proves the gate runs before the fetch.
+                    extractor: LinkExtractor::new(&[r"/about$", r"/private/"], &[r"/tag/"]),
+                    callback: None,
+                },
+            ],
+            visited: Mutex::new(Vec::new()),
+        });
+
+        let runner = SpiderRunner::new(
+            Arc::clone(&spider) as Arc<dyn Spider>,
+            RunOptions::default().with_ctrl_c(false),
+        )
+        .expect("the default `configure_sessions` registers one HTTP session");
+
+        let result = runner.run().await.expect("the crawl finishes");
+
+        // --- the items ----------------------------------------------------
+        assert!(result.completed(), "nothing paused this crawl");
+        let names: Vec<&str> = result
+            .items
+            .as_slice()
+            .iter()
+            .map(|item| item["name"].as_str().expect("a string"))
+            .collect();
+        assert_eq!(
+            names,
+            ["Widget", "Gadget"],
+            "one item per product page, in rule order"
+        );
+        assert_eq!(
+            result.items.as_slice()[0]["price"].as_str(),
+            Some("$9.99"),
+            "the named callback really ran, not `parse`"
+        );
+
+        // --- the rules ----------------------------------------------------
+        let visited = spider.visited.lock().expect("not poisoned").clone();
+        assert_eq!(
+            visited,
+            [
+                site.url("/"),
+                site.url("/p/1"),
+                site.url("/p/2"),
+                site.url("/about"),
+            ],
+            "`/tag/sale` is denied, `/private/ledger` is refused by robots.txt, \
+             and `/p/1` is linked twice but crawled once"
+        );
+        assert_eq!(
+            site.hit_count("/tag/sale"),
+            0,
+            "a `deny` rule never fetches"
+        );
+        assert_eq!(
+            site.hit_count("/private/ledger"),
+            0,
+            "robots.txt is consulted before the fetch, not after it"
+        );
+        assert_eq!(site.hit_count("/p/1"), 1, "the scheduler de-duplicates");
+        assert_eq!(site.hit_count("/robots.txt"), 1, "one netloc, one prefetch");
+
+        // --- the stats ----------------------------------------------------
+        assert_eq!(result.stats.status_count(200), 4);
+        assert_eq!(result.stats.items_scraped(), 2);
+        assert!(result.stats.domain_bytes(&site.netloc()) > 0);
+    }
+
+    /// The `Spider` trait's default methods are enough for the *degenerate*
+    /// `CrawlSpider`: no rules, no named callbacks, just `start_urls`.
+    ///
+    /// Unit 18's `SitemapSpider` and `XMLFeedSpider` are this shape.
+    #[tokio::test]
+    async fn a_spider_with_no_rules_still_needs_only_three_methods() {
+        struct Bare(SpiderSettings);
+
+        #[async_trait]
+        impl Spider for Bare {
+            fn name(&self) -> &str {
+                "bare"
+            }
+            fn settings(&self) -> &SpiderSettings {
+                &self.0
+            }
+            async fn parse(self: Arc<Self>, response: CrawlResponse) -> CallbackStream {
+                let mut item = Item::new();
+                item.insert(
+                    "title".to_owned(),
+                    Value::String(
+                        response
+                            .css("title::text")
+                            .ok()
+                            .and_then(|nodes| nodes.get())
+                            .unwrap_or_default(),
+                    ),
+                );
+                Box::pin(futures::stream::iter([Yielded::item(item)]))
+            }
+        }
+
+        let site = Site::start(shop);
+        let spider = Arc::new(Bare(
+            SpiderSettings::default().with_start_urls([site.url("/p/1")]),
+        ));
+        let result = SpiderRunner::new(spider, RunOptions::default().with_ctrl_c(false))
+            .expect("runner")
+            .run()
+            .await
+            .expect("crawl");
+
+        assert_eq!(result.items.len(), 1);
+        assert_eq!(result.items.as_slice()[0]["title"].as_str(), Some("Widget"));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// (b) Unit 18's `SiteToMarkdownSpider`: the markdown crate consuming a
+//     `Response` from BOTH engines.
+// ---------------------------------------------------------------------------
+
+/// Proof that `SiteToMarkdownSpider` is expressible.
+///
+/// Its whole premise is that markdown conversion is a property of the
+/// **response**, not of the transport — so a spider can be pointed at the HTTP
+/// fetcher or at the browser and produce the same document. That only holds if
+/// there is exactly one `Response` type and the `markdown` feature reaches it
+/// from both sides, which is what these tests check.
+///
+/// The browser half **skips cleanly** when there is no Chrome (or when
+/// `BROWSER_RS_SKIP_BROWSER_TESTS` is set) and really runs when there is.
+mod site_to_markdown_seam {
+    use std::sync::Arc;
+
+    use browser_cdp::config::{BrowserConfig, FetchParams};
+    use browser_cdp::session::{resolve_executable, BrowserSession};
+    use browser_http::response::Response;
+    use browser_http::session::AsyncFetcher;
+    use browser_spider::session::FetchedResponse;
+    use browser_spider::spider::CrawlResponse;
+
+    use super::local_site::{Page, Site};
+
+    /// One article, wrapped in the noise `_strip_noise_tags` is supposed to
+    /// remove — a `<script>`, a `<nav>` and a `<style>`.
+    const ARTICLE: &str = r#"<!doctype html><html><head><title>Post</title>
+<style>.x{display:none}</style></head><body>
+<nav><a href="/">home</a></nav>
+<article><h1>Widgets</h1><p>A <strong>short</strong> post.</p>
+<ul><li>one</li><li>two</li></ul></article>
+<script>console.log("noise")</script>
+</body></html>"#;
+
+    fn article(path: &str) -> Option<Page> {
+        match path {
+            "/" | "/post" => Some(Page::html(ARTICLE)),
+            _ => None,
+        }
+    }
+
+    /// What a `SiteToMarkdownSpider` callback does with the response it is
+    /// handed: one function, both engines.
+    ///
+    /// Taking `&Response` rather than a transport-specific type is the seam.
+    fn to_markdown(response: &Response) -> String {
+        response
+            .markdown_with(Some("article"), true)
+            .expect("`article` is a valid selector")
+    }
+
+    /// Whether a live-browser test can run here.
+    fn browser_available() -> bool {
+        if std::env::var_os("BROWSER_RS_SKIP_BROWSER_TESTS").is_some() {
+            return false;
+        }
+        BrowserConfig::new()
+            .validate()
+            .is_ok_and(|config| resolve_executable(&config).is_ok())
+    }
+
+    #[tokio::test]
+    async fn the_markdown_crate_consumes_an_http_driven_response() {
+        let site = Site::start(article);
+        let response = AsyncFetcher::get(site.url("/post"))
+            .send()
+            .await
+            .expect("the fixture answers");
+
+        assert_eq!(response.status, 200);
+        let markdown = to_markdown(&response);
+        assert!(markdown.contains("Widgets"), "{markdown:?}");
+        assert!(markdown.contains("**short**"), "{markdown:?}");
+        assert!(markdown.contains("* one"), "{markdown:?}");
+        assert!(
+            !markdown.contains("console.log"),
+            "`_strip_noise_tags` dropped the <script>: {markdown:?}"
+        );
+
+        // The whole-document form, which is what `Response.markdown()` is.
+        assert!(response.markdown().contains("Widgets"));
+    }
+
+    #[tokio::test]
+    async fn the_markdown_crate_consumes_a_browser_driven_response() {
+        if !browser_available() {
+            eprintln!(
+                "skipping site_to_markdown_seam: no Chromium/Chrome binary on this \
+                 machine (or BROWSER_RS_SKIP_BROWSER_TESTS is set)"
+            );
+            return;
+        }
+
+        let site = Site::start(article);
+        let session = BrowserSession::new(
+            BrowserConfig::new()
+                .headless(true)
+                .timeout_ms(20_000.0)
+                .disable_resources(true),
+        )
+        .expect("a valid session config");
+        session.start().await.expect("Chrome starts");
+
+        let response = session
+            .fetch(&site.url("/post"), FetchParams::default())
+            .await
+            .expect("the browser reaches the fixture");
+        session.close().await;
+
+        assert_eq!(response.status, 200);
+        // The **same** function as the HTTP arm, on the same type.
+        let markdown = to_markdown(&response);
+        assert!(markdown.contains("Widgets"), "{markdown:?}");
+        assert!(markdown.contains("**short**"), "{markdown:?}");
+        assert!(markdown.contains("* one"), "{markdown:?}");
+        assert!(!markdown.contains("console.log"), "{markdown:?}");
+
+        // And the two engines agree byte for byte on this page. That is not a
+        // law — a page whose DOM JavaScript rewrites cannot agree, which is the
+        // entire reason the browser engine exists — but on a static document the
+        // rendered DOM round-trips through `browser-dom` to the same tree, and
+        // any drift here would be a real regression in one of the two paths.
+        let over_http = AsyncFetcher::get(site.url("/post"))
+            .send()
+            .await
+            .expect("the fixture answers");
+        assert_eq!(
+            markdown,
+            to_markdown(&over_http),
+            "a rendered DOM and a raw body converge on one markdown document"
+        );
+    }
+
+    /// The spider-side seam: a `CrawlResponse` — what a callback is handed — is
+    /// a `Response`, so `SiteToMarkdownSpider` writes the *same* line.
+    #[test]
+    fn a_crawl_response_reaches_markdown_through_its_deref() {
+        let fetched = FetchedResponse::new(200, "https://shop.test/post", ARTICLE);
+        let response = CrawlResponse::from_fetched(&fetched, &Default::default(), None);
+
+        // `CrawlResponse` derefs to `Response`; no second conversion, no second
+        // markdown entry point.
+        let markdown = to_markdown(&response);
+        assert!(markdown.contains("Widgets"));
+        assert!(markdown.contains("* two"));
+
+        // …and the item a `SiteToMarkdownSpider` would yield.
+        let mut item = browser_spider::request::Item::new();
+        item.insert(
+            "url".to_owned(),
+            serde_json::Value::String(response.url.clone()),
+        );
+        item.insert("markdown".to_owned(), serde_json::Value::String(markdown));
+        assert_eq!(
+            item["url"].as_str(),
+            Some("https://shop.test/post"),
+            "the item is an ordinary `Item`, exportable by `ItemList`"
+        );
+    }
+
+    /// `Arc<Response>` crosses tasks, which is what a concurrent
+    /// `SiteToMarkdownSpider` needs.
+    #[test]
+    fn a_response_carrying_markdown_is_still_send_and_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+        assert_send_sync::<Response>();
+        assert_send_sync::<Arc<Response>>();
+        assert_send_sync::<CrawlResponse>();
+    }
+}
+
+// ---------------------------------------------------------------------------
+// (c) Unit 19's `browser-rs extract get <url> <output>`, end to end.
+// ---------------------------------------------------------------------------
+
+/// The whole `extract get` call chain, from parsed arguments to a file on disk.
+///
+/// `cli-ai.md` §2 and §4.5–4.7 describe four steps:
+///
+/// 1. `__BuildRequest` turns the shared option group into fetcher kwargs;
+/// 2. `Fetcher.get(url, **kwargs)` runs one request;
+/// 3. `Convertor._extract_content` renders the page in one of three modes;
+/// 4. `Convertor.write_content_to_file` picks the mode off the **filename
+///    suffix** and writes with the *page's* encoding.
+///
+/// Every one of those is written here against the real API, so unit 19 is a
+/// `clap` derive plus this body. The parts that turned out to matter — the
+/// generator's trailing `""`, the per-character whitespace collapsing in `text`
+/// mode, and the fact that a suffix that is not one of the three is an error
+/// rather than a default — are all pinned.
+mod cli_extract_seam {
+    use std::time::Duration;
+
+    use regex::Regex;
+
+    use browser_http::config::{Cookies, Query};
+    use browser_http::response::Response;
+    use browser_http::session::AsyncFetcher;
+    use browser_parser::config::AllTextOpts;
+
+    use super::local_site::{Page, Site};
+
+    fn docs(path: &str) -> Option<Page> {
+        match path {
+            "/doc" => Some(Page::html(
+                "<!doctype html><html><head><title>Doc</title>\
+                 <script>var noise = 1;</script></head><body>\
+                 <main><h2>Heading</h2><p>Body   text\n\n\nhere.</p>\
+                 <a href=\"/next\">next</a></main>\
+                 <footer>  \t footer  </footer></body></html>",
+            )),
+            _ => None,
+        }
+    }
+
+    // -- step 1: the shared option group ----------------------------------
+
+    /// `browser-rs extract get`'s shared options, as `clap` will parse them.
+    ///
+    /// Deliberately the *parsed* form: `--header a:b` has already become a pair
+    /// and `--timeout 5` has already become seconds. Unit 19 owns the parsing;
+    /// this pins what the parsed values are then used for.
+    #[derive(Default)]
+    struct GetArgs {
+        headers: Vec<(String, String)>,
+        cookies: Cookies,
+        params: Query,
+        /// **Seconds** — the HTTP commands' unit. The browser commands take
+        /// milliseconds, and keeping the two apart is unit 19's job.
+        timeout_secs: Option<u64>,
+        css_selector: Option<String>,
+        ai_targeted: bool,
+    }
+
+    /// `__BuildRequest` + `Fetcher.get`.
+    async fn run_get(url: &str, args: &GetArgs) -> Response {
+        let mut builder = AsyncFetcher::get(url.to_owned());
+        for (name, value) in &args.headers {
+            builder = builder.header(name.clone(), value.clone());
+        }
+        if !args.cookies.is_empty() {
+            builder = builder.cookies(args.cookies.clone());
+        }
+        if !args.params.is_empty() {
+            builder = builder.params(args.params.clone());
+        }
+        builder = builder.timeout(args.timeout_secs.map(Duration::from_secs));
+        builder.send().await.expect("the fixture answers")
+    }
+
+    // -- step 3: `Convertor._extract_content` ------------------------------
+
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    enum Extraction {
+        Markdown,
+        Html,
+        Text,
+    }
+
+    /// `_extension_map`: the suffix decides the mode, and an unknown suffix is
+    /// an error rather than a default.
+    fn extraction_for(filename: &str) -> Result<Extraction, String> {
+        if filename.ends_with(".md") {
+            Ok(Extraction::Markdown)
+        } else if filename.ends_with(".html") {
+            Ok(Extraction::Html)
+        } else if filename.ends_with(".txt") {
+            Ok(Extraction::Text)
+        } else {
+            Err(format!(
+                "Unknown file type: filename must end with '.md', '.html', or '.txt': {filename}"
+            ))
+        }
+    }
+
+    /// `text` mode's whitespace collapsing: runs of `\n`, then `\r`, then `\t`,
+    /// then ` `, each collapsed **independently and in that order**.
+    fn collapse_whitespace(text: &str) -> String {
+        let mut out = text.to_owned();
+        for ch in ['\n', '\r', '\t', ' '] {
+            let pattern = Regex::new(&format!("[{}]+", regex::escape(&ch.to_string())))
+                .expect("a valid pattern");
+            out = pattern.replace_all(&out, ch.to_string()).into_owned();
+        }
+        out
+    }
+
+    /// `Convertor._extract_content`, including the trailing `""` the generator
+    /// always yields — so `pieces.len()` is `matches + 1`.
+    fn extract_content(
+        response: &Response,
+        extraction: Extraction,
+        css_selector: Option<&str>,
+        main_content_only: bool,
+    ) -> Vec<String> {
+        let mut pieces: Vec<String> = Vec::new();
+        match extraction {
+            Extraction::Markdown => {
+                // `markdown_with` already does the `<body>` narrowing, the noise
+                // stripping and the AI sanitising, per selector.
+                pieces.push(
+                    response
+                        .markdown_with(css_selector, main_content_only)
+                        .expect("a valid selector"),
+                );
+            }
+            Extraction::Html => match css_selector {
+                Some(selector) => pieces.extend(
+                    response
+                        .css(selector)
+                        .expect("a valid selector")
+                        .iter()
+                        .map(browser_parser::node::Node::html_content),
+                ),
+                None => pieces.push(response.html()),
+            },
+            Extraction::Text => {
+                let opts = AllTextOpts {
+                    strip: true,
+                    ignore_tags: ["script", "style", "noscript", "svg", "iframe"]
+                        .into_iter()
+                        .map(str::to_owned)
+                        .collect(),
+                    ..AllTextOpts::default()
+                };
+                match css_selector {
+                    Some(selector) => pieces.extend(
+                        response
+                            .css(selector)
+                            .expect("a valid selector")
+                            .iter()
+                            .map(|node| collapse_whitespace(&node.get_all_text_with(&opts))),
+                    ),
+                    None => {
+                        pieces.push(collapse_whitespace(&response.get_all_text_with(&opts)));
+                    }
+                }
+            }
+        }
+        // The generator's final `""`. It changes `len()` and nothing else.
+        pieces.push(String::new());
+        pieces
+    }
+
+    // -- step 4: `Convertor.write_content_to_file` -------------------------
+
+    /// Writes with the page's own encoding — here always a UTF-8 superset, so
+    /// `std::fs::write` is enough; unit 19 must re-encode when it is not.
+    fn write_content_to_file(
+        response: &Response,
+        path: &std::path::Path,
+        css_selector: Option<&str>,
+        main_content_only: bool,
+    ) -> Result<(), String> {
+        let filename = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or("Filename must be provided")?;
+        if filename.trim().is_empty() {
+            return Err("Filename must be provided".to_owned());
+        }
+        let extraction = extraction_for(filename)?;
+        let body = extract_content(response, extraction, css_selector, main_content_only).concat();
+        std::fs::write(path, body).map_err(|error| error.to_string())
+    }
+
+    // -- the test ----------------------------------------------------------
+
+    #[tokio::test]
+    async fn extract_get_runs_end_to_end_into_all_three_output_modes() {
+        let site = Site::start(docs);
+        let out = tempfile::tempdir().expect("tempdir");
+
+        let args = GetArgs {
+            headers: vec![("x-seam".to_owned(), "unit-19".to_owned())],
+            params: vec![("q".to_owned(), "widget".to_owned())],
+            timeout_secs: Some(5),
+            css_selector: Some("main".to_owned()),
+            ai_targeted: true,
+            ..GetArgs::default()
+        };
+
+        let response = run_get(&site.url("/doc"), &args).await;
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            site.hits(),
+            ["/doc?q=widget"],
+            "`params=` really reached the wire"
+        );
+
+        // --- .md ----------------------------------------------------------
+        let md = out.path().join("page.md");
+        write_content_to_file(
+            &response,
+            &md,
+            args.css_selector.as_deref(),
+            args.ai_targeted,
+        )
+        .expect("markdown is written");
+        let markdown = std::fs::read_to_string(&md).expect("read");
+        assert!(markdown.contains("Heading"), "{markdown:?}");
+        assert!(
+            !markdown.contains("var noise"),
+            "`--ai-targeted` strips the noise tags: {markdown:?}"
+        );
+
+        // --- .html --------------------------------------------------------
+        let html = out.path().join("page.html");
+        write_content_to_file(&response, &html, args.css_selector.as_deref(), false)
+            .expect("html is written");
+        let rendered = std::fs::read_to_string(&html).expect("read");
+        assert!(rendered.starts_with("<main>"), "outer HTML: {rendered:?}");
+        assert!(rendered.contains("<h2>Heading</h2>"));
+
+        // --- .txt ---------------------------------------------------------
+        let txt = out.path().join("page.txt");
+        write_content_to_file(&response, &txt, None, false).expect("text is written");
+        let text = std::fs::read_to_string(&txt).expect("read");
+        assert!(text.contains("Heading"), "{text:?}");
+        assert!(
+            !text.contains("var noise"),
+            "`ignore_tags` drops <script> even without --ai-targeted: {text:?}"
+        );
+        assert!(
+            !text.contains("  "),
+            "runs of spaces are collapsed: {text:?}"
+        );
+        assert!(
+            !text.contains("\n\n"),
+            "runs of newlines are collapsed: {text:?}"
+        );
+
+        // --- the suffix map is exhaustive and closed ----------------------
+        assert_eq!(extraction_for("a.md"), Ok(Extraction::Markdown));
+        assert_eq!(extraction_for("a.html"), Ok(Extraction::Html));
+        assert_eq!(extraction_for("a.txt"), Ok(Extraction::Text));
+        assert!(extraction_for("output.invalid").is_err());
+        assert!(extraction_for("output").is_err());
+        assert!(
+            write_content_to_file(&response, &out.path().join("page.xyz"), None, false).is_err(),
+            "an unknown suffix is a `ValueError`, not a silent default"
+        );
+
+        // --- the generator's trailing empty string ------------------------
+        let pieces = extract_content(&response, Extraction::Html, Some("main a"), false);
+        assert_eq!(pieces.len(), 2, "one match plus the trailing \"\"");
+        assert_eq!(pieces.last().map(String::as_str), Some(""));
+    }
+
+    /// `extract get` on a 404 still writes a file: the CLI reports the status
+    /// but does not refuse to extract, exactly as Python's does.
+    #[tokio::test]
+    async fn a_non_200_is_still_extractable() {
+        let site = Site::start(docs);
+        let out = tempfile::tempdir().expect("tempdir");
+
+        let response = run_get(&site.url("/missing"), &GetArgs::default()).await;
+        assert_eq!(response.status, 404);
+
+        let path = out.path().join("missing.txt");
+        write_content_to_file(&response, &path, None, false).expect("written");
+        assert_eq!(
+            std::fs::read_to_string(&path).expect("read").trim(),
+            "not found"
+        );
     }
 }

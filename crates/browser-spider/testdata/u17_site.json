@@ -1,0 +1,237 @@
+{
+  "seed": 20260825,
+  "categories": 3,
+  "items_per_category": 3,
+  "hosts": {
+    "primary": [
+      {
+        "path": "/",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Index</title></head>\n<body>\n  <h1>Index</h1>\n  <ul>\n    <li><a href=\"/cat/0\">/cat/0</a></li>\n    <li><a href=\"/cat/1\">/cat/1</a></li>\n    <li><a href=\"/cat/2\">/cat/2</a></li>\n    <li><a href=\"/private/secret\">/private/secret</a></li>\n    <li><a href=\"/private/deep/er\">/private/deep/er</a></li>\n    <li><a href=\"/moved\">/moved</a></li>\n    <li><a href=\"/gone\">/gone</a></li>\n    <li><a href=\"/limited\">/limited</a></li>\n    <li><a href=\"/flaky\">/flaky</a></li>\n    <li><a href=\"/slow\">/slow</a></li>\n    <li><a href=\"/dup?b=2&a=1\">/dup?b=2&a=1</a></li>\n    <li><a href=\"/dup?a=1&b=2\">/dup?a=1&b=2</a></li>\n    <li><a href=\"/dup?a=1&b=2#section\">/dup?a=1&b=2#section</a></li>\n    <li><a href=\"{{SECONDARY}}/\">{{SECONDARY}}/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/cat/0",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Category 0</title></head>\n<body>\n  <h1>Category 0</h1>\n  <ul>\n    <li><a href=\"/item/0/1\">/item/0/1</a></li>\n    <li><a href=\"/cat/1\">/cat/1</a></li>\n    <li><a href=\"/\">/</a></li>\n    <li><a href=\"/item/0/2\">/item/0/2</a></li>\n    <li><a href=\"/item/0/0\">/item/0/0</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/0/0",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 0-0</title></head>\n<body>\n  <h1>Item 0-0</h1>\n  <ul>\n    <li><a href=\"/cat/0\">/cat/0</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">931</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/0/1",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 0-1</title></head>\n<body>\n  <h1>Item 0-1</h1>\n  <ul>\n    <li><a href=\"/cat/0\">/cat/0</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">445</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/0/2",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 0-2</title></head>\n<body>\n  <h1>Item 0-2</h1>\n  <ul>\n    <li><a href=\"/cat/0\">/cat/0</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">941</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/cat/1",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Category 1</title></head>\n<body>\n  <h1>Category 1</h1>\n  <ul>\n    <li><a href=\"/item/1/1\">/item/1/1</a></li>\n    <li><a href=\"/item/1/2\">/item/1/2</a></li>\n    <li><a href=\"/cat/2\">/cat/2</a></li>\n    <li><a href=\"/item/1/0\">/item/1/0</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/1/0",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 1-0</title></head>\n<body>\n  <h1>Item 1-0</h1>\n  <ul>\n    <li><a href=\"/cat/1\">/cat/1</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">385</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/1/1",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 1-1</title></head>\n<body>\n  <h1>Item 1-1</h1>\n  <ul>\n    <li><a href=\"/cat/1\">/cat/1</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">778</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/1/2",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 1-2</title></head>\n<body>\n  <h1>Item 1-2</h1>\n  <ul>\n    <li><a href=\"/cat/1\">/cat/1</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">426</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/cat/2",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Category 2</title></head>\n<body>\n  <h1>Category 2</h1>\n  <ul>\n    <li><a href=\"/item/2/2\">/item/2/2</a></li>\n    <li><a href=\"/\">/</a></li>\n    <li><a href=\"/item/2/1\">/item/2/1</a></li>\n    <li><a href=\"/cat/0\">/cat/0</a></li>\n    <li><a href=\"/item/2/0\">/item/2/0</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/2/0",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 2-0</title></head>\n<body>\n  <h1>Item 2-0</h1>\n  <ul>\n    <li><a href=\"/cat/2\">/cat/2</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">977</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/2/1",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 2-1</title></head>\n<body>\n  <h1>Item 2-1</h1>\n  <ul>\n    <li><a href=\"/cat/2\">/cat/2</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">881</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/item/2/2",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Item 2-2</title></head>\n<body>\n  <h1>Item 2-2</h1>\n  <ul>\n    <li><a href=\"/cat/2\">/cat/2</a></li>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n  <p class=\"price\">260</p>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/dup",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Duplicate</title></head>\n<body>\n  <h1>Duplicate</h1>\n  <ul>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/moved",
+        "status": 301,
+        "content_type": "text/html; charset=utf-8",
+        "body": "",
+        "headers": {
+          "Location": "/cat/0"
+        },
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/gone",
+        "status": 404,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Not Found</title></head>\n<body>\n  <h1>Not Found</h1>\n  <ul>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/limited",
+        "status": 429,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Too Many Requests</title></head>\n<body>\n  <h1>Too Many Requests</h1>\n  <ul>\n\n  </ul>\n</body>\n</html>\n",
+        "headers": {
+          "Retry-After": "0"
+        },
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/flaky",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Flaky, finally</title></head>\n<body>\n  <h1>Flaky, finally</h1>\n  <ul>\n    <li><a href=\"/item/0/0\">/item/0/0</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": {
+          "first_n": 2,
+          "status": 503,
+          "headers": {
+            "Retry-After": "0"
+          }
+        }
+      },
+      {
+        "path": "/slow",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Slow</title></head>\n<body>\n  <h1>Slow</h1>\n  <ul>\n    <li><a href=\"/item/1/0\">/item/1/0</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 120,
+        "flap": null
+      },
+      {
+        "path": "/robots.txt",
+        "status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "body": "User-agent: *\nDisallow: /private/\nCrawl-delay: 0.05\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      }
+    ],
+    "secondary": [
+      {
+        "path": "/",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Other site</title></head>\n<body>\n  <h1>Other site</h1>\n  <ul>\n    <li><a href=\"/x\">/x</a></li>\n    <li><a href=\"/y\">/y</a></li>\n    <li><a href=\"{{PRIMARY}}/cat/0\">{{PRIMARY}}/cat/0</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/x",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Other X</title></head>\n<body>\n  <h1>Other X</h1>\n  <ul>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/y",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>Other Y</title></head>\n<body>\n  <h1>Other Y</h1>\n  <ul>\n    <li><a href=\"/\">/</a></li>\n  </ul>\n</body>\n</html>\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      },
+      {
+        "path": "/robots.txt",
+        "status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "body": "User-agent: *\nDisallow: /y\n",
+        "headers": {},
+        "delay_ms": 0,
+        "flap": null
+      }
+    ]
+  }
+}

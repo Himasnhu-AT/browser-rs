@@ -11,12 +11,12 @@
 | | |
 |---|---|
 | Build | `cargo build --workspace --all-features` ✅ green |
-| Tests | **1529 passing, 0 failing, 2 ignored** (same under `--all-features` and `--no-default-features`) |
-| Clippy | `--workspace --all-targets -D warnings` ✅ clean with default, `--all-features` and `--no-default-features` |
+| Tests | **1791 passing, 0 failing, 2 ignored** under `--all-features`; 66 of them launch **real Chrome** and skip cleanly without it |
+| Clippy | `--workspace --all-targets --all-features -D warnings` ✅ clean |
 | Format | `cargo fmt --all --check` ✅ clean |
-| Code written | ~81k lines across 14 crates (~58k of it `src/`) |
-| Plan progress | **15 of 20 work units done** (units 1–13, 15, 16) |
-| Last commit | `80241ef Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams` |
+| Code written | ~101k lines across 14 crates (~74k of it `src/`) |
+| Plan progress | **17 of 20 work units done** (units 1–17) |
+| Last commit | `Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams` |
 
 The two ignored tests are both regeneration aids, not checks, and are meant to stay ignored:
 `browser-markdown`'s `emit_rust_answers` (reads `$MD_CASES`, writes `$MD_OUT` for
@@ -25,6 +25,8 @@ The two ignored tests are both regeneration aids, not checks, and are meant to s
 Commits so far:
 
 ```
+(HEAD)    Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams
+9ac6251   handoff: record the wave-4 commit hash
 80241ef   Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams
 d78c06e   handoff: record the wave-3 commit hash
 3824cbb   Wave 3: the public document API, the spider data plane, and the Response seam
@@ -35,8 +37,8 @@ e837c0b   Preserve specs, corpus generators and the session handoff in-repo
 fe30e17   Unit 1: workspace scaffolding for the Rust port of the reference implementation
 ```
 
-Working tree is clean. Nothing is red. Pick up at **Unit 14** (the CDP browser driver) —
-**unit 17** (the crawler engine) is unblocked and parallel-safe with it.
+Working tree is clean. Nothing is red. Pick up at **units 18 and 19** — they touch disjoint
+crates (`browser-templates` and `browser-cli`) and are parallel-safe — then **unit 20**.
 
 ---
 
@@ -52,10 +54,17 @@ Working tree is clean. Nothing is red. Pick up at **Unit 14** (the CDP browser d
    **`crates/browser-spider/API.md`** — the crawl core, now including `throttle`/`robots`/`cache`
    and the `Response` ⇄ `FetchedResponse` seam. Every crate from unit 12 onwards codes against these.
 4. **`crates/browser-dom/API.md`** — the DOM cheat sheet underneath it.
-5. **`crates/browser-rs/tests/integration.rs`** — the 18 cross-crate seam tests, and the best map of
-   how the crates fit together. `response_seam` is the executable spec unit 12 was written against;
-   `browser_response_seam` is unit 14's, and `crawl_loop_seam` is unit 17's — the latter runs a real
-   crawl (robots → cache → throttle → fetch → parse → enqueue) against a loopback server.
+5. **`crates/browser-rs/tests/integration.rs`** — the **26** cross-crate seam tests, and the best map
+   of how the crates fit together. `response_seam` is the executable spec unit 12 was written
+   against; `browser_response_seam` was unit 14's and `crawl_loop_seam` unit 17's. Wave 5 added the
+   three the *next* wave is written against:
+   * `crawl_spider_seam` — a user-written `Spider` with a `LinkExtractor`, `CrawlRule`s and a named
+     callback, run to completion by the real `CrawlerEngine` over a loopback site. **Unit 18's
+     `CrawlSpider`, in miniature.**
+   * `site_to_markdown_seam` — `Response::markdown()` on a response from the HTTP fetcher *and* one
+     from **real Chrome**, plus the `CrawlResponse` deref path. **Unit 18's `SiteToMarkdownSpider`.**
+   * `cli_extract_seam` — `extract get <url> <out>` end to end: option group → `AsyncFetcher::get`
+     → `_extract_content` → `write_content_to_file`, all three suffixes. **Unit 19's core command.**
 6. **`docs/DIVERGENCES.md`** — every intentional behavioural difference from Python, in one place.
 
 ### The reference implementation is installed — use it
@@ -98,13 +107,13 @@ the rest may still carry absolute paths from an older session — check before r
 | `browser-markdown` | 3651 | ✅ done | markdownify port at the reference implementation's defaults, `strip_noise_tags`, `sanitize_for_ai` |
 | `browser-parser` | 7992 | ✅ done | **unit 10** — the public `Document`/`Node`/`Nodes` API, `FindQuery`, `find_similar`, `find_by_text`/`_regex`, the four selector generators, the adaptive save/relocate branch. `API.md` is the downstream contract |
 | `browser-http` | 15473 | ✅ done | **units 11 + 12** — policy (config/merge/headers_job/retry/proxy), the `HttpBackend` trait + `wreq` driver, the hand-rolled `follow_redirects="safe"` SSRF guard, `Response` (lazy parse, `OnceLock`), `ResponseBuilder`/`ResponseFactory`, the RFC 6265 `CookieJar`, `AsyncFetcherSession`/`AsyncFetcherClient`/`AsyncFetcher` and the blocking façade |
-| `browser-spider` | 13569 | 🟡 **all but the engine** | **units 15 + 16** — `Request` + SHA-1 fingerprint, `canonicalize_url`, `Scheduler`, `SessionManager` + `CrawlSession`, `CrawlStats`, `ItemList` exporters, `CheckpointManager`, `AutoThrottle` + `Retry-After`, the `protego` port + `RobotsTxtManager`, `ResponseCacheManager`, and the `Response` ⇄ `FetchedResponse` conversions. **`engine.rs` and `spider.rs` (unit 17) are still stubs** |
-| `browser-cdp` | 6687 | 🟡 **half** | Unit 13 (config/flags/pool/route) done. **`cdp/`, `session.rs`, `response.rs`, `cloudflare.rs` are still stubs** |
+| `browser-spider` | 20397 | ✅ done | **units 15 + 16 + 17** — `Request` + SHA-1 fingerprint, `canonicalize_url`, `Scheduler`, `SessionManager` + `CrawlSession`, `CrawlStats`, `ItemList` exporters, `CheckpointManager`, `AutoThrottle` + `Retry-After`, the `protego` port + `RobotsTxtManager`, `ResponseCacheManager`, the `Response` ⇄ `FetchedResponse` conversions — **and now `engine.rs` + `spider.rs`: the `Spider` trait, `CrawlerEngine`, `SpiderRunner`, `HttpCrawlSession`** |
+| `browser-cdp` | 18113 | ✅ done | **units 13 + 14** — config/flags/pool/route, plus the raw-CDP driver: `CdpPage` with one deadline across `Page.navigate` + `load`, the hand-rolled `networkidle`, `Fetch`-domain interception, `Page.createIsolatedWorld`, the redirect ledger with `…ExtraInfo` header resolution, the response/XHR factory, and the Cloudflare Turnstile solver |
 | `browser-templates` | 49 | ❌ stub | Unit 18 |
 | `browser-cli` | 49 | ❌ stub | Unit 19 |
-| `browser-rs` (façade) | 2074 | 🟡 partial | 18 cross-crate seam tests, all passing; the re-export surface is unit 20 |
+| `browser-rs` (façade) | 3102 | 🟡 partial | 26 cross-crate seam tests, all passing; the re-export surface is unit 20 |
 
-**~81k lines across 14 crates** (~58k of it `src/`).
+**~101k lines across 14 crates** (~74k of it `src/`).
 
 All 14 crates are **pre-scaffolded**: every module file exists, every `pub mod` is declared, every
 dependency is wired in `[workspace.dependencies]`. Implementers fill in files; they never touch
@@ -167,6 +176,25 @@ Every finished unit was adversarially differential-tested against the real Pytho
   `\x1c`–`\x1f`, `_PyUnicode_TransformDecimalAndSpaceToASCII` (so `float("٣.٥") == 3.5` — a
   previously *declared* divergence, now implemented), and a from-scratch port of
   `email._parseaddr._parsedate_tz` that fixed eight classes of wrongly rejected HTTP date.
+- **Crawler engine (unit 17): 1255/1255 field comparisons (100%)** across **36 real crawls** run
+  on both implementations over the same declarative two-host loopback fixture — the URLs the
+  *servers* saw, the items and their depths, `CrawlStats.to_dict()` key by key, the lifecycle
+  hooks, `on_error`, the checkpoint contents and four pause→resume round trips (including one that
+  pauses with the blocked-retry ladder in flight, which pins `_retry_count` and `dont_filter`
+  surviving a checkpoint, and one with four requests in flight). Five relaxations are declared with
+  reasons and three are asserted to keep differing. The suite was **mutation-tested with 16
+  deliberate engine bugs**; the three that escaped are now pinned.
+- **Browser driver (unit 14): 311/311 in-crate tests, 66 of them against real Chrome.** The corpus
+  (35 rows, `tools/corpus/u14/`) was produced by driving **real the reference implementation 0.4.15 + Playwright + the
+  stock Google Chrome** over a declarative loopback fixture, and is replayed by driving **the same
+  Chrome binary** through `BrowserSession`. Every resource-blocking assertion is made against what
+  the *socket* saw, not against CDP bookkeeping. The differential found **four real defects**, all
+  fixed: `timeout` not bounding `page.goto` (30 s where Python raises at 3 s), a `referer` in
+  `extra_headers` making Chrome refuse every navigation with `net::ERR_BLOCKED_BY_CLIENT`, a
+  same-document (fragment) navigation burning the whole timeout, and `Response.headers` losing every
+  `Set-Cookie` because `Network.responseReceived` reports the *redacted* header set. One divergence
+  is declared and asserted to keep differing (`a_download_is_not_a_navigation`).
+
 - **Storage:** identical SQLite schema; a DB written by Python reads in Rust and vice-versa.
 - **difflib:** f64 bit-equality against CPython on a generated corpus.
 - **Markdown / HTTP policy / browser config:** golden corpora generated from the reference interpreter.
@@ -220,46 +248,37 @@ documents the nine deliberate API deviations (`xpath()` rejects a scalar; `reloc
   client certificates, HTTP/3, and the impersonation fingerprint itself (profiles are exercised,
   but the JA3/JA4 bytes are never compared).
 
-### Unit 14 — `browser-cdp` CDP driver + Cloudflare solver
-*Deps: 13, 12. Not parallel. The hardest unit left.*
-Files: `cdp/{mod,networkidle,fetch_domain,isolated_world,history}.rs`, `session.rs`, `response.rs`, `cloudflare.rs`
-- chromiumoxide session, three launch modes (CDP / rotation / persistent)
-- **reimplement Playwright primitives on raw CDP**: `networkidle` from Network events, `Fetch`-domain
-  interception replacing `page.route`, `Page.createIsolatedWorld`
-- the per-request page reset sequence whose *call counts* are pinned by `test_page_reuse.py`
-- redirect history from `redirectResponse`; response + XHR capture
-- Cloudflare Turnstile solver with all its magic numbers (5000 ms idle budget, 3 attempts, 20×500 ms,
-  100×100 ms, click offsets x+26..28 / y+25..27, hold 100..200 ms)
-- **deliberate deviation:** Python's `frame_element().is_visible()` loop is unbounded; give it the
-  request `timeout` as a deadline — an unbounded loop in an async task is a hang, not a slow request
+### ~~Unit 14 — `browser-cdp` CDP driver + Cloudflare solver~~ ✅ **done** (wave 5)
+`cdp/{mod,networkidle,fetch_domain,isolated_world,history}.rs`, `session.rs`, `response.rs`,
+`cloudflare.rs` — 311 in-crate tests, 66 of them driving **real Chrome** against a loopback fixture
+that is the Rust twin of the Python one (`tools/corpus/u14/`, which also emits
+`testdata/u14_fixture.json` so the two servers cannot drift). It does **not** write a second
+`Response`: `BrowserResponseFactory` builds unit 12's, exactly as `browser_response_seam` predicted.
 
-**The response half is already settled — do not write a second `Response`.**
-`crates/browser-rs/tests/integration.rs::browser_response_seam` builds a browser-shaped response
-out of exactly what CDP gives you (a rendered `String`, a status, a `Network.responseReceived`
-header map and `redirectResponse` hops), drives it through the same reader as an HTTP-driven one,
-and runs a full adaptive save-then-relocate on it. Copy `from_browser_page` out of that test:
+What units 18–20 must know:
 
-```rust
-let encoding = headers.get("content-type")
-    .and_then(|v| browser_http::response::charset_from_content_type(v))   // __CHARSET_RE__
-    .unwrap_or("utf-8");
-let mut builder = browser_http::response::Response::builder(status, url)
-    .method(Method::Get)
-    .body(rendered_html)          // a String; the declared encoding round-trips it
-    .headers(headers)
-    .encoding(encoding)
-    .history(hops)                // Vec<RedirectHop> from redirectResponse
-    .selector_config(selector_config);
-if let Some(storage) = storage {                     // adaptive storage goes in through the hook
-    builder = builder.document_hook(Arc::new(move |c| c.storage(Arc::clone(&storage))));
-}
-builder.build()
-```
-
-Use `charset_from_content_type` (the quote-tolerant `__CHARSET_RE__`), **not**
-`charset_from_content_type_http`: `__extract_browser_encoding` is only used on this side in
-Python, because `curl_cffi` resolves the charset for the HTTP engines — and now that
-`browser-dom` really decodes with the label, it has a real effect.
+- **`BrowserSession::fetch(url, FetchParams)` → `browser_http::response::Response`.**
+  `fetch_detailed` returns the `BrowserFetch` if you want the XHR captures. `fetch_once` is the
+  one-shot form. `browser-cdp` now has `markdown` and `adaptive` features that forward to
+  `browser-http` — see the feature note below.
+- **Browser tests skip cleanly with no Chrome.** `live_u14::browser_available()` honours
+  `BROWSER_RS_SKIP_BROWSER_TESTS` and the executable probe; every live test prints a skip notice and
+  returns. Verified both ways in wave 5: with Chrome the browser lib suite is ~48 s, and with
+  executable resolution forced to fail all 244 lib tests pass in 0.25 s with 66 skip notices.
+- **One 3-permit semaphore for the whole crate's live tests** (`live_u14::LIVE_BROWSERS`, shared
+  with `session::live`). Cold-starting six Chromes at once really did fail to hand back a WebSocket
+  URL. Anything new that launches a browser inside `browser-cdp` must take a permit.
+- **Still only structurally verified: Cloudflare.** `/challenge*` reproduces the `cType` marker, the
+  widget at a known absolute position and the mousedown-clears-it transition, which pins the state
+  machine, the attempt counts, the polling cadence, the click-offset arithmetic and the deadline. It
+  does **not** prove Cloudflare accepts the click, and the `embedded` branch plus the real
+  cross-origin challenge-iframe path are unit-tested against a trait double only.
+- **Untested end to end:** TLS (`ignore_https_errors`, HSTS, `--ignore-certificate-errors`), proxies
+  (no Python-side differential — only the pre-existing `session::live` tests against two local
+  proxies), and the `media` / `websocket` / `texttrack` resource types (golden mapping table only).
+- **Accepted-but-inert:** `additional_args` (there is no Playwright context to merge into).
+  `chromiumoxide`'s `FrameManager` still emits `Runtime.enable` on attach and appends
+  `--disable-extensions`; both are upstream and documented.
 
 ### ~~Unit 15 — `browser-spider` data plane~~ ✅ **done** (wave 3)
 `request.rs`, `canonicalize.rs`, `scheduler.rs`, `session.rs`, `stats.rs`, `items.rs`, `checkpoint.rs`
@@ -288,32 +307,48 @@ Six divergence families are written up in `docs/DIVERGENCES.md` under "Unit 16";
 really a **to-do for unit 17** is item 3: default `FetchedResponse::encoding` to `"utf-8"` instead
 of `""`, which is in `session.rs` and removes a whole declared divergence.
 
-### Unit 17 — spider engine ⬅️ **UNBLOCKED, and parallel-safe with 14**
-*Deps: 15, 16 — both done.*
-`engine.rs`, `spider.rs`. The `Spider` trait replacing Python subclassing; `CrawlerEngine` with the
-Notify-driven loop, global spawn cap + per-domain semaphores, the exact `_process_request` ordering
-(robots → cache replay → limiter → delay → fetch → cache write → block detection → autothrottle
-feedback → retry-or-callback), Request-before-Item dispatch, the pause/force-stop ladder with
-**checkpoint saved before cancel**, streaming via `mpsc::channel(100)`, `ctrl_c()` in the select loop.
+### ~~Unit 17 — spider engine~~ ✅ **done**
+`engine.rs`, `spider.rs` — the `Spider` trait, `SpiderSettings`, `CrawlResponse` + `follow`,
+`Yielded`, `HttpCrawlSession`, `RunOptions`/`SpiderRunner`, and `CrawlerEngine` with the
+Notify-driven loop, the global spawn cap plus per-domain semaphores, the exact `_process_request`
+ordering, the pause/force-stop ladder and streaming.
 
-**The whole loop already runs.** `crates/browser-rs/tests/integration.rs::crawl_loop_seam` writes
-`_process_request`'s ordering out by hand against a **real** `AsyncFetcherSession` and a loopback
-HTTP server, using `Scheduler`, `SessionManager`, `RobotsTxtManager`, `AutoThrottle`,
-`ResponseCacheManager`, `CrawlStats` and unit 12's fetcher — and asserts that a `robots.txt`
-`Disallow` stops a fetch *before* it happens, that de-duplication holds, that a 429 feeds
-`Retry-After` into `AutoThrottle::record`, and that a second pass replays entirely from cache
-without touching the server. Unit 17 has nothing left to invent, only to arrange. Three concrete
-starting jobs:
+**Verified by running 36 real crawls on both implementations** over the same declarative two-host
+loopback fixture and comparing 1,255 fields: the URLs the *servers* saw (in arrival order where
+the scenario is serial, as a multiset where it is not), the items and their depths,
+`CrawlStats.to_dict()` key by key, the lifecycle-hook call records, `on_error`, the checkpoint
+contents and the pause→resume round trips. **1255/1255 reproduce.** Generator and fixture:
+`tools/corpus/u17/` (with its own `README.md`); the comparison is
+`crates/browser-spider/tests/u17_engine_golden.rs`, and it needs neither Python nor a network.
+Five relaxations are declared in the test with reasons, three of which are still asserted (see
+`docs/DIVERGENCES.md` §"Unit 17").
 
-1. **Promote `crawl_loop_seam::HttpCrawlSession` into `browser-spider`** — `CrawlSession` over
-   `AsyncFetcherSession`, about thirty mechanical lines. Then extend its `SessionKwargs` →
-   `RequestOverrides` mapping past `method`/`headers`/`json` to `proxy`, `proxies`, `timeout` and
-   the opaque `extra`, which the test does not need and a real crawl does.
-2. **Default `FetchedResponse::encoding` to `"utf-8"`** in `session.rs`, which deletes a declared
-   unit-16 divergence (`docs/DIVERGENCES.md`, unit 16 item 3).
-3. **Drop `httpdate` and `texting_robots`** from `crates/browser-spider/Cargo.toml`. Both are now
-   unused — unit 16 replaced the date parser with a `_parsedate_tz` port over `chrono::NaiveDate`,
-   and `texting_robots` was never used at all. That file was off-limits to unit 16; it is yours.
+The differential was mutation-tested — 16 deliberate engine/spider bugs were introduced one at a
+time — and **three of them escaped the suite as it stood**; all three are now pinned:
+
+1. a callback error not stopping the rest of its stream (the old test's callback yielded nothing
+   after the error, so the assertion in its name was never made);
+2. a force stop cancelling *before* it checkpoints, which loses every in-flight request (the old
+   test pressed the ladder from the only callback there was, so `abort_all` had nothing to abort);
+3. the `robots.txt` `Crawl-delay` never reaching the pre-fetch sleep — every count and every stat
+   is identical whether the engine sleeps or not, so only a wall-clock **lower bound** can see it.
+
+The three side jobs are done too: `httpdate` and `texting_robots` are gone from
+`crates/browser-spider/Cargo.toml` (and `tempfile` moved to `[dev-dependencies]`),
+`FetchedResponse::encoding` now defaults to `"utf-8"`, and `HttpCrawlSession` is in
+`spider.rs`. The unit-17 error variants stay in a module-local `CrawlError` in `spider.rs`, which
+`crates/browser-spider/API.md` explicitly sanctions.
+
+~~**Left for the wave's green agent:** `crawl_loop_seam::Fixture::serve` closes with
+`stream.shutdown(Shutdown::Both)`~~ — **done in wave 5**: it now half-closes with
+`Shutdown::Write` and drains to EOF, and the new `local_site::Site` fixture does the same.
+
+Known holes, none of them closable on loopback: **Chrome was never involved** (the `browser`
+feature routing a crawl through `browser-cdp` is completely untested), proxies / TLS /
+impersonation have no differential, `Ctrl-C` handling rests on reading rather than running (SIGINT
+cannot be delivered to one `#[tokio::test]`), `SpiderRunner::start_blocking` is tested only on its
+refuse-to-nest branch, and `SessionKwargs` cannot express Python's `data=None` as an explicit clear
+(unit-17 divergence 14).
 
 ### Unit 18 — `browser-templates` *(parallel-safe with 19)*
 `LinkExtractor` (13 kwargs, `IGNORED_EXTENSIONS`, `strip_html5_whitespace` — the five HTML5 space chars
@@ -321,17 +356,68 @@ only, **not** `str::trim`), `CrawlSpider`/`CrawlRule` (rule dispatch as a **free
 compose it), `SitemapSpider`, `ShopifySpider`, `XMLFeedSpider`, `CSVFeedSpider`, `SiteToMarkdownSpider`,
 gzip `_decompress` with the 64 MiB bomb cap.
 
+**Start from the seam tests, not from the spec.** `crates/browser-rs/tests/integration.rs::crawl_spider_seam`
+already contains a working `strip_html5_whitespace`, an `allow`/`deny` `LinkExtractor`, a `CrawlRule`,
+`requests_to_follow` **as a free function**, and a two-callback `Spider` that the real
+`CrawlerEngine` runs to completion over a loopback site — with robots.txt, de-duplication and a
+`deny` rule all asserted. `site_to_markdown_seam` does the same for `SiteToMarkdownSpider`, over
+**both** the HTTP fetcher and real Chrome. Lift them into the crate; they were written to be lifted.
+
+Five things that will bite (all written up in `docs/DIVERGENCES.md` §"Wave 5 integration"):
+
+- **A rule must set `FollowOptions::callback` explicitly, even a follow-only one.** `follow`
+  *inherits* the originating request's callback when it is `None`, so a rule that leaves it unset
+  makes every page reached from a product page get parsed as a product. Write
+  `Some(rule.callback.clone().unwrap_or(CallbackId::PARSE))`.
+- **`Nodes::get()` is Python's `.get()`**; `Nodes::first()` returns `Option<&Node>`. Extractors want
+  `get()` / `texts()` / `attrs()`.
+- **A spider that overrides `dispatch` must override `has_callback` too**, or a restored checkpoint
+  rewrites every named callback to `parse`.
+- **`Scheduler::dequeue` clones**; mutating a dequeued request will not show up in a later
+  `snapshot()`.
+- The crate already has `csv`, `flate2`, `quick-xml` and `regex` wired in `Cargo.toml`, and a
+  `markdown` feature that now correctly forwards to `browser-http` (see below).
+
 ### Unit 19 — `browser-cli` *(parallel-safe with 18)*
 clap-derive `browser-rs` binary: `extract get/post/put/delete/fetch/stealthy-fetch`, the shared option
 groups, the **seconds-vs-milliseconds split** between HTTP and browser commands, `write_content_to_file`
 with the `.md`/`.html`/`.txt` mode map, `--ai-targeted`, `BROWSER_RS_EXECUTABLE_PATH` precedence,
 `install` (Chromium via `chromiumoxide_fetcher`, not Python Playwright), and `uncurl`.
 
+**`crates/browser-rs/tests/integration.rs::cli_extract_seam` is `extract get` already written**:
+the parsed option group → `AsyncFetcher::get` with headers/params/cookies/timeout → `_extract_content`
+in all three modes → `write_content_to_file`. It pins the four details that are easy to get wrong:
+
+- the generator's **trailing `""`** (so `pieces.len() == matches + 1`);
+- `text` mode collapsing `\n`, `\r`, `\t`, ` ` **independently and in that order**, each with its own
+  `[c]+ -> c` substitution — one pass over a combined character class is wrong;
+- an unknown suffix is a **`ValueError`**, not a silent default, and the match is on the suffix
+  *string*, not on `Path::extension`;
+- the **seconds-vs-milliseconds split**: `extract get/post/put/delete` take seconds and feed
+  `RequestBuilder::timeout(Option<Duration>)`; `fetch` / `stealthy-fetch` take milliseconds and feed
+  `BrowserConfig::timeout_ms(f64)`.
+
+`BROWSER_RS_EXECUTABLE_PATH` is **the CLI's** concern, not the browser crate's: `resolve_executable`
+in `browser-cdp` reads `BrowserConfig::executable_path` and then falls through to
+`chromiumoxide`'s detection (which honours `CHROME`). Unit 19 implements the precedence
+`--executable-path` > `BROWSER_RS_EXECUTABLE_PATH` > absent, per `cli-ai.md` §1394.
+
 ### Unit 20 — façade, docs, conformance, benchmarks
 `crates/browser-rs/src/{lib,prelude}.rs` re-export surface + feature flags, end-to-end tests against a
 local server, criterion benches (`parse`, `relocate`, `markdown` — the spec pins parse of 5000
 nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), finished README,
 `DIVERGENCES.md`, runnable examples for the four entry points.
+
+**The feature graph is now correct but is still only *forwarded*, never *re-exported*.**
+`crates/browser-rs/src/lib.rs` is 26 lines. Wave 5 fixed a real hole in it — `markdown` and
+`adaptive` were forwarded only to `browser-parser`, so `Response::markdown()` (which lives in
+`browser-http`) was unreachable through the façade and would have broken unit 19 on day one.
+Every forwarding list now names `browser-http` too, `browser-cdp` gained `markdown` /
+`adaptive`, and two tests pin it by *not compiling* if it regresses
+(`browser-spider::spider::tests::the_markdown_feature_reaches_the_response_through_deref`,
+`browser-cdp::response::tests::a_browser_response_converts_to_markdown`). Unit 20 should keep
+that discipline as it writes the re-export surface: **every `#[cfg(feature = …)]` item in a member
+crate needs a matching forwarding entry here.**
 
 ---
 
@@ -351,8 +437,27 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
    `docs/DIVERGENCES.md` §"Blank text" and `crates/browser-dom/API.md` deviation 3.
 4. ~~Add `iterchildren()` to `browser-dom`~~ — **done**: `NodeRef::iterchildren()`, pinned by
    `tests/downstream_contract.rs::iterchildren_matches_lxmls_child_sequence`.
-5. `cargo-deny` is **not installed** on this machine, so `deny.toml` has never actually run.
-   `cargo install cargo-deny` and verify CI's deny step passes. **Still open — the only one.**
+5. ~~`cargo-deny` is not installed~~ — **it is now, it was run, and it found a real problem.**
+   `cargo deny check` reports **`advisories ok, bans ok, licenses FAILED, sources ok`**.
+
+   🔴 **`wreq-util 0.1.0` is GPL-3.0 and this workspace is MIT.** It is the emulation-profile table
+   behind `browser-http`'s `impersonate` feature — which is **on by default** — so as things stand
+   a default build of `browser-rs` links copyleft code into an MIT crate. `wreq` itself is
+   Apache-2.0; only the profile crate is GPL. This is **not** something the green agent should
+   allowlist away, so `deny.toml`'s `exceptions` is deliberately still empty and the check is
+   deliberately still red. A human has to pick one of:
+
+   1. relicense the workspace to GPL-3.0;
+   2. take `impersonate` out of `browser-http`'s default features and ship the JA3/JA4 profiles as
+      an opt-in GPL build, documented as such;
+   3. replace `wreq-util` with permissively licensed profile tables — the mapping in
+      `crates/browser-http/src/backend/wreq.rs` is ours, only the profile *data* is theirs.
+
+   The reasoning is repeated in `deny.toml` next to the empty `exceptions`, so nobody closes it by
+   accident. One licence *was* added legitimately: `CDLA-Permissive-2.0`, for `webpki-root-certs` —
+   the Mozilla root store, a permissive **data** licence with no copyleft reach into the code.
+
+   **This is the one thing that is still red in the repo.**
 6. ~~The one `#[ignore]`d test~~ — **done, it is not a bug.** It is
    `browser-markdown/tests/markdown_golden.rs::emit_rust_answers`, a regeneration aid that reads
    `$MD_CASES` and writes `$MD_OUT` for `tools/corpus/mdgold/step2_golden.py`. It fails under bare
@@ -362,14 +467,20 @@ nested `div.item` + `css(".item")` under 0.5 s; we should beat that by ~50×), f
    Now mostly moot (the inputs in `testdata/normalized/` are minified), but if anyone regenerates
    that corpus, tighten the comparison at the same time.
 8. **`wiremock` is declared in `[workspace.dependencies]` and is not in `Cargo.lock`.** Nothing uses
-   it, and pulling it in needs crates.io, which is not reachable here. The two local-server test
-   fixtures written so far are hand-rolled `std::net` listeners
-   (`crates/browser-http/tests/u12_support/mod.rs` and `crawl_loop_seam::Fixture` in the façade's
-   integration test); unit 20 should either vendor `wiremock` deliberately or drop the line.
+   it, and pulling it in needs crates.io, which is not reachable here. There are now **five**
+   hand-rolled `std::net` / `tokio` fixture servers instead
+   (`crates/browser-http/tests/u12_support/mod.rs`, `crates/browser-spider/tests/u17_support/mod.rs`,
+   `crates/browser-cdp/src/live_u14/server.rs`, and `crawl_loop_seam::Fixture` +
+   `local_site::Site` in the façade's integration test); unit 20 should either vendor `wiremock`
+   deliberately or drop the line. `local_site::Site` is the one to copy: it takes a
+   `fn(&str) -> Option<Page>` route table, serves each connection on its own thread (a browser opens
+   several at once), and half-closes rather than RSTing.
 9. **`hyper` is not a `browser-http` dependency**, which is the only reason a non-canonical reason
    phrase is lost (corpus rows `status-299`, `status-222`). One line in `Cargo.toml` closes it.
-10. **`httpdate` and `texting_robots` are unused** by `browser-spider` and still listed in its
-    `Cargo.toml`. Unit 17 owns that file now — see its TODO.
+10. ~~**`httpdate` and `texting_robots` are unused**~~ — **done** in unit 17: both are gone from
+    `crates/browser-spider/Cargo.toml`, and `tempfile` moved to `[dev-dependencies]` (it is only
+    used by tests and doc examples). `tracing-subscriber` was added there for the u17 differential,
+    which installs a counting-only subscriber so `CrawlStats.log_count` is a real tally.
 
 ---
 
@@ -433,19 +544,32 @@ The pattern that worked, and is worth repeating:
    `build`/`test`/`clippy`/`fmt`, write a composition test proving the next wave's seam works, append
    to `DIVERGENCES.md`, and commit.
 
-Waves 1–4 are done (units 1–13, 15, 16). Remaining: **14 + 17 in parallel** (they touch disjoint
-crates and 17 no longer waits on 14), then **18 + 19** in parallel, then **20**.
+Waves 1–5 are done (units 1–17). Remaining: **18 + 19 in parallel** (disjoint crates), then **20**.
 
 Wave 4 added a fourth job to the green agent's list that is worth keeping: **write the next wave's
 seam test before the next wave starts.** `browser_response_seam` and `crawl_loop_seam` in
 `crates/browser-rs/tests/integration.rs` are what turned three vague API questions into three small
 commits (`From<&Response> for FetchedResponse`, `FetchedResponse::response_builder`, and
-`Method`/`HttpMethod` conversions) instead of into a merge conflict two weeks later.
+`Method`/`HttpMethod` conversions) instead of into a merge conflict two weeks later. Wave 5 did the
+same for units 18 and 19 (`crawl_spider_seam`, `site_to_markdown_seam`, `cli_extract_seam`) and it
+paid immediately: writing them surfaced that the `markdown` feature never reached
+`browser-http`, so `Response::markdown()` — the one method unit 19's `extract get out.md` is
+built on — was unreachable through the façade. That would have been unit 19's first hour.
+
+A fifth job is now worth adding: **run `cargo deny check`.** It had never been run before wave 5,
+and the first run found a GPL-3.0 crate in an MIT workspace (housekeeping item 5).
 
 ```bash
 cd /Users/himanshu/codes/browser-rs
 cargo build --workspace --all-features \
-  && cargo test --workspace \
-  && cargo clippy --workspace --all-targets -- -D warnings \
+  && cargo test --workspace --all-features \
+  && cargo clippy --workspace --all-targets --all-features -- -D warnings \
   && cargo fmt --all --check
+# and, separately, because it is expected to FAIL on licences until the
+# `wreq-util` GPL question is answered:
+cargo deny check          # advisories ok, bans ok, licenses FAILED, sources ok
+
+# The browser suite takes ~48 s because 66 tests launch real Chrome. To run
+# without one (and prove the skip path still works):
+BROWSER_RS_SKIP_BROWSER_TESTS=1 cargo test --workspace --all-features
 ```

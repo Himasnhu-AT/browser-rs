@@ -35,6 +35,6 @@ url.workspace = true
 
 [features]
 default = []
-markdown = ["dep:browser-markdown", "browser-parser/markdown"]
+markdown = ["dep:browser-markdown", "browser-parser/markdown", "browser-spider/markdown"]
 browser = ["browser-spider/browser"]
 adaptive = ["browser-spider/adaptive"]

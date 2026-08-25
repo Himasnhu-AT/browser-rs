@@ -29,7 +29,6 @@ form_urlencoded.workspace = true
 futures.workspace = true
 hex.workspace = true
 http.workspace = true
-httpdate.workspace = true
 idna.workspace = true
 indexmap.workspace = true
 parking_lot.workspace = true
@@ -39,17 +38,24 @@ quick-xml.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha1.workspace = true
-tempfile.workspace = true
-texting_robots.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["sync", "time", "macros", "rt", "fs", "signal"] }
 tokio-util.workspace = true
 tracing.workspace = true
 url.workspace = true
 
+[dev-dependencies]
+# Only the unit tests, the doc examples and the u17 fixture need a scratch directory.
+tempfile.workspace = true
+# The u17 differential installs a counting-only subscriber so `CrawlStats.log_count`
+# is a real tally rather than an empty map.
+tracing-subscriber.workspace = true
+
 [features]
 default = []
 # Let a spider fetch through the headless-browser engine as well as HTTP.
 browser = ["dep:browser-cdp"]
-markdown = ["browser-parser/markdown"]
-adaptive = ["browser-parser/adaptive"]
+# Both flags gate methods on unit 12's `Response`, which `CrawlResponse` derefs
+# to, so they have to reach `browser-http` as well as `browser-parser`.
+markdown = ["browser-parser/markdown", "browser-http/markdown"]
+adaptive = ["browser-parser/adaptive", "browser-http/adaptive"]

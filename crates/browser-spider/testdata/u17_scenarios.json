@@ -1,0 +1,669 @@
+[
+  {
+    "id": "s01_depth1_serial",
+    "description": "Serial BFS one level deep. Pins order, the 301, the 404, the 429 retry ladder, the flapping 503 and canonical dedup of the three /dup spellings.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s02_depth2_serial",
+    "description": "Serial BFS two levels deep: the whole primary graph plus one hop into the secondary host.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s03_robots_serial",
+    "description": "Same as s02 with robots_txt_obey. /private/** must never reach the server, and Crawl-delay raises the floor.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "robots_txt_obey": true
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s04_allowed_domains",
+    "description": "The offsite filter keyed on the netloc: the secondary host is dropped before it is ever queued.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "allowed_domains": [
+        "{{PRIMARY_HOST}}"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 3
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s05_concurrent4",
+    "description": "Four in flight, deep enough that every page is reachable. Sets, not order.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 4
+    },
+    "callback": {
+      "max_depth": 4
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s06_per_domain_limit",
+    "description": "Global cap 4, per-domain cap 2, robots on, two hosts seeded at once.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/",
+        "{{SECONDARY}}/"
+      ],
+      "concurrent_requests": 4,
+      "concurrent_requests_per_domain": 2,
+      "robots_txt_obey": true
+    },
+    "callback": {
+      "max_depth": 3
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s07_no_retries",
+    "description": "max_blocked_retries = 0: a blocked response is counted once and never re-queued.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "max_blocked_retries": 0
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s08_drop_and_empty",
+    "description": "on_scraped_item returns None for /gone, and /slow yields an empty dict. Both count as items_dropped.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1,
+      "drop_paths": [
+        "/gone"
+      ],
+      "empty_item_paths": [
+        "/slow"
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s09_callback_error",
+    "description": "The /cat/1 callback raises after its first yield. on_error fires, the rest of that generator is abandoned, and the crawl still drains the queue.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "error_paths": [
+        "/cat/1"
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s10_fp_include_headers",
+    "description": "fp_include_headers folds the referer Response.follow stamps into the fingerprint, so the same URL reached from two parents is two requests.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "fp_include_headers": true
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s11_fp_keep_fragments",
+    "description": "keep_fragments makes /dup?a=1&b=2#section a distinct request from /dup?a=1&b=2.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "fp_keep_fragments": true
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s12_download_delay",
+    "description": "A fixed 20 ms pre-fetch sleep, serial. download_delay lands in the stats verbatim.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "download_delay": 0.02
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s13_autothrottle",
+    "description": "AutoThrottle on with a 10 ms start delay: the blocked 429/503 ladder feeds Retry-After back into the controller.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 2,
+      "concurrent_requests_per_domain": 2,
+      "autothrottle_enabled": true,
+      "autothrottle_start_delay": 0.01,
+      "autothrottle_max_delay": 0.2
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s14_stream",
+    "description": "Streaming mode: every item goes to the channel and engine.items stays empty.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "stream"
+    }
+  },
+  {
+    "id": "s15_secondary_seed",
+    "description": "Seeded on the secondary host with robots on: Disallow: /y, and the cross-link back into the primary host is followed.",
+    "settings": {
+      "start_urls": [
+        "{{SECONDARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "robots_txt_obey": true
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s16_priority",
+    "description": "The callback stamps a descending priority on every follow-up, so the queue is a LIFO within one page and a strict priority order across pages.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "priority_by_index": true
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s17_checkpoint_pause",
+    "description": "Graceful pause after the 4th item, with a crawldir. The checkpoint is written and the run reports paused.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "pause_after_items": 4
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0
+    }
+  },
+  {
+    "id": "s17_checkpoint_resume",
+    "description": "The resume half of s17: the same crawldir, no pause. start_requests() must NOT run, and the union of the two runs must equal s02.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0,
+      "resume_of": "s17_checkpoint_pause"
+    }
+  },
+  {
+    "id": "s18_force_stop",
+    "description": "Two pause presses from inside the same callback: the checkpoint is written first, then the in-flight tasks are cancelled.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 4
+    },
+    "callback": {
+      "max_depth": 2,
+      "pause_after_items": 3,
+      "force_stop": true
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0
+    }
+  },
+  {
+    "id": "s19_no_checkpoint_pause",
+    "description": "The same graceful pause with no crawldir: the crawl stops but `paused` stays false, so a caller cannot mistake it for a resumable state.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "pause_after_items": 4
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s20_devcache_record",
+    "description": "development_mode records every response to disk. cache_misses counts every live fetch.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "development_mode": true
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run",
+      "cachedir": true
+    }
+  },
+  {
+    "id": "s20_devcache_replay",
+    "description": "The replay half: the same cache directory, so every request is a hit, nothing reaches the server, and the callbacks still run.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "development_mode": true
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run",
+      "cachedir": true,
+      "resume_of": "s20_devcache_record"
+    }
+  },
+  {
+    "id": "s21_named_callback",
+    "description": "Every /item/ link is followed with a *named* callback, so dispatch() has to route it and the item carries `via: parse_item`.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "item_callback": true
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s22_two_sessions",
+    "description": "Two registered sessions; /cat/ links are routed to `alt`. sessions_requests_count splits, and the sid is part of the fingerprint.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "sessions": [
+        "default",
+        "alt"
+      ]
+    },
+    "callback": {
+      "max_depth": 2,
+      "alt_sid_prefixes": [
+        "/cat/"
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s23_post_and_kwargs",
+    "description": "The /dup and /cat/0 links are followed as POSTs with a form body; their children inherit the method unless they override it, which /item/** does. fp_include_kwargs folds every non-body kwarg into the fingerprint as well.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "fp_include_kwargs": true
+    },
+    "callback": {
+      "max_depth": 2,
+      "post_prefixes": [
+        "/dup",
+        "/cat/0"
+      ],
+      "get_prefixes": [
+        "/item/"
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s24_dont_filter",
+    "description": "dont_filter on the /cat/ and /gone links: the same URL is fetched once per discovery instead of once per crawl.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "dont_filter_prefixes": [
+        "/cat/",
+        "/gone"
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s25_failed_fetch",
+    "description": "A link to the closed discard port: the fetch raises, failed_requests_count rises, requests_count does NOT, and on_error sees it.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1,
+      "dead_link": true
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s26_callback_checkpoint_pause",
+    "description": "A graceful pause while /item/ requests bound for the named callback are still queued, so the checkpoint has to carry the callback name.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "item_callback": true,
+      "pause_after_items": 5
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0
+    }
+  },
+  {
+    "id": "s26_callback_checkpoint_resume",
+    "description": "The resume half: every restored /item/ request must still dispatch to parse_item, not fall back to parse.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2,
+      "item_callback": true
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0,
+      "resume_of": "s26_callback_checkpoint_pause"
+    }
+  },
+  {
+    "id": "s27_retry_checkpoint_pause",
+    "description": "Pause with the blocked-retry ladder mid-flight: the checkpoint has to carry _retry_count AND dont_filter, or the resumed retry is either deduplicated away or restarts its budget.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1,
+      "pause_after_items": 9
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0
+    }
+  },
+  {
+    "id": "s27_retry_checkpoint_resume",
+    "description": "The resume half of s27: the union with the paused run must be exactly the uninterrupted s01 crawl, retry for retry.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0,
+      "resume_of": "s27_retry_checkpoint_pause"
+    }
+  },
+  {
+    "id": "s28_concurrent_checkpoint_pause",
+    "description": "A graceful pause with four requests in flight: every in-flight task has to finish and be removed from the queue snapshot before the checkpoint is written.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 4
+    },
+    "callback": {
+      "max_depth": 4,
+      "pause_after_items": 6
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0
+    }
+  },
+  {
+    "id": "s28_concurrent_checkpoint_resume",
+    "description": "The resume half of s28: the union must still be the uninterrupted s05 crawl, however the four in-flight tasks happened to land.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 4
+    },
+    "callback": {
+      "max_depth": 4
+    },
+    "run": {
+      "mode": "run",
+      "crawldir": true,
+      "interval": 300.0,
+      "resume_of": "s28_concurrent_checkpoint_pause"
+    }
+  },
+  {
+    "id": "s29_retry_hook_meta",
+    "description": "retry_blocked_request stamps the retry counter and the blocking status into meta, so the item /flaky finally yields carries what the hook wrote three retries earlier.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 1,
+      "retry_meta": true
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s30_custom_is_blocked",
+    "description": "is_blocked overridden to treat 404 as blocked and 429/503 as fine: /gone burns the retry budget and the 429 page reaches a callback.",
+    "settings": {
+      "start_urls": [
+        "{{PRIMARY}}/"
+      ],
+      "concurrent_requests": 1,
+      "max_blocked_retries": 2
+    },
+    "callback": {
+      "max_depth": 1,
+      "block_statuses": [
+        404
+      ]
+    },
+    "run": {
+      "mode": "run"
+    }
+  },
+  {
+    "id": "s31_offsite_seed",
+    "description": "A seed outside allowed_domains is still crawled (Python never filters start_requests), but its own links are filtered and only the cross-link into the allowed host survives.",
+    "settings": {
+      "start_urls": [
+        "{{SECONDARY}}/"
+      ],
+      "allowed_domains": [
+        "{{PRIMARY_HOST}}"
+      ],
+      "concurrent_requests": 1
+    },
+    "callback": {
+      "max_depth": 2
+    },
+    "run": {
+      "mode": "run"
+    }
+  }
+]

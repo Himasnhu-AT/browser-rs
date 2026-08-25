@@ -40,7 +40,7 @@ use crate::request::{Item, Request, SessionKwargs};
 ///
 /// Deliberately narrow — see the module docs. `body` is `Bytes` so a cache replay or a
 /// browser capture can hand over a buffer without copying it.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct FetchedResponse {
     /// HTTP status code. Drives `is_blocked`, the status counters and AutoThrottle's
     /// "was this request OK" test.
@@ -67,6 +67,28 @@ pub struct FetchedResponse {
     /// The request this response answers. Set by [`SessionManager::fetch`] and by a cache
     /// replay.
     pub request: Option<Request>,
+}
+
+/// Python's `Response.encoding` is `"utf-8"` unless the transport says otherwise, and can
+/// never be the empty string — so neither can this. An empty label would reach
+/// `bytes.decode("")`, which raises in CPython and would make a `robots.txt` carrying it
+/// silently allow everything (`docs/DIVERGENCES.md`, unit 16 item 3).
+impl Default for FetchedResponse {
+    fn default() -> Self {
+        Self {
+            status: 0,
+            reason: String::new(),
+            url: String::new(),
+            body: Bytes::new(),
+            encoding: "utf-8".to_owned(),
+            headers: IndexMap::new(),
+            request_headers: IndexMap::new(),
+            cookies: Value::Null,
+            history: Vec::new(),
+            meta: Item::new(),
+            request: None,
+        }
+    }
 }
 
 impl FetchedResponse {

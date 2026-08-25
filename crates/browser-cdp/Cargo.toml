@@ -32,5 +32,17 @@ tokio = { workspace = true, features = ["sync", "time", "macros", "rt", "fs", "p
 tracing.workspace = true
 url.workspace = true
 
+[dev-dependencies]
+# Test-only: the unit-14 live corpus runs a tokio fixture server (`net`,
+# `io-util`) and fans several live browsers out across worker threads
+# (`rt-multi-thread`). Cargo unifies these with the `[dependencies]` entry
+# above when building tests, and they are not compiled for consumers.
+tokio = { workspace = true, features = ["net", "io-util", "rt-multi-thread"] }
+
 [features]
 default = []
+# `Response::markdown()` on a browser-driven response. The method lives on unit
+# 12's `Response` — the only response type in the workspace — so the flag has to
+# reach `browser-http`, not `browser-parser`.
+markdown = ["browser-http/markdown"]
+adaptive = ["browser-http/adaptive"]
