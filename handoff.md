@@ -16,7 +16,7 @@
 | Format | `cargo fmt --all --check` ✅ clean |
 | Code written | ~101k lines across 14 crates (~74k of it `src/`) |
 | Plan progress | **17 of 20 work units done** (units 1–17) |
-| Last commit | `Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams` |
+| Last commit | `23edc39 Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams` |
 
 The two ignored tests are both regeneration aids, not checks, and are meant to stay ignored:
 `browser-markdown`'s `emit_rust_answers` (reads `$MD_CASES`, writes `$MD_OUT` for
@@ -25,7 +25,7 @@ The two ignored tests are both regeneration aids, not checks, and are meant to s
 Commits so far:
 
 ```
-(HEAD)    Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams
+23edc39   Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams
 9ac6251   handoff: record the wave-4 commit hash
 80241ef   Wave 4: the HTTP driver, spider support services, and the unit-14/17 seams
 d78c06e   handoff: record the wave-3 commit hash
