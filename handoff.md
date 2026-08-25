@@ -15,7 +15,7 @@
 | Clippy | `--workspace --all-targets -D warnings` ✅ clean, with and without `--all-features` |
 | Code written | ~65k lines across 14 crates |
 | Plan progress | **13 of 20 work units done** (units 1–11, 13, 15) |
-| Last commit | `Wave 3: the public document API, the spider data plane, and the Response seam` |
+| Last commit | `3824cbb Wave 3: the public document API, the spider data plane, and the Response seam` |
 
 The one ignored test is `browser-markdown`'s `emit_rust_answers` — a **corpus regeneration aid**,
 not a check: it reads `$MD_CASES` and writes `$MD_OUT` for `tools/corpus/mdgold/step2_golden.py`.
@@ -24,7 +24,7 @@ It is meant to stay ignored. (Housekeeping item 6, closed.)
 Commits so far:
 
 ```
-Wave 3   the public document API, the spider data plane, and the Response seam
+3824cbb  Wave 3: the public document API, the spider data plane, and the Response seam
 9a29998  handoff: mark the two preservation TODOs done
 e837c0b  Preserve specs, corpus generators and the session handoff in-repo
 8228e99  Wave 2: selectors, XPath, storage, markdown, HTTP policy, browser config
