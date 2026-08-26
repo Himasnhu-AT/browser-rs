@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// Distinguishes "the caller did not mention this key" from "the caller explicitly
 /// passed `None`".
 ///
-/// the reference implementation's `_get_param` helper keys on *presence*: for its twelve named request
+/// The reference implementation's `_get_param` helper keys on *presence*: for its twelve named request
 /// keys an explicit `None` **overrides** the session default, while for pass-through
 /// keys a `None` is dropped (`ARCHITECTURE.md` §6). A bare `Option<T>` cannot express
 /// both, so builders wrap the value once more:

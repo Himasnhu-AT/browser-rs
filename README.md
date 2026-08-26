@@ -1,13 +1,12 @@
 # browser-rs
 
-A Rust port of [the reference implementation](https://github.com/Himasnhu-AT/browser-rs) — an undetectable, adaptive
-web-scraping library.
+An undetectable, adaptive web-scraping library for Rust.
 
 `browser-rs` gives you the three things a real scraper needs, in one workspace:
 
 * **A browser-grade HTML tree.** `html5ever` parses exactly what a browser would, into an arena
   with O(1) parent/sibling/ancestor walks. CSS selection runs on Servo's `selectors` — the same
-  matcher Firefox ships — extended with the reference implementation's `::text`, `::attr()` and `:contains()`.
+  matcher Firefox ships — extended with `::text`, `::attr()` and `:contains()`.
   XPath 1.0 is a complete, from-scratch engine over the same tree, so node identity is shared
   between the CSS and XPath paths and nothing is ever parsed twice.
 * **Fetchers that are hard to fingerprint.** TLS/JA3 impersonation via BoringSSL, browser-consistent
@@ -19,9 +18,9 @@ web-scraping library.
 
 No `unsafe`, no system C libraries, no Python runtime. Every crate is `#![forbid(unsafe_code)]`.
 
-> **Status: scaffolding.** The workspace, dependency graph and module layout are in place; the
-> subsystems are being filled in unit by unit. See `docs/DIVERGENCES.md` for where behaviour
-> deliberately differs from the Python reference.
+> **Status: pre-release.** Thirteen of the fourteen crates are complete and differentially
+> tested; the façade's README, benchmarks and examples are the remaining work. See
+> `docs/DIVERGENCES.md` for documented behavioural decisions.
 
 ## Quickstart
 
@@ -129,7 +128,7 @@ Dependency edges point downward; there are no cycles.
                      |
               browser-templates
                      |
-                 browser-rs  <--  browser-cli (bin `browser-rs`)
+                   browser  <--  browser-cli (bin `browser-rs`)
 ```
 
 `browser-parser` reaches `browser-markdown` and `browser-storage` only

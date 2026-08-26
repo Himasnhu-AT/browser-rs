@@ -7,7 +7,7 @@
 //! # The command tree
 //!
 //! ```text
-//! browser-rs [-L LEVEL] [--version]
+//! brs [-L LEVEL] [--version]
 //! ├── install       [-f/--force] [--path DIR]        (feature = "browser")
 //! ├── extract
 //! │   ├── get             URL OUTPUT_FILE  <http options>
@@ -35,7 +35,7 @@
 //! use browser_cli::convert::extraction_for;
 //!
 //! let cli = Cli::try_parse_from([
-//!     "browser-rs", "extract", "get", "--timeout", "5", "https://example.test/", "out.md",
+//!     "brs", "extract", "get", "--timeout", "5", "https://example.test/", "out.md",
 //! ])
 //! .expect("a valid command line");
 //!
@@ -99,15 +99,10 @@ pub fn tracing_level(level: &str) -> &'static str {
 /// twice is harmless — the second call is ignored rather than panicking, which
 /// matters because tests share a process.
 ///
-/// Logs go to **stderr**, so `browser-rs uncurl … | jq` still works.
+/// Logs go to **stderr**, so `brs uncurl … | jq` still works.
 pub fn init_logging(level: &str) {
     let filter = std::env::var("RUST_LOG").map_or_else(
-        |_| {
-            EnvFilter::new(format!(
-                "browser_cli={0},browser-rs={0}",
-                tracing_level(level)
-            ))
-        },
+        |_| EnvFilter::new(format!("browser_cli={0},browser={0}", tracing_level(level))),
         EnvFilter::new,
     );
     let _ = tracing_subscriber::fmt()

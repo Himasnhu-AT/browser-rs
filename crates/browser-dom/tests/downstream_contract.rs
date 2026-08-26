@@ -7,10 +7,10 @@
 
 use std::collections::HashSet;
 
-use ego_tree::NodeId;
 use browser_dom::node::NodeRef;
 use browser_dom::parse::ParseOptions;
 use browser_dom::tree::Document;
+use ego_tree::NodeId;
 
 /// `Selector.get_all_text` (parser.md §3.2), written against the DOM API.
 ///

@@ -1072,10 +1072,9 @@ fn the_blocking_facade_drives_the_same_fixture() {
     let mut config = FetcherConfig::new();
     config.retries = Some(0);
     config.retry_delay = Duration::ZERO;
-    let session = browser_http::blocking::FetcherSession::from_builder(
-        SessionBuilder::new().config(config),
-    )
-    .expect("session");
+    let session =
+        browser_http::blocking::FetcherSession::from_builder(SessionBuilder::new().config(config))
+            .expect("session");
     session.open().expect("open");
 
     let page = session

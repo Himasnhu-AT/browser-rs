@@ -53,9 +53,9 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
+use browser_fingerprint::impersonate::ImpersonateProfile;
 use bytes::Bytes;
 use indexmap::IndexMap;
-use browser_fingerprint::impersonate::ImpersonateProfile;
 use serde_json::Value;
 use thiserror::Error;
 

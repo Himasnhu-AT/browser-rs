@@ -6,7 +6,7 @@
 //!
 //! # How Python surfaces these
 //!
-//! the reference implementation validates a session's keyword arguments with `msgspec.convert`,
+//! The reference implementation validates a session's keyword arguments with `msgspec.convert`,
 //! and `msgspec` converts *any* `ValueError`/`TypeError` raised from
 //! `__post_init__` into a `msgspec.ValidationError`. `validate()` then
 //! re-raises that as `TypeError(f"Invalid argument type: {e}")`. The practical
@@ -369,7 +369,7 @@ pub enum BrowserError {
     /// binary has to be located on this machine.
     #[error(
         "No {channel} executable found. Set `executable_path`, or install the browser \
-         with `browser-rs install`."
+         with `brs install`."
     )]
     ExecutableNotFound {
         /// `"chrome"` or `"chromium"`.

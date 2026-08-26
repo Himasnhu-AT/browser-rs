@@ -53,12 +53,12 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
-use futures::stream::StreamExt;
-use parking_lot::Mutex;
 use browser_core::log::LevelCounter;
 use browser_core::types::Proxy;
 use browser_http::config::SelectorConfig;
 use browser_http::response::DocumentHook;
+use futures::stream::StreamExt;
+use parking_lot::Mutex;
 use serde_json::Value;
 use tokio::sync::{mpsc, Notify, Semaphore};
 use tokio::task::JoinSet;

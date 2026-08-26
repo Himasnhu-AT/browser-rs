@@ -41,17 +41,17 @@ use crate::request::Fingerprint;
 use crate::session::FetchedResponse;
 
 /// The directory the engine caches into when the spider does not name one:
-/// `.browser-rs_cache/<spider name>`, relative to the current working directory.
-pub const DEFAULT_CACHE_ROOT: &str = ".browser-rs_cache";
+/// `.browser_rs_cache/<spider name>`, relative to the current working directory.
+pub const DEFAULT_CACHE_ROOT: &str = ".browser_rs_cache";
 
-/// `.browser-rs_cache/{spider_name}` — the engine's default `development_cache_dir`.
+/// `.browser_rs_cache/{spider_name}` — the engine's default `development_cache_dir`.
 ///
 /// ```
 /// use browser_spider::cache::default_cache_dir;
 ///
 /// assert_eq!(
 ///     default_cache_dir("quotes"),
-///     std::path::Path::new(".browser-rs_cache/quotes")
+///     std::path::Path::new(".browser_rs_cache/quotes")
 /// );
 /// ```
 #[must_use]
@@ -401,7 +401,7 @@ mod tests {
         headers.insert("Content-Type".to_owned(), "text/html".to_owned());
         headers.insert("X-Trace".to_owned(), "abc".to_owned());
         let mut request_headers = IndexMap::new();
-        request_headers.insert("User-Agent".to_owned(), "browser-rs".to_owned());
+        request_headers.insert("User-Agent".to_owned(), "brs".to_owned());
 
         FetchedResponse {
             status: 201,
@@ -685,7 +685,7 @@ mod tests {
     fn default_cache_dir_is_relative_to_cwd() {
         assert_eq!(
             default_cache_dir("quotes"),
-            Path::new(".browser-rs_cache").join("quotes")
+            Path::new(".browser_rs_cache").join("quotes")
         );
     }
 }

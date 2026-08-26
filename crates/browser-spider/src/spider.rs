@@ -71,13 +71,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use bytes::Bytes;
-use futures::stream::{BoxStream, StreamExt};
-use parking_lot::Mutex;
 use browser_core::log::LevelCounter;
 use browser_http::config::{Body, HeaderDict, ProxySpec, SelectorConfig};
 use browser_http::response::{DocumentHook, Response as HttpResponse};
 use browser_http::session::AsyncFetcherSession;
+use bytes::Bytes;
+use futures::stream::{BoxStream, StreamExt};
+use parking_lot::Mutex;
 use serde_json::Value;
 
 use crate::engine::CrawlerEngine;
@@ -339,7 +339,7 @@ pub struct SpiderSettings {
     pub robots_txt_obey: bool,
     /// Cache every response to disk and replay it on the next run.
     pub development_mode: bool,
-    /// Where the dev-mode cache lives. `None` means `.browser-rs_cache/{name}`.
+    /// Where the dev-mode cache lives. `None` means `.browser_rs_cache/{name}`.
     pub development_cache_dir: Option<PathBuf>,
     /// Global in-flight cap, and the spawn cap in the main loop. Clamped to at least 1.
     pub concurrent_requests: usize,

@@ -572,7 +572,7 @@ impl HeaderGenerator {
 }
 
 // ---------------------------------------------------------------------------
-// the reference implementation's `generate_headers`
+// The reference implementation's `generate_headers`
 // ---------------------------------------------------------------------------
 
 /// Which of the reference implementation's two header modes to generate for.
@@ -1237,10 +1237,8 @@ mod tests {
 
     #[test]
     fn driver_version_reads_browsers_json() {
-        let dir = std::env::temp_dir().join(format!(
-            "browser-fingerprint-driver-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("browser-fingerprint-driver-{}", std::process::id()));
         let package = dir.join("driver").join("package");
         std::fs::create_dir_all(&package).expect("temp dir");
         std::fs::write(

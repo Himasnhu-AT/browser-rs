@@ -137,7 +137,7 @@ fn default_path(url: &Url) -> String {
 ///
 /// `curl_cffi` builds `Cookies` from `Set-Cookie` only, and so does this. The
 /// implementation is RFC 6265's matching rules minus the public-suffix check —
-/// which is a *transport* concern in curl, not a the reference implementation one, and which
+/// which is a *transport* concern in curl, not a reference implementation one, and which
 /// `browser-storage`'s `registrable_domain` could supply if a caller needs it.
 ///
 /// # Examples

@@ -16,7 +16,7 @@ name = "browser_cli"
 path = "src/lib.rs"
 
 [[bin]]
-name = "browser-rs"
+name = "brs"
 path = "src/main.rs"
 
 [dependencies]

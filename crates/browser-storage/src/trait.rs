@@ -8,7 +8,7 @@
 //!
 //! # What is deliberately *not* ported
 //!
-//! the reference implementation requires a custom backend to be decorated with
+//! The reference implementation requires a custom backend to be decorated with
 //! `functools.lru_cache`, and `Selector.__init__` rejects a storage class
 //! without a `__wrapped__` attribute:
 //!

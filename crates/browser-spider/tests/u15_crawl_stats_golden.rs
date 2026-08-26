@@ -134,7 +134,7 @@ fn same_ignoring_object_order(a: &Value, b: &Value) -> bool {
 }
 
 #[test]
-fn crawl_stats_to_dict_matches_browser-rs() {
+fn crawl_stats_to_dict_matches_the_reference() {
     let corpus = read_corpus("u15_crawl_stats.jsonl");
     let mut failures: Vec<String> = Vec::new();
     let mut matched = 0usize;

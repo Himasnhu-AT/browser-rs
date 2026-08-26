@@ -2,7 +2,7 @@
 //!
 //! # Why this module exists at all
 //!
-//! the reference implementation's stealth engine imports Playwright from **patchright**, a patched
+//! The reference implementation's stealth engine imports Playwright from **patchright**, a patched
 //! driver whose entire value is three CDP-level behaviours (`ARCHITECTURE.md`
 //! §8, "Patchright as a dependency"):
 //!
@@ -48,7 +48,7 @@ use crate::error::{BrowserError, Result};
 /// Playwright uses `__playwright_utility_world__`, which is itself a
 /// fingerprint (`Runtime.executionContextCreated` carries the name, and
 /// extensions can see it). A neutral name is used instead.
-pub const ISOLATED_WORLD_NAME: &str = "__browser-rs_utility_world__";
+pub const ISOLATED_WORLD_NAME: &str = "__browser_rs_utility_world__";
 
 /// Playwright's `Page.content()`, verbatim.
 ///

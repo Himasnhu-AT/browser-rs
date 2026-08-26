@@ -33,6 +33,9 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+use browser_core::types::Proxy;
+use browser_http::config::SelectorConfig;
+use browser_http::response::Response;
 use chromiumoxide::browser::{Browser, BrowserConfig as ChromiumConfig};
 use chromiumoxide::cdp::browser_protocol::browser::BrowserContextId;
 use chromiumoxide::cdp::browser_protocol::target::{
@@ -42,9 +45,6 @@ use chromiumoxide::handler::viewport::Viewport as ChromiumViewport;
 use futures::future::BoxFuture;
 use futures::StreamExt;
 use indexmap::IndexMap;
-use browser_core::types::Proxy;
-use browser_http::config::SelectorConfig;
-use browser_http::response::Response;
 use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 use tokio::time::Instant;
@@ -819,7 +819,7 @@ impl BrowserSession {
 
     // -- launching ---------------------------------------------------------
 
-    /// Translate the the reference implementation launch options into a `chromiumoxide` config.
+    /// Translate the reference implementation launch options into a `chromiumoxide` config.
     ///
     /// Returns the temporary profile directory when one had to be created, so
     /// [`BrowserSession::close`] can delete it.
@@ -1577,7 +1577,7 @@ document.addEventListener('mousedown', (e) => {
 <script>
 document.getElementById('webdriver').textContent = String(navigator.webdriver);
 document.getElementById('injected').textContent =
-  (typeof window.__browser-rs_init === 'undefined') ? 'absent' : String(window.__browser-rs_init);
+  (typeof window.__browser_rs_init === 'undefined') ? 'absent' : String(window.__browser_rs_init);
 document.getElementById('dpr').textContent = String(window.devicePixelRatio);
 document.getElementById('scheme').textContent =
   window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -2310,8 +2310,9 @@ document.getElementById('scheme').textContent =
     async fn an_init_script_runs_before_the_pages_own_scripts() {
         require_browser!();
         let server = TestServer::start();
-        let script = std::env::temp_dir().join(format!("browser-rs-init-{}.js", std::process::id()));
-        std::fs::write(&script, "window.__browser-rs_init = 'ran';").expect("write the script");
+        let script =
+            std::env::temp_dir().join(format!("browser-rs-init-{}.js", std::process::id()));
+        std::fs::write(&script, "window.__browser_rs_init = 'ran';").expect("write the script");
 
         let session = session_for(live_config().init_script(&script)).await;
         let response = session
@@ -2331,14 +2332,16 @@ document.getElementById('scheme').textContent =
     async fn a_custom_useragent_and_cookies_reach_the_server() {
         require_browser!();
         let server = TestServer::start();
-        let session = session_for(live_config().useragent("the reference implementation/1.0 probe").cookies([
-            browser_core::types::SetCookieParam {
-                name: "seeded".to_owned(),
-                value: "yes".to_owned(),
-                url: Some(server.url("/")),
-                ..Default::default()
-            },
-        ]))
+        let session = session_for(
+            live_config()
+                .useragent("browser-rs/1.0 probe")
+                .cookies([browser_core::types::SetCookieParam {
+                    name: "seeded".to_owned(),
+                    value: "yes".to_owned(),
+                    url: Some(server.url("/")),
+                    ..Default::default()
+                }]),
+        )
         .await;
 
         let response = session
@@ -2347,7 +2350,7 @@ document.getElementById('scheme').textContent =
             .expect("a response");
         assert_eq!(
             server.header_of("/", "user-agent").as_deref(),
-            Some("the reference implementation/1.0 probe")
+            Some("browser-rs/1.0 probe")
         );
         assert!(
             server

@@ -252,7 +252,7 @@ async fn replay(row: &Value) -> Vec<Value> {
 }
 
 #[tokio::test]
-async fn session_manager_behaviour_matches_browser-rs() {
+async fn session_manager_behaviour_matches_the_reference() {
     let corpus = read_corpus("u15_session.jsonl");
     let divergences: HashMap<&str, &str> = DIVERGENCES.iter().copied().collect();
     let mut seen_divergences: HashMap<String, usize> = HashMap::new();

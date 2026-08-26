@@ -329,6 +329,284 @@ dependencies = [
 ]
 
 [[package]]
+name = "browser-cdp"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "base64 0.23.1",
+ "browser-core",
+ "browser-fingerprint",
+ "browser-http",
+ "bytes",
+ "chromiumoxide",
+ "futures",
+ "http",
+ "indexmap",
+ "parking_lot",
+ "rand 0.10.2",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "browser-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "browser-rs",
+ "chromiumoxide_fetcher",
+ "clap",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+]
+
+[[package]]
+name = "browser-core"
+version = "0.1.0"
+dependencies = [
+ "fancy-regex",
+ "indexmap",
+ "phf 0.14.0",
+ "phf_codegen 0.14.0",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+]
+
+[[package]]
+name = "browser-dom"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "ego-tree",
+ "encoding_rs",
+ "html5ever",
+ "indexmap",
+ "markup5ever",
+ "tendril",
+ "thiserror",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "browser-fingerprint"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "phf 0.14.0",
+ "phf_codegen 0.14.0",
+ "rand 0.10.2",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "browser-http"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "browser-core",
+ "browser-fingerprint",
+ "browser-parser",
+ "bytes",
+ "cookie",
+ "encoding_rs",
+ "futures",
+ "http",
+ "indexmap",
+ "mime",
+ "parking_lot",
+ "rand 0.10.2",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+ "wreq",
+ "wreq-util",
+]
+
+[[package]]
+name = "browser-markdown"
+version = "0.1.0"
+dependencies = [
+ "bitflags",
+ "browser-core",
+ "browser-dom",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "browser-parser"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "browser-dom",
+ "browser-markdown",
+ "browser-selectors",
+ "browser-storage",
+ "browser-xpath",
+ "indexmap",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "browser-rs"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "browser-cdp",
+ "browser-core",
+ "browser-dom",
+ "browser-http",
+ "browser-markdown",
+ "browser-parser",
+ "browser-selectors",
+ "browser-spider",
+ "browser-storage",
+ "browser-templates",
+ "browser-xpath",
+ "bytes",
+ "futures",
+ "indexmap",
+ "regex",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "browser-selectors"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "browser-dom",
+ "cssparser",
+ "markup5ever",
+ "precomputed-hash",
+ "selectors",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "browser-spider"
+version = "0.1.0"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "base64 0.23.1",
+ "browser-cdp",
+ "browser-core",
+ "browser-http",
+ "browser-parser",
+ "bytes",
+ "chrono",
+ "csv",
+ "dashmap",
+ "form_urlencoded",
+ "futures",
+ "hex",
+ "http",
+ "idna",
+ "indexmap",
+ "parking_lot",
+ "percent-encoding",
+ "psl",
+ "quick-xml",
+ "serde",
+ "serde_json",
+ "sha1 0.11.0",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+]
+
+[[package]]
+name = "browser-storage"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "hex",
+ "parking_lot",
+ "psl",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "browser-templates"
+version = "0.1.0"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "browser-core",
+ "browser-markdown",
+ "browser-parser",
+ "browser-spider",
+ "csv",
+ "flate2",
+ "futures",
+ "indexmap",
+ "quick-xml",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "browser-xpath"
+version = "0.1.0"
+dependencies = [
+ "browser-core",
+ "browser-dom",
+ "indexmap",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2444,284 +2722,6 @@ name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
-
-[[package]]
-name = "browser-rs"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bytes",
- "futures",
- "indexmap",
- "regex",
- "browser-cdp",
- "browser-core",
- "browser-dom",
- "browser-http",
- "browser-markdown",
- "browser-parser",
- "browser-selectors",
- "browser-spider",
- "browser-storage",
- "browser-templates",
- "browser-xpath",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "browser-cdp"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "base64 0.23.1",
- "bytes",
- "chromiumoxide",
- "futures",
- "http",
- "indexmap",
- "parking_lot",
- "rand 0.10.2",
- "browser-core",
- "browser-fingerprint",
- "browser-http",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "browser-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chromiumoxide_fetcher",
- "clap",
- "browser-rs",
- "serde_json",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "browser-core"
-version = "0.1.0"
-dependencies = [
- "fancy-regex",
- "indexmap",
- "phf 0.14.0",
- "phf_codegen 0.14.0",
- "regex",
- "serde",
- "serde_json",
- "thiserror",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "browser-dom"
-version = "0.1.0"
-dependencies = [
- "ego-tree",
- "encoding_rs",
- "html5ever",
- "indexmap",
- "markup5ever",
- "browser-core",
- "tendril",
- "thiserror",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "browser-fingerprint"
-version = "0.1.0"
-dependencies = [
- "phf 0.14.0",
- "phf_codegen 0.14.0",
- "rand 0.10.2",
- "regex",
- "browser-core",
- "serde",
- "serde_json",
- "thiserror",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "browser-http"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bytes",
- "cookie",
- "encoding_rs",
- "futures",
- "http",
- "indexmap",
- "mime",
- "parking_lot",
- "rand 0.10.2",
- "browser-core",
- "browser-fingerprint",
- "browser-parser",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "url",
- "wreq",
- "wreq-util",
-]
-
-[[package]]
-name = "browser-markdown"
-version = "0.1.0"
-dependencies = [
- "bitflags",
- "regex",
- "browser-core",
- "browser-dom",
- "serde",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
-name = "browser-parser"
-version = "0.1.0"
-dependencies = [
- "indexmap",
- "rayon",
- "regex",
- "browser-core",
- "browser-dom",
- "browser-markdown",
- "browser-selectors",
- "browser-storage",
- "browser-xpath",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "browser-selectors"
-version = "0.1.0"
-dependencies = [
- "cssparser",
- "markup5ever",
- "precomputed-hash",
- "browser-core",
- "browser-dom",
- "selectors",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
-name = "browser-spider"
-version = "0.1.0"
-dependencies = [
- "async-stream",
- "async-trait",
- "base64 0.23.1",
- "bytes",
- "chrono",
- "csv",
- "dashmap",
- "form_urlencoded",
- "futures",
- "hex",
- "http",
- "idna",
- "indexmap",
- "parking_lot",
- "percent-encoding",
- "psl",
- "quick-xml",
- "browser-cdp",
- "browser-core",
- "browser-http",
- "browser-parser",
- "serde",
- "serde_json",
- "sha1 0.11.0",
- "tempfile",
- "thiserror",
- "tokio",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "browser-storage"
-version = "0.1.0"
-dependencies = [
- "hex",
- "parking_lot",
- "psl",
- "rusqlite",
- "browser-core",
- "serde",
- "serde_json",
- "sha2",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "browser-templates"
-version = "0.1.0"
-dependencies = [
- "async-stream",
- "async-trait",
- "csv",
- "flate2",
- "futures",
- "indexmap",
- "quick-xml",
- "regex",
- "browser-core",
- "browser-markdown",
- "browser-parser",
- "browser-spider",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "browser-xpath"
-version = "0.1.0"
-dependencies = [
- "indexmap",
- "browser-core",
- "browser-dom",
- "serde_json",
- "thiserror",
-]
 
 [[package]]
 name = "security-framework"

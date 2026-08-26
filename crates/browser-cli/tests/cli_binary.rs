@@ -4,7 +4,7 @@
 //! things only a process can show — **exit codes** and **what lands on stdout /
 //! stderr** — against what the reference `browser-rs` console script does. Those
 //! were established by running
-//! `/…/pyref/bin/browser-rs --help`, `--version`, `extract get` and `nosuch` and
+//! `/…/pyref/bin/<reference-cli> --help`, `--version`, `extract get` and `nosuch` and
 //! reading the codes off, not by reading Click's source.
 //!
 //! | Situation | Click | here |
@@ -23,7 +23,7 @@ use std::process::{Command, Output};
 use support::{Page, Site};
 
 /// The binary Cargo just built for this test.
-const BIN: &str = env!("CARGO_BIN_EXE_browser-rs");
+const BIN: &str = env!("CARGO_BIN_EXE_brs");
 
 fn run(args: &[&str]) -> Output {
     Command::new(BIN)
@@ -69,15 +69,15 @@ fn help_exits_zero_and_lists_the_three_commands() {
     assert!(help.contains("install"), "{help}");
 }
 
-/// Click's `version_option(prog_name="the reference implementation")` prints
-/// `the reference implementation, version 0.4.15`. The number here is this crate's, but the shape
+/// The `prog_name`-style version line prints
+/// `browser-rs, version 0.1.0`. The number here is this crate's, and the shape
 /// is the same so a script that greps for it keeps working.
 #[test]
 fn version_uses_clicks_prog_name_form() {
     let output = run(&["--version"]);
     assert_eq!(output.status.code(), Some(0));
     assert!(
-        stdout(&output).starts_with("the reference implementation, version "),
+        stdout(&output).starts_with("browser-rs, version "),
         "{:?}",
         stdout(&output)
     );
@@ -298,7 +298,7 @@ fn uncurl_refuses_an_unsupported_method_before_it_fetches() {
     ]);
     assert_eq!(output.status.code(), Some(1));
     assert!(
-        stderr(&output).contains("isn't supported by the reference implementation yet"),
+        stderr(&output).contains("isn't supported yet"),
         "{}",
         stderr(&output)
     );
@@ -318,8 +318,7 @@ fn uncurl_refuses_an_unsupported_method_before_it_fetches() {
 fn install_short_circuits_on_an_existing_marker() {
     let dir = tempfile::tempdir().expect("tempdir");
     std::fs::write(
-        dir.path()
-            .join(browser_cli::commands::install::MARKER_FILE),
+        dir.path().join(browser_cli::commands::install::MARKER_FILE),
         b"",
     )
     .expect("marker written");

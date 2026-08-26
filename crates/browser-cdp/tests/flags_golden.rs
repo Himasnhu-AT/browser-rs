@@ -1,6 +1,6 @@
 //! Differential test of [`launch_options`] / [`context_options`] against the
 //! real `BaseSessionMixin.__generate_options__` and
-//! `StealthySessionMixin.__generate_stealth_options` from browser-rs 0.4.15.
+//! `StealthySessionMixin.__generate_stealth_options` from the reference implementation.
 //!
 //! `testdata/flags_golden.jsonl` is produced by `gen_flags_golden.py` (kept
 //! outside the repo), which instantiates the actual session mixins and dumps
@@ -139,7 +139,7 @@ fn normalise(value: &Value) -> Value {
 }
 
 #[test]
-fn flags_and_context_match_browser-rs() {
+fn flags_and_context_match_the_reference() {
     let mut checked = 0_usize;
     let mut ordered_rows = 0_usize;
     let mut failures: Vec<String> = Vec::new();

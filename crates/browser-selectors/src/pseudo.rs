@@ -41,7 +41,7 @@ pub enum BrowserPseudoClass {
     /// implements as `contains(., 'v')`, i.e. a substring test against the
     /// element's **whole string-value including descendants**.
     ///
-    /// Not a the reference implementation extension despite how it is usually used
+    /// Not a reference implementation extension despite how it is usually used
     /// (`parser.md` §6.2).
     Contains(String),
 
@@ -138,7 +138,7 @@ impl NonTSPseudoClass for BrowserPseudoClass {
     }
 }
 
-/// the reference implementation's two pseudo-elements (`parser.md` §6.2).
+/// The reference implementation's two pseudo-elements (`parser.md` §6.2).
 ///
 /// Unlike a real CSS pseudo-element these do not describe a box; they change
 /// *what a match yields*. `p::text` yields the `<p>`'s direct text-node

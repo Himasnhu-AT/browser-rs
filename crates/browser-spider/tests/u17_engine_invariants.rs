@@ -18,7 +18,6 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use parking_lot::Mutex;
 use browser_spider::error::{Result as SpiderResult, SpiderError};
 use browser_spider::request::{Item, Request, SessionKwargs};
 use browser_spider::session::{AddOptions, CrawlSession, FetchedResponse, SessionManager};
@@ -26,6 +25,7 @@ use browser_spider::spider::{
     CallbackStream, CrawlError, CrawlResponse, RunOptions, Spider, SpiderRunner, SpiderSettings,
     Yielded,
 };
+use parking_lot::Mutex;
 use serde_json::Value;
 
 // ---------------------------------------------------------------------------

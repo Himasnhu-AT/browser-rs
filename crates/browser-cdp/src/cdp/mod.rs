@@ -30,6 +30,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
+use browser_core::types::{Proxy, SetCookieParam, WaitState};
+use browser_http::config::HeaderDict;
 use bytes::Bytes;
 use chromiumoxide::cdp::browser_protocol::dom::{
     EnableParams as DomEnableParams, GetFrameOwnerParams, ResolveNodeParams,
@@ -57,8 +59,6 @@ use chromiumoxide::Page;
 use futures::StreamExt;
 use indexmap::IndexMap;
 use parking_lot::Mutex;
-use browser_core::types::{Proxy, SetCookieParam, WaitState};
-use browser_http::config::HeaderDict;
 use serde_json::Value;
 use tokio::sync::Notify;
 use tokio::task::JoinHandle;
@@ -80,7 +80,7 @@ use self::networkidle::{IdleOutcome, NetworkTracker, NETWORK_IDLE_QUIET_PERIOD};
 
 /// Playwright's default viewport for a context that does not ask for one.
 ///
-/// the reference implementation only sets `viewport` for stealth sessions (1920×1080); dynamic
+/// The reference implementation only sets `viewport` for stealth sessions (1920×1080); dynamic
 /// sessions inherit Playwright's default, which this reproduces so a page's
 /// media queries behave the same under both engines.
 pub const DEFAULT_VIEWPORT: Viewport = Viewport {
@@ -592,7 +592,7 @@ impl Drop for PageInner {
     }
 }
 
-/// One Chromium tab, with everything a the reference implementation request needs bolted to it.
+/// One Chromium tab, with everything a reference implementation request needs bolted to it.
 ///
 /// Cloning is cheap and shares state — the [`crate::pool::PagePool`] holds one
 /// clone and the request holds another, exactly as Python hands out the same
@@ -962,7 +962,7 @@ impl CdpPage {
     /// is where `Network.setExtraHTTPHeaders` puts it — is refused outright
     /// with `net::ERR_BLOCKED_BY_CLIENT`. Lifting it into the `referrer`
     /// parameter is what makes `extra_headers={"referer": …}` work at all, and
-    /// the reference implementation relies on that: `fetch()` passes `referer=None` to `goto`
+    /// The reference implementation relies on that: `fetch()` passes `referer=None` to `goto`
     /// precisely when the caller supplied one in `extra_headers`.
     ///
     /// # The whole call is bounded by `set_default_navigation_timeout`

@@ -46,11 +46,11 @@ use std::sync::{Arc, Mutex};
 #[cfg(feature = "markdown")]
 use async_trait::async_trait;
 #[cfg(feature = "markdown")]
-use regex::Regex;
-#[cfg(feature = "markdown")]
 use browser_spider::request::Item;
 #[cfg(feature = "markdown")]
 use browser_spider::spider::{CallbackStream, CrawlResponse, Spider, SpiderSettings, Yielded};
+#[cfg(feature = "markdown")]
+use regex::Regex;
 #[cfg(feature = "markdown")]
 use serde_json::Value;
 
@@ -504,9 +504,9 @@ impl SiteToMarkdownSpiderBuilder {
 
 #[cfg(all(test, feature = "markdown"))]
 mod tests {
-    use futures::StreamExt;
     use browser_spider::request::Request;
     use browser_spider::session::FetchedResponse;
+    use futures::StreamExt;
 
     use super::*;
 

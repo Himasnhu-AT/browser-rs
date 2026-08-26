@@ -16,7 +16,7 @@ use crate::qualname::{is_raw_text_element, is_void_element, to_string as name_to
 /// The `__repr__` truncation limit from `parser.md` §3.2.
 pub const REPR_LENGTH_LIMIT: usize = 40;
 
-/// the reference implementation's module-level `clean_spaces` helper (`parser.md` §7.4).
+/// The reference implementation's module-level `clean_spaces` helper (`parser.md` §7.4).
 ///
 /// `\t` becomes a space, `\n` and `\r` are **deleted** (not replaced), then runs
 /// of spaces collapse to one. Unlike `TextHandler.clean()` the result is *not*

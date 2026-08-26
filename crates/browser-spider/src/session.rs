@@ -28,9 +28,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use browser_http::response::Response as HttpResponse;
 use bytes::Bytes;
 use indexmap::IndexMap;
-use browser_http::response::Response as HttpResponse;
 use serde_json::Value;
 
 use crate::error::{Result, SpiderError};
@@ -541,8 +541,8 @@ impl SessionManager {
 mod tests {
     use super::*;
     use crate::request::RequestBody;
-    use parking_lot::Mutex;
     use browser_core::types::HttpMethod;
+    use parking_lot::Mutex;
     use std::sync::atomic::AtomicUsize;
 
     #[derive(Debug, Default)]

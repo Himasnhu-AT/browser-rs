@@ -62,9 +62,9 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use indexmap::IndexMap;
 use browser_core::types::{Override, Proxy, SetCookieParam, WaitState};
 use browser_fingerprint::ad_domains::AD_DOMAINS;
+use indexmap::IndexMap;
 
 use crate::error::{ConfigError, EXECUTABLE_LABEL, INIT_SCRIPT_LABEL};
 use crate::flags::ExtraFlagsPolicy;

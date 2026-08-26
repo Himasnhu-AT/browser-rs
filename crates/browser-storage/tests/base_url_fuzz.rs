@@ -83,7 +83,7 @@ fn the_corpus_is_intact() {
 /// count is zero. A `psl` bump that changes any of these is a real regression
 /// in namespace compatibility, not a vintage difference.
 #[test]
-fn registrable_domain_matches_browser-rs_on_every_fuzzed_url() {
+fn registrable_domain_matches_the_reference_on_every_fuzzed_url() {
     let mut mismatches = Vec::new();
 
     for case in corpus() {

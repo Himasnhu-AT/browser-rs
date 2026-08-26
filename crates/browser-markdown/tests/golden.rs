@@ -51,7 +51,7 @@ fn run_corpus(html_dir: &str, golden_dir: &str, options: &ParseOptions) {
 
         let doc = Document::parse_with(&html, options);
         let element = doc.root_element().expect("every fixture has an <html>");
-        // the reference implementation converts `element.html_content`, i.e. the element becomes
+        // The reference implementation converts `element.html_content`, i.e. the element becomes
         // the child of a fresh document — which is what `to_markdown` models.
         let actual = to_markdown_default(element);
 

@@ -23,10 +23,10 @@ mod support;
 
 use std::collections::BTreeMap;
 
-use clap::Parser;
 use browser::Impersonate;
 use browser_cli::args::{Cli, Command, ExtractCommand};
 use browser_cli::commands::extract::{build_http_plan, HttpPlan};
+use clap::Parser;
 use serde_json::Value;
 
 /// Rows whose Rust answer is deliberately not Python's, with the reason.
@@ -67,7 +67,7 @@ fn corpus() -> Vec<Value> {
 }
 
 fn argv_of(row: &Value) -> Vec<String> {
-    std::iter::once("browser-rs".to_owned())
+    std::iter::once("brs".to_owned())
         .chain(
             row["argv"]
                 .as_array()
@@ -162,10 +162,7 @@ fn compare_http(id: &str, kwargs: &Value, plan: &HttpPlan, tally: &mut Tally) {
         id,
         "follow_redirects",
         &kwargs["follow_redirects"].as_bool().expect("a bool"),
-        &matches!(
-            plan.follow_redirects,
-            browser::FollowRedirects::Bool(true)
-        ),
+        &matches!(plan.follow_redirects, browser::FollowRedirects::Bool(true)),
     );
     tally.eq(
         id,

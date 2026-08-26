@@ -40,10 +40,10 @@
 //!
 //! In other words: on Chromium, `disable_resources=True` really blocks only
 //! `font`, `image`, `media`, `texttrack`, `websocket` and `stylesheet`. That is
-//! the reference implementation's behaviour, so it is this crate's default
+//! The reference implementation's behaviour, so it is this crate's default
 //! ([`RoutePolicy::decide_cdp`]). [`RoutePolicy::decide_cdp_lenient`] applies
 //! the aliases in [`PLAYWRIGHT_ONLY_RESOURCE_TYPES`] first, blocking what
-//! the reference implementation evidently *meant* to block, and is opt-in precisely because it
+//! The reference implementation evidently *meant* to block, and is opt-in precisely because it
 //! blocks strictly more.
 //!
 //! The table is pinned against the driver the reference implementation actually ships by

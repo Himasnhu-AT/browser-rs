@@ -31,8 +31,8 @@
 //! `:nth-child` / `:nth-of-type` come from `NodeRef::index_in_parent` and
 //! `NodeRef::nth_of_type`; `::text` / `::attr()` from `text_content` / `attr`.
 
-use markup5ever::{LocalName, Namespace};
 use browser_dom::{Document, NodeRef};
+use markup5ever::{LocalName, Namespace};
 use selectors::attr::CaseSensitivity;
 use selectors::OpaqueElement;
 
@@ -121,9 +121,7 @@ fn local_name_and_namespace_are_available_for_type_selectors() {
         .expect("2nd <a>");
     assert_eq!(
         first_a.as_element().map(browser_dom::Element::local_name),
-        second_a
-            .as_element()
-            .map(browser_dom::Element::local_name)
+        second_a.as_element().map(browser_dom::Element::local_name)
     );
 }
 
@@ -296,10 +294,10 @@ fn structural_pseudo_classes_have_everything_they_need() {
     assert!(a_without.is_some(), ":link must not match a bare <a>");
 }
 
-/// the reference implementation's `::text` / `::attr()` pseudo-elements and cssselect's `:contains()`
+/// The reference implementation's `::text` / `::attr()` pseudo-elements and cssselect's `:contains()`
 /// read the tree, not the selector engine — this is the data they read.
 #[test]
-fn browser-rss_own_extensions_are_backed_by_the_tree() {
+fn the_ports_own_extensions_are_backed_by_the_tree() {
     let doc = doc();
     let first_a = doc.elements().find(|e| e.tag() == "a").expect("an <a>");
 

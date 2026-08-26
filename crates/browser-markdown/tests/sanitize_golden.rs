@@ -62,7 +62,7 @@ fn dump(html: &str) -> String {
 }
 
 #[test]
-fn matches_browser-rs_convertor_on_the_fixtures() {
+fn matches_the_reference_convertor_on_the_fixtures() {
     let root = testdata();
     let golden = fs::read_to_string(root.join("sanitized").join("golden-fixtures.txt"))
         .expect("sanitized/golden-fixtures.txt");
@@ -84,7 +84,7 @@ fn matches_browser-rs_convertor_on_the_fixtures() {
 }
 
 #[test]
-fn matches_browser-rs_convertor_on_the_generated_corpus() {
+fn matches_the_reference_convertor_on_the_generated_corpus() {
     let root = testdata();
     let html = fs::read_to_string(root.join("fuzz").join("normalized.txt")).expect("fuzz corpus");
     let golden = fs::read_to_string(root.join("sanitized").join("golden-fuzz.txt"))

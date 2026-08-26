@@ -1,7 +1,7 @@
 //! `tracing` initialisation plus the [`LevelCounter`] layer that backs
 //! `CrawlStats.log_levels_counter`.
 //!
-//! Python keeps one process-wide `logging.Logger` named `"browser-rs"` behind a
+//! Python keeps one process-wide `logging.Logger` named `"brs"` behind a
 //! `ContextVar` so a spider run can swap in its own logger and restore it afterwards.
 //! The Rust equivalent is `tracing`: [`init`] installs a global subscriber, and a
 //! scoped override is `tracing::subscriber::set_default(...)`, whose returned

@@ -1,6 +1,6 @@
 [package]
 name = "browser-rs"
-description = "An undetectable, adaptive web-scraping library for Rust — the Rust port of the reference implementation."
+description = "An undetectable, adaptive web-scraping library for Rust."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,6 +10,10 @@ homepage.workspace = true
 authors.workspace = true
 keywords.workspace = true
 categories.workspace = true
+
+[lib]
+name = "browser"
+path = "src/lib.rs"
 
 [dependencies]
 browser-core.workspace = true

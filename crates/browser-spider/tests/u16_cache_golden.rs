@@ -18,10 +18,10 @@
 
 mod u16_support;
 
-use bytes::Bytes;
-use indexmap::IndexMap;
 use browser_spider::cache::ResponseCacheManager;
 use browser_spider::session::FetchedResponse;
+use bytes::Bytes;
+use indexmap::IndexMap;
 use serde_json::Value;
 use u16_support::{assert_divergences, read_corpus, Divergence};
 

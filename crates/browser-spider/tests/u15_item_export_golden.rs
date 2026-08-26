@@ -98,7 +98,7 @@ fn show(bytes: &[u8]) -> String {
 }
 
 #[test]
-fn item_exports_match_browser-rs_byte_for_byte_u15() {
+fn item_exports_match_the_reference_byte_for_byte_u15() {
     let corpus = read_corpus("u15_item_exports.jsonl");
     let divergences: HashMap<&str, &str> = DIVERGENCES.iter().copied().collect();
     let mut seen_divergences: HashMap<String, usize> = HashMap::new();

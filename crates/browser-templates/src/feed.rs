@@ -40,12 +40,12 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use browser_spider::request::Item;
+use browser_spider::spider::{CallbackStream, CrawlResponse, Spider, SpiderSettings, Yielded};
 use indexmap::IndexMap;
 use quick_xml::events::Event;
 use quick_xml::name::ResolveResult;
 use quick_xml::reader::NsReader;
-use browser_spider::request::Item;
-use browser_spider::spider::{CallbackStream, CrawlResponse, Spider, SpiderSettings, Yielded};
 use serde_json::Value;
 
 use crate::error::{Result, TemplateError};
@@ -857,11 +857,11 @@ impl CSVFeedSpiderBuilder {
 mod tests {
     use std::io::Write;
 
+    use browser_spider::request::Request;
+    use browser_spider::session::FetchedResponse;
     use flate2::write::GzEncoder;
     use flate2::Compression;
     use futures::StreamExt;
-    use browser_spider::request::Request;
-    use browser_spider::session::FetchedResponse;
 
     use super::*;
 

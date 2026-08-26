@@ -10,7 +10,7 @@
 //!
 //! # Profile mapping
 //!
-//! the reference implementation forwards an impersonation string straight to `curl_cffi`, and
+//! The reference implementation forwards an impersonation string straight to `curl_cffi`, and
 //! `curl_cffi`'s target list is **not** `wreq-util`'s: `curl_cffi` 0.16.1 knows
 //! `chrome150` and `safari2601`, `wreq-util` 0.1.0 stops at `Chrome137` and
 //! `Safari18_5`. [`emulation_for`] therefore resolves the string through
@@ -47,10 +47,10 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use async_trait::async_trait;
+use browser_fingerprint::impersonate::{BrowserFamily, ImpersonateProfile};
 use bytes::Bytes;
 use http::header::{HeaderName, HeaderValue};
 use parking_lot::Mutex;
-use browser_fingerprint::impersonate::{BrowserFamily, ImpersonateProfile};
 use wreq_util::{Emulation, EmulationOS, EmulationOption};
 
 use super::{HttpBackend, WireRequest, WireResponse};
@@ -75,7 +75,7 @@ struct ClientKey {
     verify: bool,
 }
 
-/// Map a the reference implementation impersonation string onto a `wreq-util` emulation profile.
+/// Map a reference implementation impersonation string onto a `wreq-util` emulation profile.
 ///
 /// Returns `None` for a string [`ImpersonateProfile`] does not know — the caller
 /// then sends without emulation rather than guessing, which is what

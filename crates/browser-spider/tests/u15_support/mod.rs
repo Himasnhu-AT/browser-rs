@@ -10,9 +10,9 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use indexmap::IndexMap;
 use browser_core::types::{HttpMethod, Proxy};
 use browser_spider::request::{Item, Request, RequestBody, SessionKwargs};
+use indexmap::IndexMap;
 use serde_json::Value;
 
 /// Absolute path of a file in the crate's `testdata/` directory.

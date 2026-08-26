@@ -213,11 +213,10 @@ pub fn build_http_plan(
 
     // `--cookies` merges *over* the ones a `Cookie:` header produced.
     if let Some(raw) = options.cookies.as_deref().filter(|value| !value.is_empty()) {
-        let parsed =
-            browser::parse_cookie_string(raw).map_err(|error| ExtractError::Cookies {
-                cookies: raw.to_owned(),
-                message: error.to_string(),
-            })?;
+        let parsed = browser::parse_cookie_string(raw).map_err(|error| ExtractError::Cookies {
+            cookies: raw.to_owned(),
+            message: error.to_string(),
+        })?;
         for (key, value) in parsed {
             cookies.insert(key, value);
         }
@@ -431,8 +430,8 @@ pub fn assemble_browser_config(
 
     // `_ParseHeaders(extra_headers, False)` — cookies are *not* diverted here,
     // so a `Cookie:` line stays an ordinary header for the browser.
-    let (parsed_headers, _) = browser::parse_header_lines(&options.extra_headers, false)
-        .map_err(ExtractError::Header)?;
+    let (parsed_headers, _) =
+        browser::parse_header_lines(&options.extra_headers, false).map_err(ExtractError::Header)?;
     if !parsed_headers.is_empty() {
         config = config.extra_headers(parsed_headers);
     }
@@ -471,8 +470,7 @@ pub async fn run_browser(
     let _ = crate::convert::extraction_for(&output_path.to_string_lossy())?;
 
     let config = build_browser_config(options, stealth)?;
-    let response =
-        browser::fetch_once(config, &targets.url, browser::FetchParams::new()).await?;
+    let response = browser::fetch_once(config, &targets.url, browser::FetchParams::new()).await?;
     tracing::info!("<{} {}>", response.status, response.url);
 
     write_content_to_file(
@@ -615,7 +613,7 @@ mod tests {
 
     #[test]
     fn the_default_plan_matches_pythons_kwargs() {
-        let plan = plan(&["browser-rs", "extract", "get", "https://x.test/", "o.md"]);
+        let plan = plan(&["brs", "extract", "get", "https://x.test/", "o.md"]);
         assert!(plan.headers.is_empty());
         assert!(plan.cookies.is_empty());
         assert!(plan.params.is_empty());
@@ -635,7 +633,7 @@ mod tests {
     #[test]
     fn the_http_timeout_is_read_as_seconds() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--timeout",
@@ -650,7 +648,7 @@ mod tests {
     #[test]
     fn headers_and_cookies_are_separated_the_way_parse_headers_does() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -669,7 +667,7 @@ mod tests {
     #[test]
     fn the_cookies_flag_merges_over_a_cookie_header() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -686,7 +684,7 @@ mod tests {
     #[test]
     fn a_header_without_a_colon_is_an_error() {
         let options = http_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -708,7 +706,7 @@ mod tests {
     #[test]
     fn a_colon_less_header_ending_in_a_semicolon_is_accepted() {
         let options = http_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -723,7 +721,7 @@ mod tests {
     #[test]
     fn the_body_options_reach_the_plan_for_post() {
         let cli = Cli::try_parse_from([
-            "browser-rs",
+            "brs",
             "extract",
             "post",
             "-j",
@@ -748,7 +746,7 @@ mod tests {
     #[test]
     fn a_proxy_reaches_the_plan_as_a_url() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--proxy",
@@ -768,7 +766,7 @@ mod tests {
     #[test]
     fn an_empty_proxy_string_is_forwarded_and_only_falsy_downstream() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--proxy",
@@ -787,7 +785,7 @@ mod tests {
     #[test]
     fn the_plan_is_applied_to_a_request_builder() {
         let plan = plan(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -833,7 +831,7 @@ mod tests {
     /// the default.
     #[test]
     fn the_always_present_keys_are_always_set_on_the_builder() {
-        let plan = plan(&["browser-rs", "extract", "get", "https://x.test/", "o.md"]);
+        let plan = plan(&["brs", "extract", "get", "https://x.test/", "o.md"]);
         let overrides = apply_http_plan(AsyncFetcher::get("https://x.test/"), &plan)
             .overrides()
             .clone();
@@ -882,8 +880,7 @@ mod tests {
     #[cfg(feature = "browser")]
     #[test]
     fn the_browser_defaults_reach_the_config_unchanged() {
-        let options =
-            browser_options(&["browser-rs", "extract", "fetch", "https://x.test/", "o.md"]);
+        let options = browser_options(&["brs", "extract", "fetch", "https://x.test/", "o.md"]);
         let config = build_browser_config(&options, None).expect("valid");
         assert!(config.headless);
         assert!(!config.disable_resources);
@@ -907,7 +904,7 @@ mod tests {
     #[test]
     fn the_browser_timeout_is_read_as_milliseconds() {
         let options = browser_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "--timeout",
@@ -927,7 +924,7 @@ mod tests {
     #[test]
     fn the_browser_flags_reach_the_config() {
         let options = browser_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "--no-headless",
@@ -970,7 +967,7 @@ mod tests {
     #[test]
     fn extra_headers_do_not_divert_a_cookie_line() {
         let options = browser_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "-H",
@@ -997,7 +994,7 @@ mod tests {
     #[test]
     fn stealthy_fetch_builds_a_stealthy_config() {
         let command = stealthy(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "https://x.test/",
@@ -1018,7 +1015,7 @@ mod tests {
     #[test]
     fn solve_cloudflare_raises_the_timeout_floor_to_sixty_seconds() {
         let command = stealthy(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "--solve-cloudflare",
@@ -1034,7 +1031,7 @@ mod tests {
 
         // An explicit larger timeout is left alone.
         let command = stealthy(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "--solve-cloudflare",
@@ -1051,7 +1048,7 @@ mod tests {
     #[test]
     fn the_stealth_knobs_reach_the_extras() {
         let command = stealthy(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "--block-webrtc",
@@ -1071,7 +1068,7 @@ mod tests {
     #[test]
     fn a_missing_executable_is_rejected_by_validation() {
         let options = browser_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "--executable-path",
@@ -1086,7 +1083,7 @@ mod tests {
     #[test]
     fn a_malformed_extra_header_is_reported_rather_than_dropped() {
         let options = browser_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "-H",

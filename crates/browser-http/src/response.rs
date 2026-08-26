@@ -34,8 +34,6 @@
 use std::borrow::Cow;
 use std::sync::{Arc, OnceLock};
 
-use bytes::Bytes;
-use indexmap::IndexMap;
 use browser_core::fingerprint::ElementFingerprint;
 use browser_core::text::{ReOptions, RegexSpec};
 use browser_parser::config::{
@@ -45,6 +43,8 @@ use browser_parser::document::{Body as DocumentBody, Document};
 use browser_parser::find::FindQuery;
 use browser_parser::node::Node;
 use browser_parser::nodes::Nodes;
+use bytes::Bytes;
+use indexmap::IndexMap;
 use serde_json::Value;
 
 use crate::backend::{Method, WireResponse};

@@ -24,12 +24,12 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
-use regex::Regex;
 use browser_spider::canonicalize::netloc_of;
 use browser_spider::request::{CallbackId, Item, Request};
 use browser_spider::spider::{
     CallbackStream, CrawlError, CrawlResponse, RequestStream, Spider, SpiderSettings, Yielded,
 };
+use regex::Regex;
 use serde_json::Value;
 
 use crate::error::{Result, TemplateError};
@@ -944,8 +944,8 @@ impl ShopifySpiderBuilder {
 
 #[cfg(test)]
 mod tests {
-    use futures::StreamExt;
     use browser_spider::session::FetchedResponse;
+    use futures::StreamExt;
     use serde_json::json;
 
     use super::*;

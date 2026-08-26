@@ -1,5 +1,5 @@
 //! Differential test of [`FetchParams::resolve`] against the real
-//! `browser-rs.engines._browsers._validators.validate_fetch`.
+//! `reference.engines._browsers._validators.validate_fetch`.
 //!
 //! `testdata/fetch_params_golden.jsonl` is produced by `gen_fetch_golden.py`
 //! (kept outside the repo): each row is a session config plus a `fetch()`
@@ -155,7 +155,7 @@ fn dump_domains(value: Option<&HashSet<String>>) -> Value {
 }
 
 #[test]
-fn fetch_params_match_browser-rs() {
+fn fetch_params_match_the_reference() {
     let mut checked = 0_usize;
     let mut failures: Vec<String> = Vec::new();
 

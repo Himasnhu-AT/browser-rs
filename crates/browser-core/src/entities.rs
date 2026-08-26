@@ -12,7 +12,7 @@
 //! 4. Code points `0x80..=0x9F` are remapped through Windows-1252, the way browsers
 //!    do, rather than emitted as C1 control characters.
 //!
-//! the reference implementation always calls it with the defaults, i.e. [`replace_entities`]:
+//! The reference implementation always calls it with the defaults, i.e. [`replace_entities`]:
 //! `keep = ()`, `remove_illegal = true`.
 
 use std::sync::OnceLock;

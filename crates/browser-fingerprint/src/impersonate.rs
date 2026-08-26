@@ -2,7 +2,7 @@
 //!
 //! The lists here are transcribed verbatim from `http-fetch.md` §2.2, which in
 //! turn reads `curl_cffi` 0.16.1's `BrowserTypeLiteral` and `REAL_TARGET_MAP`.
-//! the reference implementation itself never resolves an alias — it forwards the string straight
+//! The reference implementation itself never resolves an alias — it forwards the string straight
 //! to `curl_cffi` — so [`ImpersonateProfile::parse`] keeps aliases as first
 //! class values and only resolves them on demand via
 //! [`ImpersonateProfile::resolve`].

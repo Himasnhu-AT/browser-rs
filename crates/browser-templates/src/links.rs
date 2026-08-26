@@ -36,9 +36,9 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Arc;
 
-use regex::Regex;
 use browser_spider::canonicalize::{canonicalize_url, urlparse};
 use browser_spider::spider::CrawlResponse;
+use regex::Regex;
 
 use crate::error::{Result, TemplateError};
 

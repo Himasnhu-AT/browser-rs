@@ -347,6 +347,9 @@ pub use browser_spider::spider::{
 #[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
 pub use async_trait::async_trait;
 
+#[cfg(feature = "spider")]
+#[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
+pub use browser_spider::stats::{CrawlResult, CrawlStats};
 /// The stream crate [`CallbackStream`] is made of.
 ///
 /// `CallbackStream` is a type **alias** for
@@ -359,9 +362,6 @@ pub use async_trait::async_trait;
 #[cfg(feature = "spider")]
 #[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
 pub use futures;
-#[cfg(feature = "spider")]
-#[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
-pub use browser_spider::stats::{CrawlResult, CrawlStats};
 
 // ---------------------------------------------------------------------------
 // `browser-templates` — the ready-made spiders.
@@ -427,9 +427,7 @@ pub use browser_templates::sitemap::{
 /// the response and not of the transport.
 #[cfg(all(feature = "spider", feature = "markdown"))]
 #[cfg_attr(docsrs, doc(cfg(all(feature = "spider", feature = "markdown"))))]
-pub use browser_templates::site_to_markdown::{
-    SiteToMarkdownSpider, SiteToMarkdownSpiderBuilder,
-};
+pub use browser_templates::site_to_markdown::{SiteToMarkdownSpider, SiteToMarkdownSpiderBuilder};
 
 #[cfg(test)]
 mod tests {

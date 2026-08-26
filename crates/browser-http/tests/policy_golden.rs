@@ -21,7 +21,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use rand::TryRng;
 use browser_core::types::{FollowRedirects, Proxy, RedirectMode};
 use browser_fingerprint::headers::Headers;
 use browser_fingerprint::useragent::default_ua;
@@ -35,6 +34,7 @@ use browser_http::proxy::{
     proxy_key, ProxyRotator,
 };
 use browser_http::retry::{proxy_for_attempt, retry_warning, RetryDecision, RetryPolicy};
+use rand::TryRng;
 use serde_json::{json, Map, Value};
 
 // ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ impl TryRng for ZeroRng {
     }
 }
 
-/// The header set the generator pinned `browser-rs.engines.static.generate_headers` to.
+/// The header set the generator pinned `reference.engines.static.generate_headers` to.
 fn pinned_generated_headers() -> Headers {
     let mut headers = Headers::new();
     headers.push("User-Agent", "Generated/1.0");

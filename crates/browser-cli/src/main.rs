@@ -4,7 +4,7 @@
 //! decides three things, and each of them mirrors Click:
 //!
 //! * a **usage** error (missing argument, unknown subcommand, bad `--loglevel`)
-//!   exits **2**, printed by `clap` — `browser-rs extract get` with no URL is
+//!   exits **2**, printed by `clap` — `brs extract get` with no URL is
 //!   exit 2 in Python too;
 //! * a **runtime** error exits **1** with `Error: …` on stderr, which is what an
 //!   uncaught `ValueError` costs you in Python;

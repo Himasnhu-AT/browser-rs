@@ -3,7 +3,7 @@
 //!
 //! # The conversion root stands in for BeautifulSoup's `[document]`
 //!
-//! the reference implementation calls `markdownify(page.html_content)` — it *re-serialises* the
+//! The reference implementation calls `markdownify(page.html_content)` — it *re-serialises* the
 //! element and hands the string to a fresh `BeautifulSoup`, so inside the
 //! converter the element is a direct child of the soup and has no ancestors and
 //! no siblings. We convert a live [`NodeRef`] instead, so [`Walker`] remembers

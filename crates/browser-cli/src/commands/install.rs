@@ -3,7 +3,7 @@
 //!
 //! # What this is *not*
 //!
-//! Python's `browser-rs install` shells out to `python -m playwright install
+//! Python's `brs install` shells out to `python -m playwright install
 //! chromium`, then `install-deps`, then refreshes `tld`'s public-suffix list
 //! (`cli-ai.md` §2.2). None of the three ports:
 //!
@@ -38,7 +38,7 @@ use crate::args::InstallOptions;
 /// The empty file whose existence means "already installed".
 ///
 /// The name is Python's, so a user who has both installed recognises it.
-pub const MARKER_FILE: &str = ".browser-rs_dependencies_installed";
+pub const MARKER_FILE: &str = ".browser_rs_dependencies_installed";
 
 /// The cache sub-directory `chromiumoxide_fetcher` uses by default.
 ///
@@ -87,7 +87,7 @@ impl std::error::Error for InstallError {
     }
 }
 
-/// `<root>/.browser-rs_dependencies_installed`.
+/// `<root>/.browser_rs_dependencies_installed`.
 ///
 /// ```
 /// use std::path::Path;
@@ -95,7 +95,7 @@ impl std::error::Error for InstallError {
 ///
 /// assert_eq!(
 ///     marker_path(Path::new("/cache/chromiumoxide")),
-///     Path::new("/cache/chromiumoxide/.browser-rs_dependencies_installed"),
+///     Path::new("/cache/chromiumoxide/.browser_rs_dependencies_installed"),
 /// );
 /// ```
 #[must_use]
@@ -238,7 +238,7 @@ pub fn touch_marker(root: &Path) -> Result<PathBuf, InstallError> {
     }
 }
 
-/// `browser-rs install`.
+/// `brs install`.
 ///
 /// **Unverified.** The `fetch()` call downloads roughly 150 MB over the network
 /// and is never exercised by the test suite; only the surrounding decisions are.
@@ -292,10 +292,10 @@ mod tests {
 
     #[test]
     fn the_marker_file_keeps_pythons_name() {
-        assert_eq!(MARKER_FILE, ".browser-rs_dependencies_installed");
+        assert_eq!(MARKER_FILE, ".browser_rs_dependencies_installed");
         assert_eq!(
             marker_path(Path::new("/a/b")),
-            PathBuf::from("/a/b/.browser-rs_dependencies_installed")
+            PathBuf::from("/a/b/.browser_rs_dependencies_installed")
         );
     }
 

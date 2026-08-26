@@ -126,7 +126,7 @@ comparison measures the converter and never `html.parser` versus `html5ever`. To
 ```sh
 python3 crates/browser-markdown/tools/gen_fuzz.py 800 777
 cargo run -p browser-markdown --example normalize
-<python-with-markdownify-and-browser-rs> crates/browser-markdown/tools/gen_golden.py
+<reference-python-env> crates/browser-markdown/tools/gen_golden.py
 ```
 
 ## Known deviations

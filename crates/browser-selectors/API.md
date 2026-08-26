@@ -257,7 +257,7 @@ scoring, still is):
    selector contains a `!`. Selection results are identical; the canonical string is not.
 2. **The CSS Selectors 4 grammar is wider than cssselect's**, in seven places the differential test
    pins by name. All of them are `SelectorSyntaxError`/`ExpressionError` in Python, so no *working*
-   the reference implementation selector changes meaning — `ARCHITECTURE.md` §1.3 signs this class off and names
+   The reference implementation selector changes meaning — `ARCHITECTURE.md` §1.3 signs this class off and names
    `*:nth-of-type()` explicitly:
    `.dot:first-of-type` / `:nth-of-type(1)` (cssselect demands an explicit type selector before an
    `*-of-type` pseudo-class), `li:has(a[href])` and `div:has(p span)` (its `:has()` takes only a

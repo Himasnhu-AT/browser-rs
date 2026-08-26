@@ -18,8 +18,8 @@
 
 use std::fmt;
 
-use parking_lot::Mutex;
 use browser_core::types::Proxy;
+use parking_lot::Mutex;
 use thiserror::Error;
 use url::{ParseError, Url};
 
@@ -45,7 +45,7 @@ pub const PROXY_SCHEMES: [&str; 4] = ["http", "https", "socks4", "socks5"];
 /// Everything that can go wrong in this module.
 ///
 /// Python raises `ValueError` and `TypeError` with these exact messages and the
-/// the reference implementation test-suite pins them, so the `Display` text is byte-identical.
+/// The reference implementation test-suite pins them, so the `Display` text is byte-identical.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 pub enum ProxyError {
     /// `ProxyRotator([])` — Python: `ValueError`.
@@ -125,7 +125,7 @@ pub fn is_proxy_error_message(message: &str) -> bool {
 /// A URL proxy keys on itself; a dictionary proxy keys on `"{server}|{username}"`,
 /// so the same endpoint with two different accounts counts as two proxies.
 ///
-/// the reference implementation builds a `{key: index}` map with this and then never reads it. It is
+/// The reference implementation builds a `{key: index}` map with this and then never reads it. It is
 /// kept here because it is the natural identity for the ban tracking this version
 /// lacks.
 ///

@@ -1,6 +1,6 @@
 //! A faithful port of CPython's [`difflib.SequenceMatcher`] ratio algorithm.
 //!
-//! the reference implementation's adaptive element relocation scores candidate nodes with
+//! The reference implementation's adaptive element relocation scores candidate nodes with
 //! `difflib.SequenceMatcher(None, a, b).ratio()`. No crate on crates.io reproduces that
 //! number: `strsim` is edit distance and `similar` is Myers/Patience/LCS, and both would
 //! silently change every relocation outcome (and the meaning of the `40 %` threshold).
@@ -20,7 +20,7 @@
 //! `Vec<char>` before matching. [`ratio_seq`] is the element-wise variant used for tag
 //! paths, sibling lists and the key/value tuples of [`crate::fingerprint::dict_diff`].
 //!
-//! the reference implementation never passes an `isjunk` predicate, so this port does not implement one; the
+//! The reference implementation never passes an `isjunk` predicate, so this port does not implement one; the
 //! `bjunk` set is always empty and the junk-extension loops of the original are therefore
 //! dead code and omitted.
 //!
@@ -88,7 +88,7 @@ impl<'a, T: Eq + Hash> SequenceMatcher<'a, T> {
     /// Builds a matcher with the autojunk heuristic explicitly enabled or disabled.
     ///
     /// `autojunk = false` corresponds to `difflib.SequenceMatcher(None, a, b,
-    /// autojunk=False)`. the reference implementation always uses the default (`true`); this constructor
+    /// autojunk=False)`. The reference implementation always uses the default (`true`); this constructor
     /// exists for tests and for callers that need to diff long sequences verbatim.
     #[must_use]
     pub fn with_autojunk(a: &'a [T], b: &'a [T], autojunk: bool) -> Self {

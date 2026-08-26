@@ -125,8 +125,8 @@ mod tests {
             "5633aceb51bce3bc6cfa84acc35249ac220adcd9c87715d01dff6517496ddbc1_6",
         ),
         (
-            "the reference implementation",
-            "1d912f5760a7e18457a8ab292cb616f300c36dafac26da22238699e3aadf66f0_9",
+            "browser-rs",
+            "e929ac049ffed2ce1ee9146962bbbce17cbc6379e3c00a0f774e9b3d323955f7_10",
         ),
         (
             "p::text",

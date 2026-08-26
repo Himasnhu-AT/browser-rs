@@ -222,7 +222,7 @@ fn normalise_expected(trace: &[Value]) -> Vec<Value> {
 }
 
 #[tokio::test]
-async fn checkpoint_behaviour_matches_browser-rs() {
+async fn checkpoint_behaviour_matches_the_reference() {
     let corpus = read_corpus("u15_checkpoint.jsonl");
     let divergences: HashMap<&str, &str> = DIVERGENCES.iter().copied().collect();
     let mut seen_divergences: HashMap<String, usize> = HashMap::new();

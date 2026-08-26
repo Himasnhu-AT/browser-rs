@@ -46,8 +46,8 @@
 //! * `inspect.signature(arg).parameters` arity checking — a Rust closure's
 //!   signature is checked by the compiler (`ARCHITECTURE.md` §11.6).
 
-use indexmap::{IndexMap, IndexSet};
 use browser_core::text::{ReOptions, RegexSpec, TextExt};
+use indexmap::{IndexMap, IndexSet};
 
 use crate::error::{ParseError, Result};
 use crate::node::Node;

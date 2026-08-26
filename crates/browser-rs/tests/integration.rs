@@ -484,17 +484,14 @@ fn the_http_policy_types_compose_into_one_attempt_loop() {
 /// fetcher; unit 10 turns them into `ParseOptions`. Check the two ends line up.
 #[test]
 fn the_selector_config_carries_the_parser_keywords_unit_10_needs() {
-    use browser_http::config::{
-        FetcherConfig, RequestOverrides, SelectorConfig, PARSER_KEYWORDS,
-    };
+    use browser_http::config::{FetcherConfig, RequestOverrides, SelectorConfig, PARSER_KEYWORDS};
 
     let mut requested = SelectorConfig::default();
     requested.insert("keep_comments", true.into());
     requested.insert("huge_tree", true.into());
 
     let config = FetcherConfig::default().with_selector_config(requested.clone());
-    let resolved =
-        browser_http::config::resolve_selector_config(&config, &RequestOverrides::new());
+    let resolved = browser_http::config::resolve_selector_config(&config, &RequestOverrides::new());
     assert_eq!(resolved.get("keep_comments"), Some(&true.into()));
 
     // Every keyword the fetchers accept has to be one unit 10 knows what to do
@@ -1170,7 +1167,6 @@ mod response_seam {
 mod browser_response_seam {
     use std::sync::Arc;
 
-    use indexmap::IndexMap;
     use browser_http::backend::mock::{MockBackend, MockReply};
     use browser_http::backend::Method;
     use browser_http::config::SelectorConfig;
@@ -1180,6 +1176,7 @@ mod browser_response_seam {
     use browser_parser::config::CssOpts;
     use browser_parser::node::Node;
     use browser_storage::{SqliteStorage, StorageSystem};
+    use indexmap::IndexMap;
 
     /// What `Page.content()` returns after Chrome has run the scripts: a
     /// serialised DOM, not the bytes the server sent.
@@ -1353,7 +1350,7 @@ mod browser_response_seam {
     fn the_browser_charset_regex_is_the_one_unit_14_needs() {
         use browser_http::response::charset_from_content_type_http;
 
-        // the reference implementation's `__CHARSET_RE__` — `charset=["']?([\w-]+)` — accepts a
+        // The reference implementation's `__CHARSET_RE__` — `charset=["']?([\w-]+)` — accepts a
         // quoted value; `curl_cffi`'s does not, and unit 12 is bound by
         // `curl_cffi`'s because that is what resolved the charset in Python.
         assert_eq!(
@@ -2015,7 +2012,7 @@ mod crawl_loop_seam {
 //
 // * `crawl_spider_seam`      → `LinkExtractor` + `CrawlRule` + `CrawlSpider`
 // * `site_to_markdown_seam`  → `SiteToMarkdownSpider`
-// * `cli_extract_seam`       → `browser-rs extract get <url> <output>`
+// * `cli_extract_seam`       → `brs extract get <url> <output>`
 //
 // All three run against a loopback server this file starts. Nothing reaches the
 // public internet, and the browser half skips cleanly when there is no Chrome.
@@ -2730,7 +2727,7 @@ mod site_to_markdown_seam {
 }
 
 // ---------------------------------------------------------------------------
-// (c) Unit 19's `browser-rs extract get <url> <output>`, end to end.
+// (c) Unit 19's `brs extract get <url> <output>`, end to end.
 // ---------------------------------------------------------------------------
 
 /// The whole `extract get` call chain, from parsed arguments to a file on disk.
@@ -2775,7 +2772,7 @@ mod cli_extract_seam {
 
     // -- step 1: the shared option group ----------------------------------
 
-    /// `browser-rs extract get`'s shared options, as `clap` will parse them.
+    /// `brs extract get`'s shared options, as `clap` will parse them.
     ///
     /// Deliberately the *parsed* form: `--header a:b` has already become a pair
     /// and `--timeout 5` has already become seconds. Unit 19 owns the parsing;

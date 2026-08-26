@@ -94,7 +94,7 @@ pub fn is_favicon(url: &str) -> bool {
 /// The budget `_cloudflare_solver` gives its very first idle wait.
 ///
 /// `_wait_for_networkidle(page, timeout=5000)` — the only call site in
-/// the reference implementation that overrides the page default.
+/// The reference implementation that overrides the page default.
 pub const CLOUDFLARE_IDLE_BUDGET: Duration = Duration::from_millis(5_000);
 
 /// How a [`NetworkTracker::wait_for_idle`] ended.

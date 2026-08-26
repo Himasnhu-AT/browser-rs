@@ -433,9 +433,9 @@ impl CrawlSpiderBuilder {
 
 #[cfg(test)]
 mod tests {
-    use futures::StreamExt;
     use browser_spider::request::Item;
     use browser_spider::session::FetchedResponse;
+    use futures::StreamExt;
 
     use super::*;
 

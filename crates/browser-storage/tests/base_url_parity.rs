@@ -67,7 +67,7 @@ fn corpus() -> Vec<Case> {
 }
 
 #[test]
-fn registrable_domain_matches_browser-rs_on_every_case() {
+fn registrable_domain_matches_the_reference_on_every_case() {
     let mut failures = Vec::new();
     for case in corpus() {
         let got = registrable_domain(case.url.as_deref());

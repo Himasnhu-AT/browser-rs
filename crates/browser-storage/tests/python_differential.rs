@@ -25,7 +25,6 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use rusqlite::Connection;
 use browser_core::fingerprint::AttributeDict;
 use browser_core::ElementFingerprint;
 use browser_storage::hash::identifier_hash;
@@ -33,6 +32,7 @@ use browser_storage::r#trait::StorageSystem;
 use browser_storage::sqlite::{
     SqliteStorage, INSERT_SQL, JOURNAL_MODE_SQL, SCHEMA_SQL, SELECT_SQL,
 };
+use rusqlite::Connection;
 
 use common::TempDb;
 

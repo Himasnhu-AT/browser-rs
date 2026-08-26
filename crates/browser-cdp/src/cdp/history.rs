@@ -34,12 +34,12 @@
 
 use std::collections::HashMap;
 
-use indexmap::IndexMap;
-use parking_lot::Mutex;
 use browser_core::text::compile as compile_regex;
 use browser_fingerprint::status::StatusText;
 use browser_http::config::HeaderDict;
 use browser_http::redirect_safe::RedirectHop;
+use indexmap::IndexMap;
+use parking_lot::Mutex;
 
 use crate::error::BrowserError;
 use crate::route::playwright_resource_type;

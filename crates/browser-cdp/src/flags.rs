@@ -35,10 +35,10 @@
 //! [`BrowserConfig::extra_flags`]: crate::config::BrowserConfig::extra_flags
 //! [`BrowserConfig::extra_flags_union`]: crate::config::BrowserConfig::extra_flags_union
 
-use indexmap::{IndexMap, IndexSet};
 use browser_core::types::Proxy;
 use browser_fingerprint::domains::{DEFAULT_ARGS, HARMFUL_ARGS, STEALTH_ARGS};
 use browser_fingerprint::useragent::{default_browser_ua, default_chrome_ua};
+use indexmap::{IndexMap, IndexSet};
 use serde_json::{json, Map, Value};
 
 use crate::config::{construct_proxy, BrowserConfig, StealthExtras};

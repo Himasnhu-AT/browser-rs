@@ -1,7 +1,7 @@
 # `browser-storage`
 
 Adaptive-selector persistence for `browser-rs`: the SQLite store behind
-the reference implementation's "find the element again after the site was redesigned" feature.
+The reference implementation's "find the element again after the site was redesigned" feature.
 
 The on-disk format is **shared with the Python implementation**. An existing
 `elements_storage.db` written by the reference implementation 0.4.15 is readable and writable here,
@@ -17,7 +17,7 @@ namespace keys. Both directions are *tested*, not asserted:
   `Selector.__calculate_similarity_score` — the adaptive path the storage exists to
   serve, and the one that catches a row Python can *load* but not *use*.
 * **Byte for byte** — `tests/python_payload_parity.rs` takes 81 fingerprints that
-  the reference implementation produced from real `lxml` elements, re-encodes each one here and
+  The reference implementation produced from real `lxml` elements, re-encodes each one here and
   compares against `orjson`'s original bytes; `tools/verify_rust_payloads.py`
   then reads the database this crate writes from them and checks the stored bytes
   and storage class are identical. An *empty* database is compared byte for byte

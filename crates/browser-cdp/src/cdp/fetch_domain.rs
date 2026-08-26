@@ -34,7 +34,7 @@
 //!
 //! `ARCHITECTURE.md` §13.4 suggests `BlockedByClient`, but Playwright's
 //! `Route.abort()` defaults to the error code `"failed"`, which its Chromium
-//! backend maps to `ErrorReason::Failed` — so a the reference implementation-blocked resource
+//! backend maps to `ErrorReason::Failed` — so a reference implementation-blocked resource
 //! reports `net::ERR_FAILED` to the page, not `net::ERR_BLOCKED_BY_CLIENT`.
 //! Pages that branch on the error text (ad-block detectors do) would see the
 //! difference, so [`ABORT_ERROR_REASON`] follows Playwright.

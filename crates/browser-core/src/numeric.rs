@@ -1,6 +1,6 @@
 //! [`round_half_even`]: `round(x, n)` with Python's exact semantics.
 //!
-//! the reference implementation rounds stats (`elapsed_seconds`, `requests_per_second`, AutoThrottle
+//! The reference implementation rounds stats (`elapsed_seconds`, `requests_per_second`, AutoThrottle
 //! delays) and the adaptive similarity score with the built-in `round()`, whose
 //! result is compared against thresholds. `ARCHITECTURE.md` §4 calls this out: the
 //! naive `(x * 10f64.powi(n)).round() / 10f64.powi(n)` is *not* the same function,

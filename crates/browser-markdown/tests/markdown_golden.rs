@@ -12,7 +12,7 @@
 //! | `expected` | the reference implementation's real Markdown path over the raw input (see below) |
 //! | `expected_norm` | `markdownify(norm_clean)` — the same, but over **our** cleaned tree's serialisation |
 //!
-//! the reference implementation's path is
+//! The reference implementation's path is
 //! `Convertor._extract_content(page, "markdown", main_content_only=True)`:
 //!
 //! ```text
@@ -94,7 +94,7 @@ struct Case {
     direct: String,
     /// `markdownify(norm_ws)` — the converter-only answer.
     direct_norm: String,
-    /// the reference implementation's full Markdown path over `html`.
+    /// The reference implementation's full Markdown path over `html`.
     expected: String,
     /// `markdownify(norm_clean)` — the converter-only answer for the clean tree.
     expected_norm: String,
@@ -141,7 +141,7 @@ fn converter(html: &str) -> String {
     to_markdown_default(doc.root())
 }
 
-/// the reference implementation's `Response.markdown()` in Rust, on a document parsed exactly the
+/// The reference implementation's `Response.markdown()` in Rust, on a document parsed exactly the
 /// way `Selector(content)` parses one.
 fn pipeline(html: &str) -> String {
     let doc = Document::parse(html);
@@ -318,7 +318,7 @@ fn converter_matches_markdownify_byte_for_byte() {
 
 /// The whole deliverable, against the reference implementation's own Markdown path.
 #[test]
-fn pipeline_matches_browser-rs_byte_for_byte() {
+fn pipeline_matches_the_reference_byte_for_byte() {
     run_raw_arm(
         "pipeline",
         pipeline,
@@ -335,7 +335,7 @@ fn pipeline_matches_browser-rs_byte_for_byte() {
 /// The cleaning passes are what make the output safe to hand to a model, so pin
 /// their contract independently of the Markdown bytes.
 ///
-/// the reference implementation scrubs `element.text` and `element.tail` only — an attribute keeps
+/// The reference implementation scrubs `element.text` and `element.tail` only — an attribute keeps
 /// its zero-width characters — so the character check runs over the cleaned
 /// tree's text nodes, which is exactly the surface `_sanitize_for_ai` promises.
 #[test]

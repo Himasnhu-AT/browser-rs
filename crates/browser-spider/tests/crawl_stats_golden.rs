@@ -1,5 +1,5 @@
 //! Differential test for [`browser_spider::stats::CrawlStats::to_dict`] against
-//! `reference.spiders.result.CrawlStats.to_dict` (browser-rs 0.4.15, CPython 3.14).
+//! `reference.spiders.result.CrawlStats.to_dict` (the reference implementation, CPython 3.14).
 //!
 //! Pins three things Python's tests pin: the **exact top-level key order**, the rename of
 //! `log_levels_counter` to `log_count`, and `round(x, 2)`'s banker's rounding on the four
@@ -107,7 +107,7 @@ fn build(fields: &Map<String, Value>, calls: &[Value]) -> Arc<CrawlStats> {
 }
 
 #[test]
-fn crawl_stats_to_dict_matches_browser-rs() {
+fn crawl_stats_to_dict_matches_the_reference() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata/crawl_stats.jsonl");
     let corpus = std::fs::read_to_string(&path)
         .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));

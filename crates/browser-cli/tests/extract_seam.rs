@@ -22,11 +22,11 @@ mod support;
 
 use std::time::Duration;
 
-use clap::Parser;
 use browser::ExtractionType;
 use browser_cli::args::{Cli, Command, ExtractCommand, HttpCommand};
 use browser_cli::commands::extract::{self, HttpVerb};
 use browser_cli::convert::{extract_content, extraction_for, write_content_to_file};
+use clap::Parser;
 
 use support::{Page, Site};
 
@@ -70,7 +70,7 @@ async fn extract_get_runs_end_to_end_into_all_three_output_modes() {
     // --- .md ------------------------------------------------------------
     let markdown_path = out.path().join("page.md");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         "-H",
@@ -107,7 +107,7 @@ async fn extract_get_runs_end_to_end_into_all_three_output_modes() {
     // --- .html ----------------------------------------------------------
     let html_path = out.path().join("page.html");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         "-s",
@@ -125,7 +125,7 @@ async fn extract_get_runs_end_to_end_into_all_three_output_modes() {
     // --- .txt -----------------------------------------------------------
     let text_path = out.path().join("page.txt");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         &url,
@@ -167,7 +167,7 @@ async fn the_suffix_map_is_exhaustive_and_closed() {
     let out = tempfile::tempdir().expect("tempdir");
     let bad = out.path().join("page.xyz");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         &site.url("/doc"),
@@ -189,7 +189,7 @@ async fn the_suffix_map_is_exhaustive_and_closed() {
 #[tokio::test]
 async fn the_generator_yields_a_trailing_empty_string() {
     let site = Site::start(docs);
-    let command = get_command(&["browser-rs", "extract", "get", &site.url("/doc"), "out.html"]);
+    let command = get_command(&["brs", "extract", "get", &site.url("/doc"), "out.html"]);
     let plan = extract::build_http_plan(&command.options, None).expect("builds");
     let builder = extract::apply_http_plan(
         browser::AsyncFetcher::get(command.targets.url.clone()),
@@ -221,7 +221,7 @@ async fn a_non_200_is_still_extractable() {
     let out = tempfile::tempdir().expect("tempdir");
     let path = out.path().join("missing.txt");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         &site.url("/missing"),
@@ -247,7 +247,7 @@ async fn ai_targeted_text_narrows_scrubs_and_drops_hidden_elements() {
     let out = tempfile::tempdir().expect("tempdir");
     let path = out.path().join("hidden.txt");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         "--ai-targeted",
@@ -276,7 +276,7 @@ async fn ai_targeted_markdown_does_drop_hidden_elements() {
     let out = tempfile::tempdir().expect("tempdir");
     let path = out.path().join("hidden.md");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         "--ai-targeted",
@@ -302,7 +302,7 @@ async fn post_sends_its_body_and_delete_sends_none() {
 
     let path = out.path().join("posted.txt");
     let cli = Cli::try_parse_from([
-        "browser-rs",
+        "brs",
         "extract",
         "post",
         "-d",
@@ -336,7 +336,7 @@ async fn post_sends_its_body_and_delete_sends_none() {
 
     let path = out.path().join("deleted.txt");
     let cli = Cli::try_parse_from([
-        "browser-rs",
+        "brs",
         "extract",
         "delete",
         &site.url("/echo"),
@@ -364,7 +364,7 @@ async fn post_with_json_sends_a_json_body() {
     let out = tempfile::tempdir().expect("tempdir");
     let path = out.path().join("posted.txt");
     let cli = Cli::try_parse_from([
-        "browser-rs",
+        "brs",
         "extract",
         "post",
         "-j",
@@ -405,7 +405,7 @@ async fn cookies_reach_the_wire() {
     let out = tempfile::tempdir().expect("tempdir");
     let path = out.path().join("page.txt");
     let command = get_command(&[
-        "browser-rs",
+        "brs",
         "extract",
         "get",
         "--cookies",
@@ -440,13 +440,7 @@ async fn a_relative_output_path_lands_in_the_working_directory() {
 async fn write_content_to_file_is_the_same_function_the_binary_uses() {
     let site = Site::start(docs);
     let out = tempfile::tempdir().expect("tempdir");
-    let command = get_command(&[
-        "browser-rs",
-        "extract",
-        "get",
-        &site.url("/doc"),
-        "unused.md",
-    ]);
+    let command = get_command(&["brs", "extract", "get", &site.url("/doc"), "unused.md"]);
     let plan = extract::build_http_plan(&command.options, None).expect("builds");
     let response = extract::apply_http_plan(
         browser::AsyncFetcher::get(command.targets.url.clone()),

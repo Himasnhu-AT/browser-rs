@@ -27,10 +27,10 @@ mod u16_support;
 
 use std::collections::BTreeMap;
 
-use indexmap::IndexMap;
 use browser_spider::throttle::{
     parse_retry_after, AutoThrottle, AutoThrottleConfig, AutoThrottleConfigError,
 };
+use indexmap::IndexMap;
 use serde_json::Value;
 use u16_support::{assert_divergences, f64_from_bits, read_corpus, Divergence};
 

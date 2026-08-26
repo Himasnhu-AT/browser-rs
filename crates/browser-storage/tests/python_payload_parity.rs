@@ -26,7 +26,7 @@
 //! # The one thing Python cannot round-trip
 //!
 //! `testdata/python_payload_divergences.jsonl` lists four elements that
-//! the reference implementation itself **fails** to store: `element_to_dict` puts `child.tag` into
+//! The reference implementation itself **fails** to store: `element_to_dict` puts `child.tag` into
 //! `siblings`, and for an `lxml` comment or processing instruction that `.tag`
 //! is a *Cython function object*, which `orjson.dumps` rejects with
 //! `TypeError: Type is not JSON serializable`. Any element with a comment
@@ -43,12 +43,12 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::PathBuf;
 
-use rusqlite::Connection;
 use browser_core::ElementFingerprint;
 use browser_storage::base_url::registrable_domain;
 use browser_storage::python_json;
 use browser_storage::r#trait::StorageSystem;
 use browser_storage::sqlite::SqliteStorage;
+use rusqlite::Connection;
 
 use common::TempDb;
 

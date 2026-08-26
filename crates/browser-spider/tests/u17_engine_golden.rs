@@ -34,8 +34,6 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use futures::StreamExt;
-use parking_lot::Mutex;
 use browser_core::log::LevelCounter;
 use browser_core::types::HttpMethod;
 use browser_spider::engine::CrawlerEngine;
@@ -45,6 +43,8 @@ use browser_spider::spider::{
     CallbackStream, CrawlError, CrawlResponse, FollowOptions, HttpCrawlSession, RunOptions, Spider,
     SpiderRunner, SpiderSettings, Yielded,
 };
+use futures::StreamExt;
+use parking_lot::Mutex;
 use serde_json::{json, Map, Value};
 use u17_support::{testdata, Fixture};
 
@@ -193,7 +193,7 @@ const RESUME_PAIRS: &[(&str, &str, &str, u64)] = &[
 /// An item's `depth` is `parent.depth + 1` **of whichever parent enqueued it first**, and
 /// with more than one request in flight "first" is a race between a fetch, a parse and a
 /// callback. `/cat/1` is linked both from `/` (depth 1) and from `/cat/0` (depth 2), and
-/// the reference implementation happens to be stable only because CPython's `lxml` parse
+/// The reference implementation happens to be stable only because CPython's `lxml` parse
 /// is far quicker than the fetch it is racing; the port lost that race once in five runs
 /// of `s06_per_domain_limit` (two seeds on two hosts, one of which has a `Crawl-delay`
 /// and the other none, so the two chains start 50 ms apart).

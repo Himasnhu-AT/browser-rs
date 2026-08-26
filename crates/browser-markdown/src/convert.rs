@@ -8,8 +8,8 @@
 use std::borrow::Cow;
 use std::sync::LazyLock;
 
-use regex::Regex;
 use browser_dom::{Document, NodeRef};
+use regex::Regex;
 
 use crate::error::{MarkdownError, Result};
 use crate::escape::{
@@ -104,7 +104,7 @@ pub enum PreStrip {
 
 /// Every markdownify option, pre-filled with markdownify's defaults.
 ///
-/// the reference implementation passes no options at all, so `MarkdownOptions::default()` is the
+/// The reference implementation passes no options at all, so `MarkdownOptions::default()` is the
 /// configuration the port has to match byte for byte.
 ///
 /// The field list mirrors markdownify's `DefaultOptions` and is therefore
@@ -285,7 +285,7 @@ fn parse_like_markdownify(html: &str) -> Document {
     Document::parse_bytes(html.as_bytes(), &markdownify_parse_options())
 }
 
-/// the reference implementation's `Convertor._convert_to_markdown(body)`: parse an HTML string and
+/// The reference implementation's `Convertor._convert_to_markdown(body)`: parse an HTML string and
 /// convert the whole document.
 #[must_use]
 pub fn html_to_markdown(html: &str) -> String {
@@ -1031,7 +1031,7 @@ mod tests {
     }
 
     /// The HTML5 tokenizer drops one U+000A straight after `<pre>`/`<textarea>`;
-    /// libxml2 does not. the reference implementation never sees the difference because
+    /// libxml2 does not. The reference implementation never sees the difference because
     /// `strip_pre = Strip` removes leading newlines anyway, but the non-default
     /// `strip_pre` settings do, so the deviation is pinned rather than implied.
     #[test]

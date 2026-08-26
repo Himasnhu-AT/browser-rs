@@ -537,10 +537,10 @@ impl SitemapSpiderBuilder {
 mod tests {
     use std::io::Write;
 
+    use browser_spider::session::FetchedResponse;
     use flate2::write::GzEncoder;
     use flate2::Compression;
     use futures::StreamExt;
-    use browser_spider::session::FetchedResponse;
 
     use super::*;
 

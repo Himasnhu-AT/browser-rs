@@ -56,7 +56,7 @@ pub enum SelectorError {
     /// `::data(x)` — a *functional* pseudo-element this port does not implement.
     ///
     /// `::data()` deliberately does not exist: `parser.md` §6.2 states that
-    /// the reference implementation 0.4.15 adds only `::text` and `::attr()` on top of cssselect.
+    /// The reference implementation 0.4.15 adds only `::text` and `::attr()` on top of cssselect.
     ///
     /// Python: `ExpressionError("The functional pseudo-element ::data() is unknown")`.
     #[error("The functional pseudo-element ::{0}() is unknown")]

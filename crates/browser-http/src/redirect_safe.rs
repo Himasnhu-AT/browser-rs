@@ -501,7 +501,7 @@ pub async fn check_target(
     // has not already reached. curl-impersonate expresses this as "the check
     // runs when the redirect needs a NEW connection"; an origin comparison is
     // the closest a port that does not own the connection pool can get, and it
-    // is what keeps `follow_redirects="safe"` — the the reference implementation default — usable
+    // is what keeps `follow_redirects="safe"` — the reference implementation default — usable
     // against a host that is itself private, exactly as Python is. See
     // `docs/DIVERGENCES.md`.
     if same_origin(from, to) {

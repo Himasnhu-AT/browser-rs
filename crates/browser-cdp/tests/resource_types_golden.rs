@@ -1,12 +1,12 @@
 //! Differential test of [`browser_cdp::route`]'s CDP↔Playwright
-//! resource-type table against the node driver that browser-rs 0.4.15 actually
+//! resource-type table against the node driver that the reference implementation actually
 //! drives.
 //!
 //! `testdata/resource_types_golden.jsonl` is produced by
 //! `gen_resource_types_golden.py` (kept outside the repo), which parses
 //! `toResourceType` out of the bundled
 //! `playwright/driver/package/lib/coreBundle.js` for all three backends and
-//! pairs it with `browser-rs.engines.constants.EXTRA_RESOURCES`.
+//! pairs it with `reference.engines.constants.EXTRA_RESOURCES`.
 //!
 //! This is the one part of the crate whose ground truth is not reachable by
 //! calling Python: the mapping runs inside the driver process, on a live
@@ -122,9 +122,9 @@ fn reverse_lookup_is_consistent() {
     assert_eq!(cdp_resource_type("not-a-resource-type"), None);
 }
 
-/// `EXTRA_RESOURCES` is browser-rs's, verbatim.
+/// `EXTRA_RESOURCES` is the reference implementation's, verbatim.
 #[test]
-fn extra_resources_matches_browser-rs() {
+fn extra_resources_matches_the_reference() {
     let rows = rows();
     assert_eq!(
         values(find(&rows, "extra_resources")),
@@ -189,7 +189,7 @@ fn effective_blocking_matches_the_driver() {
 
     // The lenient variant additionally catches the CDP types that carry the
     // dead `EXTRA_RESOURCES` names: `CSPViolationReport` (spelled `csp_report`
-    // by browser-rs, `cspreport` by the driver) and `Ping` (which is how
+    // by the reference, `cspreport` by the driver) and `Ping` (which is how
     // Chromium reports `navigator.sendBeacon`, spelled `beacon` elsewhere).
     // `object` and `imageset` add nothing: their nearest CDP types are `Other`
     // and `Image`, and `Image` is already blocked.

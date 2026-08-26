@@ -2,7 +2,7 @@
 //!
 //! `testdata/psl_sweep.jsonl` is 20 306 rows — two per rule in `tld` 0.13.2's
 //! bundled `res/effective_tld_names.dat.txt` — each carrying the answer
-//! the reference implementation's `StorageSystemMixin._get_base_url()` actually gave under CPython
+//! The reference implementation's `StorageSystemMixin._get_base_url()` actually gave under CPython
 //! 3.14. `tools/gen_psl_sweep.py` regenerates it.
 //!
 //! # Why sweep the whole list

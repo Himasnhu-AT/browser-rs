@@ -1,7 +1,7 @@
 //! Direct ports of the reference implementation's own test files for this subsystem:
 //!
 //! * `tests/fetchers/test_merge_request_args.py` — the browser-only kwargs must not
-//!   leak into the HTTP request dict (regression for Himasnhu-AT/browser-rs#247);
+//!   leak into the HTTP request dict (regression for D4Vinci/the reference implementation#247);
 //! * `tests/fetchers/test_impersonate_list.py` — `_select_random_browser` and the
 //!   session/request precedence of a list-valued `impersonate`;
 //! * `tests/fetchers/test_proxy_rotation.py` — `cyclic_rotation`, `ProxyRotator`

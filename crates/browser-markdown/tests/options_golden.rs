@@ -1,6 +1,6 @@
 //! The option matrix, checked against markdownify.
 //!
-//! the reference implementation only ever uses the defaults, but [`MarkdownOptions`] exposes the
+//! The reference implementation only ever uses the defaults, but [`MarkdownOptions`] exposes the
 //! whole markdownify surface and every field of it is a real code path. This
 //! runs each non-default option set over every normalized fixture and compares
 //! with `markdownify(html, **kwargs)`.

@@ -1,4 +1,4 @@
-//! the reference implementation's cleaning layer — `Convertor._strip_noise_tags` and
+//! The reference implementation's cleaning layer — `Convertor._strip_noise_tags` and
 //! `Convertor._sanitize_for_ai` from `reference/core/shell.py`.
 //!
 //! Both take a document, copy it, prune it and hand back a new document; the
@@ -9,7 +9,7 @@
 //!
 //! # What `_sanitize_for_ai` removes
 //!
-//! the reference implementation's `_HIDDEN_XPATH` is a naive `contains()` test on the raw `style`
+//! The reference implementation's `_HIDDEN_XPATH` is a naive `contains()` test on the raw `style`
 //! attribute, matching only the twelve literal substrings in
 //! [`HIDDEN_STYLE_SUBSTRINGS`] (no-space and one-space spellings of six
 //! properties). It does not parse CSS, which is deliberate but has consequences:
@@ -109,7 +109,7 @@ pub fn is_hidden_element(node: NodeRef<'_>) -> bool {
     })
 }
 
-/// the reference implementation's `Convertor._strip_noise_tags`.
+/// The reference implementation's `Convertor._strip_noise_tags`.
 ///
 /// Drops every `<script>`, `<style>`, `<noscript>` and `<svg>` subtree. lxml's
 /// `drop_tree()` re-parents the element's tail text; here the tail is already a
@@ -124,7 +124,7 @@ pub fn strip_noise_tags(doc: &Document) -> Document {
     })
 }
 
-/// the reference implementation's `Convertor._sanitize_for_ai`.
+/// The reference implementation's `Convertor._sanitize_for_ai`.
 ///
 /// Drops hidden elements (see [`is_hidden_element`]) and then scrubs every text
 /// node. Like the XPath it ports, the document's root element is never itself a

@@ -21,12 +21,12 @@
 //! [`SelectorGroup::select`] reproduces the *non*-adaptive path, an XPath union
 //! (document order, duplicates removed).
 
+use browser_dom::NodeRef;
 use cssparser::{
     match_ignore_ascii_case, CowRcStr, Parser as CssParser, ParserInput, SourceLocation, ToCss,
     Token,
 };
 use markup5ever::LocalName;
-use browser_dom::NodeRef;
 use selectors::attr::{ParsedAttrSelectorOperation, ParsedCaseSensitivity};
 use selectors::parser::{
     Combinator, Component, ParseRelative, RelativeSelector, Selector, SelectorList,
@@ -35,7 +35,7 @@ use selectors::parser::{
 use selectors::visitor::SelectorVisitor;
 
 use crate::canonical;
-use crate::impl_selector::{CssLocalName, CssNamespace, BrowserImpl};
+use crate::impl_selector::{BrowserImpl, CssLocalName, CssNamespace};
 use crate::matching::{self, Match};
 use crate::pseudo::Tail;
 
@@ -477,7 +477,7 @@ impl SubSelector {
 
     /// The second matcher `X *::text` / `X *::attr(a)` needs, if any.
     ///
-    /// the reference implementation's translator does not render a trailing bare `*` as a step of
+    /// The reference implementation's translator does not render a trailing bare `*` as a step of
     /// its own when a pseudo-element follows a **descendant** combinator — it
     /// folds it into the pseudo-element instead
     /// (`reference/core/translator.py`, `XPathExpr.__str__`):

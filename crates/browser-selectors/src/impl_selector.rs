@@ -28,10 +28,10 @@
 use std::borrow::Borrow;
 use std::fmt;
 
+use browser_dom::{Element as DomElement, NodeRef};
 use cssparser::{serialize_identifier, serialize_string, ToCss};
 use markup5ever::{ns, LocalName, Namespace};
 use precomputed_hash::PrecomputedHash;
-use browser_dom::{Element as DomElement, NodeRef};
 use selectors::attr::{AttrSelectorOperation, CaseSensitivity, NamespaceConstraint};
 use selectors::bloom::BloomFilter;
 use selectors::matching::{ElementSelectorFlags, MatchingContext};

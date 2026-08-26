@@ -41,13 +41,13 @@ pub const EXECUTABLE_PATH_ENV: &str = "BROWSER_RS_EXECUTABLE_PATH";
 
 /// The `browser-rs` command line.
 ///
-/// `display_name` is set so `--version` prints `the reference implementation, version <v>`, which
-/// is what Click's `version_option(prog_name="the reference implementation")` produces. The version
-/// number is **this crate's**, not `the reference implementation`'s.
+/// `display_name` is set so `--version` prints `browser-rs, version <v>`, which
+/// is the `prog_name`-style form the reference CLI produced. The version
+/// number is this crate's.
 #[derive(Debug, Parser)]
 #[command(
-    name = "browser-rs",
-    display_name = "the reference implementation, version",
+    name = "brs",
+    display_name = "browser-rs, version",
     version,
     about = "An undetectable, adaptive web-scraping toolkit.",
     long_about = None,
@@ -80,9 +80,9 @@ pub struct Cli {
 /// The top-level command tree.
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Install all the reference implementation's Fetchers dependencies
+    /// Install all fetcher dependencies
     #[cfg(feature = "browser")]
-    #[command(about = "Install all the reference implementation's Fetchers dependencies")]
+    #[command(about = "Install all fetcher dependencies")]
     Install(InstallOptions),
 
     /// Fetch web pages and extract HTML, Markdown or text.
@@ -93,14 +93,14 @@ pub enum Command {
         command: ExtractCommand,
     },
 
-    /// Convert a `curl` command line into a the reference implementation request.
+    /// Convert a `curl` command line into a `browser-rs` request.
     ///
     /// This is the shell's `uncurl()` — and, with `--output`, its
     /// `curl2fetcher()` — as a subcommand.
     Uncurl(UncurlOptions),
 }
 
-/// `browser-rs extract <...>`.
+/// `brs extract <...>`.
 #[derive(Debug, Subcommand)]
 pub enum ExtractCommand {
     /// Perform a GET request and save the content to a file.
@@ -573,11 +573,11 @@ impl StealthyCommand {
 // `install` and `uncurl`
 // ---------------------------------------------------------------------------
 
-/// `browser-rs install`.
+/// `brs install`.
 #[cfg(feature = "browser")]
 #[derive(Debug, Args, Clone, Default)]
 pub struct InstallOptions {
-    /// Force the reference implementation to reinstall all Fetchers dependencies
+    /// Force a reinstall of all fetcher dependencies
     #[arg(short = 'f', long = "force", overrides_with = "force")]
     pub force: bool,
 
@@ -587,7 +587,7 @@ pub struct InstallOptions {
     pub path: Option<std::path::PathBuf>,
 }
 
-/// `browser-rs uncurl`.
+/// `brs uncurl`.
 #[derive(Debug, Args, Clone, Default)]
 pub struct UncurlOptions {
     /// Fetch the request and write the page here instead of printing the parsed
@@ -681,26 +681,24 @@ mod tests {
 
     #[test]
     fn both_positionals_are_required() {
-        assert!(Cli::try_parse_from(["browser-rs", "extract", "get"]).is_err());
-        assert!(Cli::try_parse_from(["browser-rs", "extract", "get", "https://x.test/"]).is_err());
-        assert!(
-            Cli::try_parse_from(["browser-rs", "extract", "get", "https://x.test/", "o.md"]).is_ok()
-        );
+        assert!(Cli::try_parse_from(["brs", "extract", "get"]).is_err());
+        assert!(Cli::try_parse_from(["brs", "extract", "get", "https://x.test/"]).is_err());
+        assert!(Cli::try_parse_from(["brs", "extract", "get", "https://x.test/", "o.md"]).is_ok());
     }
 
     #[test]
     fn a_missing_argument_is_a_usage_error_not_a_panic() {
-        let error = Cli::try_parse_from(["browser-rs", "extract", "get"]).unwrap_err();
+        let error = Cli::try_parse_from(["brs", "extract", "get"]).unwrap_err();
         // Click exits 2 for a usage error; so does `clap`.
         assert_eq!(error.exit_code(), 2);
     }
 
     #[test]
-    fn version_prints_click_s_prog_name_form() {
+    fn version_prints_the_prog_name_form() {
         let rendered = Cli::command().render_version();
         assert!(
-            rendered.starts_with("the reference implementation, version "),
-            "{rendered:?} should look like Click's `the reference implementation, version 0.4.15`"
+            rendered.starts_with("browser-rs, version "),
+            "{rendered:?} should look like `browser-rs, version 0.1.0`"
         );
     }
 
@@ -708,7 +706,7 @@ mod tests {
 
     #[test]
     fn the_http_defaults_match_python() {
-        let options = get_options(&["browser-rs", "extract", "get", "https://x.test/", "o.md"]);
+        let options = get_options(&["brs", "extract", "get", "https://x.test/", "o.md"]);
         assert_eq!(options.timeout_secs, 30, "seconds, not milliseconds");
         assert!(options.follow_redirects());
         assert!(options.verify());
@@ -725,7 +723,7 @@ mod tests {
     #[test]
     fn headers_and_params_are_repeatable_and_keep_their_order() {
         let options = get_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-H",
@@ -745,7 +743,7 @@ mod tests {
 
     #[test]
     fn the_boolean_pairs_are_mutually_overriding_and_last_wins() {
-        let url = ["browser-rs", "extract", "get", "https://x.test/", "o.md"];
+        let url = ["brs", "extract", "get", "https://x.test/", "o.md"];
 
         let mut argv = url.to_vec();
         argv.push("--no-verify");
@@ -760,7 +758,7 @@ mod tests {
 
         // `--no-verify --verify` -> the later one wins.
         let options = get_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--no-verify",
@@ -772,7 +770,7 @@ mod tests {
 
         // …and the other way round.
         let options = get_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--verify",
@@ -786,7 +784,7 @@ mod tests {
     #[test]
     fn every_http_boolean_pair_can_be_turned_off() {
         let options = get_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--no-follow-redirects",
@@ -805,7 +803,7 @@ mod tests {
     #[test]
     fn post_and_put_take_a_body_and_get_and_delete_do_not() {
         let cli = parse(&[
-            "browser-rs",
+            "brs",
             "extract",
             "post",
             "-j",
@@ -825,7 +823,7 @@ mod tests {
             other => panic!("{other:?}"),
         }
         assert!(Cli::try_parse_from([
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "-d",
@@ -853,8 +851,8 @@ mod tests {
     #[cfg(feature = "browser")]
     #[test]
     fn the_browser_timeout_is_milliseconds_and_the_http_one_is_seconds() {
-        let http = get_options(&["browser-rs", "extract", "get", "https://x.test/", "o.md"]);
-        let browser = fetch_options(&["browser-rs", "extract", "fetch", "https://x.test/", "o.md"]);
+        let http = get_options(&["brs", "extract", "get", "https://x.test/", "o.md"]);
+        let browser = fetch_options(&["brs", "extract", "fetch", "https://x.test/", "o.md"]);
         assert_eq!(http.timeout_secs, 30);
         assert_eq!(browser.timeout_ms, 30_000);
         assert_eq!(
@@ -867,7 +865,7 @@ mod tests {
     #[cfg(feature = "browser")]
     #[test]
     fn the_browser_defaults_match_python() {
-        let options = fetch_options(&["browser-rs", "extract", "fetch", "https://x.test/", "o.md"]);
+        let options = fetch_options(&["brs", "extract", "fetch", "https://x.test/", "o.md"]);
         assert!(options.headless());
         assert!(!options.disable_resources());
         assert!(!options.network_idle());
@@ -885,7 +883,7 @@ mod tests {
     #[test]
     fn the_asymmetric_browser_pairs_use_pythons_names() {
         let options = fetch_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "--disable-resources",
@@ -894,7 +892,7 @@ mod tests {
         ]);
         assert!(options.disable_resources());
         let options = fetch_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "--disable-resources",
@@ -909,7 +907,7 @@ mod tests {
     #[test]
     fn extra_headers_uses_capital_h_like_the_http_group() {
         let options = fetch_options(&[
-            "browser-rs",
+            "brs",
             "extract",
             "fetch",
             "-H",
@@ -924,7 +922,7 @@ mod tests {
     #[test]
     fn the_stealth_only_options_default_the_way_python_does() {
         let cli = parse(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "https://x.test/",
@@ -946,7 +944,7 @@ mod tests {
     #[test]
     fn the_stealth_only_options_can_all_be_flipped() {
         let cli = parse(&[
-            "browser-rs",
+            "brs",
             "extract",
             "stealthy-fetch",
             "--block-webrtc",
@@ -980,15 +978,8 @@ mod tests {
             "--hide-canvas",
         ] {
             assert!(
-                Cli::try_parse_from([
-                    "browser-rs",
-                    "extract",
-                    "fetch",
-                    flag,
-                    "https://x.test/",
-                    "o.md"
-                ])
-                .is_err(),
+                Cli::try_parse_from(["brs", "extract", "fetch", flag, "https://x.test/", "o.md"])
+                    .is_err(),
                 "`fetch` must not accept {flag}"
             );
         }
@@ -1041,7 +1032,7 @@ mod tests {
 
     #[test]
     fn uncurl_takes_the_whole_command_as_one_quoted_string() {
-        let cli = parse(&["browser-rs", "uncurl", "curl https://x.test/ -H 'A: 1'"]);
+        let cli = parse(&["brs", "uncurl", "curl https://x.test/ -H 'A: 1'"]);
         let Command::Uncurl(options) = cli.command else {
             panic!("expected uncurl")
         };
@@ -1051,14 +1042,7 @@ mod tests {
 
     #[test]
     fn uncurl_also_accepts_already_split_tokens_including_hyphenated_ones() {
-        let cli = parse(&[
-            "browser-rs",
-            "uncurl",
-            "curl",
-            "https://x.test/",
-            "-H",
-            "A: 1",
-        ]);
+        let cli = parse(&["brs", "uncurl", "curl", "https://x.test/", "-H", "A: 1"]);
         let Command::Uncurl(options) = cli.command else {
             panic!("expected uncurl")
         };
@@ -1067,13 +1051,7 @@ mod tests {
 
     #[test]
     fn uncurl_options_have_to_come_before_the_command() {
-        let cli = parse(&[
-            "browser-rs",
-            "uncurl",
-            "-o",
-            "out.md",
-            "curl https://x.test/",
-        ]);
+        let cli = parse(&["brs", "uncurl", "-o", "out.md", "curl https://x.test/"]);
         let Command::Uncurl(options) = cli.command else {
             panic!("expected uncurl")
         };
@@ -1083,7 +1061,7 @@ mod tests {
 
     #[test]
     fn uncurl_needs_a_command() {
-        assert!(Cli::try_parse_from(["browser-rs", "uncurl"]).is_err());
+        assert!(Cli::try_parse_from(["brs", "uncurl"]).is_err());
     }
 
     // -- `install` ---------------------------------------------------------
@@ -1091,7 +1069,7 @@ mod tests {
     #[cfg(feature = "browser")]
     #[test]
     fn install_defaults_to_no_force_and_no_path() {
-        let cli = parse(&["browser-rs", "install"]);
+        let cli = parse(&["brs", "install"]);
         let Command::Install(options) = cli.command else {
             panic!("expected install")
         };
@@ -1103,7 +1081,7 @@ mod tests {
     #[test]
     fn install_accepts_both_spellings_of_force() {
         for flag in ["-f", "--force"] {
-            let cli = parse(&["browser-rs", "install", flag]);
+            let cli = parse(&["brs", "install", flag]);
             let Command::Install(options) = cli.command else {
                 panic!("expected install")
             };
@@ -1115,23 +1093,23 @@ mod tests {
 
     #[test]
     fn the_log_level_defaults_to_info_and_accepts_pythons_six_names() {
-        assert_eq!(parse(&["browser-rs", "uncurl", "curl x"]).loglevel, "info");
+        assert_eq!(parse(&["brs", "uncurl", "curl x"]).loglevel, "info");
         for level in ["debug", "info", "warning", "error", "critical", "fatal"] {
-            let cli = parse(&["browser-rs", "-L", level, "uncurl", "curl x"]);
+            let cli = parse(&["brs", "-L", level, "uncurl", "curl x"]);
             assert_eq!(cli.loglevel, level);
         }
         // `click.Choice(..., case_sensitive=False)`.
         assert_eq!(
-            parse(&["browser-rs", "-L", "DEBUG", "uncurl", "curl x"]).loglevel,
+            parse(&["brs", "-L", "DEBUG", "uncurl", "curl x"]).loglevel,
             "DEBUG"
         );
-        assert!(Cli::try_parse_from(["browser-rs", "-L", "trace", "uncurl", "curl x"]).is_err());
+        assert!(Cli::try_parse_from(["brs", "-L", "trace", "uncurl", "curl x"]).is_err());
     }
 
     #[test]
     fn the_log_level_is_global_so_it_can_follow_the_subcommand() {
         let cli = parse(&[
-            "browser-rs",
+            "brs",
             "extract",
             "get",
             "--loglevel",

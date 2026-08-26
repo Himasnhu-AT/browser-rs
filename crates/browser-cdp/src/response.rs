@@ -35,14 +35,12 @@
 //! caller that only wants the page is unaffected; downstream still sees one
 //! `Response` type.
 
-use bytes::Bytes;
-use indexmap::IndexMap;
 use browser_http::backend::Method;
 use browser_http::config::SelectorConfig;
 use browser_http::redirect_safe::RedirectHop;
-use browser_http::response::{
-    charset_from_content_type, DocumentHook, Response, DEFAULT_ENCODING,
-};
+use browser_http::response::{charset_from_content_type, DocumentHook, Response, DEFAULT_ENCODING};
+use bytes::Bytes;
+use indexmap::IndexMap;
 use serde_json::Value;
 
 use crate::cdp::history::{Capture, ResponseRecord};

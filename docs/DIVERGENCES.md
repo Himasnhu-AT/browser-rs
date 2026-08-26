@@ -147,7 +147,7 @@ T1/T3, not to T2.
 
 1. **`namespace-uri()` on an HTML element answers `""`.** html5ever puts HTML
    elements in the XHTML namespace; libxml2's HTML parser — the only parser
-   the reference implementation ever uses — namespaces nothing. `DomModel` maps the XHTML namespace
+   The reference implementation ever uses — namespaces nothing. `DomModel` maps the XHTML namespace
    to the null namespace so `lxml`'s answer is reproduced. Foreign (SVG/MathML)
    content keeps its real URI.
 2. **A top-level `position()` / `last()` returns `1`.** XPath 1.0 and libxml2
@@ -199,7 +199,7 @@ Beyond T1/T3/T5/T6/T7 above, all of which land here (T2 is fixed):
    that landed with it.
 2. **An emptied `<li>` stays its own list item.** `lxml` writes `<li></li>` as a
    bare `<li>`, and `html.parser` then nests the *following* `<li>` inside it, so
-   the reference implementation renders `<ul><li></li><li>x</li></ul>` as `* * x`. We emit `* x`.
+   The reference implementation renders `<ul><li></li><li>x</li></ul>` as `* * x`. We emit `* x`.
 3. **`<ol start>` is arbitrary-precision and accepts Unicode decimal digits**, as
    Python's `int()` does. A `start` that is numeric but has no decimal value
    (`²`, `Ⅰ`) makes Python raise a `ValueError`; we fall back to `1` rather than
@@ -216,7 +216,7 @@ Beyond T1/T3/T5/T6/T7 above, all of which land here (T2 is fixed):
    spaces but leaves trailing ones inside the port, so `.port` raises there; the
    `url` crate follows WHATWG and trims both ends.
 3. **`follow_redirects` = `"all"` / `"obeycode"` / `"firstonly"` are honoured.**
-   the reference implementation's own type annotation advertises them, but `curl_cffi` only
+   The reference implementation's own type annotation advertises them, but `curl_cffi` only
    special-cases `"safe"` and then calls `int(allow_redirects)`, which raises.
    We map them to CurlFollow 1/2/3 — the evident intent, not the runtime
    behaviour. Upstream bug.
@@ -333,7 +333,7 @@ written reason, and both tests fail if a declared row ever starts passing:
 
 # Wave 3 — unit 15 (`browser-spider`, data plane)
 
-Verified against browser-rs 0.4.15 / w3lib 2.4.1 / CPython 3.14 by the corpora under
+Verified against the reference implementation / w3lib 2.4.1 / CPython 3.14 by the corpora under
 `tools/corpus/u15/` (generators) and `crates/browser-spider/testdata/u15_*.jsonl`
 (goldens). Every table below is mirrored by a `DIVERGENCES` constant next to its test,
 and every one of those tests **fails if a declared row ever starts matching**.
@@ -418,7 +418,7 @@ Three real defects the unit-15 verification pass found and repaired:
    `serde_json::Value`, which is always serialisable. All 1605 corpus digests match,
    `include_kwargs` rows included.
 10. **`method=` is an enum.** Python stores whatever string the caller passed, so
-    `method="post"` fingerprints differently from `method="POST"`. the reference implementation's own
+    `method="post"` fingerprints differently from `method="POST"`. The reference implementation's own
     `SUPPORTED_HTTP_METHODS` is `Literal["GET", "POST", "PUT", "DELETE"]`, so the enum
     loses only inputs the reference implementation already declares unsupported.
 11. **A named `SessionKwargs` field and an `extra` key that collide only after case
@@ -571,7 +571,7 @@ Recorded because each was wrong before the differential run and each is now pinn
   `Response.cookies` read *that*.
 * **`Response.encoding` uses `curl_cffi`'s `charset=([\w-]+)`, which does not accept a
   quoted value.** `Content-Type: text/html; charset="windows-1252"` resolves to **`utf-8`**
-  over HTTP. the reference implementation's own `__CHARSET_RE__` (`charset=["\']?([\w-]+)`) *does* accept
+  over HTTP. The reference implementation's own `__CHARSET_RE__` (`charset=["\']?([\w-]+)`) *does* accept
   quotes, but it is only ever applied to browser responses; both are now separate functions.
 * **A 301/302/303 always drops the body, even when the method survives.** `PUT` with `data=`
   through a 303 arrives as a bodiless `PUT` — the method table said the body survived.
@@ -932,7 +932,7 @@ survived that comparison.
    see the page's clicks through the DOM.
 8. **Non-stealth sessions get a 1280×720 viewport** (Playwright's default for a
    context that does not ask for one) with `device_scale_factor: 2`; stealth
-   sessions get 1920×1080. the reference implementation only sets `viewport` for stealth sessions,
+   sessions get 1920×1080. The reference implementation only sets `viewport` for stealth sessions,
    so the dynamic value is inherited from Playwright rather than stated anywhere
    in the reference implementation.
 9. **`page.is_closed()` is a bounded CDP probe** (`Page.getFrameTree`, 5 s

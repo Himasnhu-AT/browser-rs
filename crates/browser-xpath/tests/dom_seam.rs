@@ -273,10 +273,7 @@ fn string_value_matches_the_xpath_data_model() {
         .map(XNode::Tree);
     assert!(comment.is_none(), "comments are removed by default");
 
-    let kept = Document::parse_with(
-        PAGE,
-        &browser_dom::ParseOptions::new().keep_comments(true),
-    );
+    let kept = Document::parse_with(PAGE, &browser_dom::ParseOptions::new().keep_comments(true));
     let kept_model = DomModel::new(&kept);
     let comment = kept
         .root()
@@ -292,10 +289,7 @@ fn string_value_matches_the_xpath_data_model() {
 /// it is O(1) per comparison via the precomputed index.
 #[test]
 fn document_order_totally_orders_every_node_kind() {
-    let doc = Document::parse_with(
-        PAGE,
-        &browser_dom::ParseOptions::new().keep_comments(true),
-    );
+    let doc = Document::parse_with(PAGE, &browser_dom::ParseOptions::new().keep_comments(true));
     let model = DomModel::new(&doc);
 
     let mut all: Vec<XNode<'_>> = Vec::new();

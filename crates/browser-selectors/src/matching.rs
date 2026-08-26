@@ -20,14 +20,14 @@
 
 use std::collections::HashSet;
 
-use markup5ever::LocalName;
 use browser_dom::NodeRef;
+use markup5ever::LocalName;
 use selectors::context::{
     MatchingForInvalidation, MatchingMode, NeedsSelectorFlags, QuirksMode, SelectorCaches,
 };
 use selectors::matching::{matches_selector, MatchingContext};
 
-use crate::impl_selector::{unprefixed_attr, ElementRef, BrowserImpl};
+use crate::impl_selector::{unprefixed_attr, BrowserImpl, ElementRef};
 use crate::parse::SubSelector;
 use crate::pseudo::Tail;
 

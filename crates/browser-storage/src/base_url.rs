@@ -3,7 +3,7 @@
 //!
 //! # What this reproduces
 //!
-//! the reference implementation namespaces every stored fingerprint by the *registrable domain* of
+//! The reference implementation namespaces every stored fingerprint by the *registrable domain* of
 //! the page it came from, so that `example.com` and `other.com` can both store a
 //! `"div.price"` identifier in the same `elements_storage.db` without colliding.
 //! The Python side is two functions:
@@ -89,7 +89,7 @@ fn is_scheme_char(c: char) -> bool {
 /// Python does — and collapses `None` and `""` to `None`.
 ///
 /// The lowercasing is not cosmetic: it works around [tld#124], where a mixed
-/// case host is not found in the suffix list. the reference implementation's test suite pins the
+/// case host is not found in the suffix list. The reference implementation's test suite pins the
 /// observable consequence (`storage.url == "https://www.example.com/page"` after
 /// constructing with `"https://WWW.EXAMPLE.COM/Page"`), so the stored URL is
 /// lowercased here rather than only inside the lookup.

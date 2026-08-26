@@ -34,7 +34,7 @@ pub const REPR_LENGTH_LIMIT: usize = 40;
 /// The file name a document falls back to when adaptive storage is switched on
 /// but no backend was supplied.
 ///
-/// Python uses `<browser-rs package dir>/elements_storage.db`; a Rust crate has
+/// Python uses the reference package directory’s `elements_storage.db`; a Rust crate has
 /// no writable package directory, so the fallback is this name in the process's
 /// working directory, overridable with the `BROWSER_RS_ADAPTIVE_DB` environment
 /// variable. Recorded in `docs/DIVERGENCES.md`.

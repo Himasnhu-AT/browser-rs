@@ -1369,9 +1369,7 @@ fn from_match(m: &Match<'_>) -> Entry {
             let mut attrs: Vec<(String, String)> = el
                 .attrs()
                 .iter_qual()
-                .map(|(name, value)| {
-                    normalise_attr(&browser_dom::qualname::to_string(name), value)
-                })
+                .map(|(name, value)| normalise_attr(&browser_dom::qualname::to_string(name), value))
                 .collect();
             attrs.sort();
             Entry::Element {

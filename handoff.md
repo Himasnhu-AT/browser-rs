@@ -1,8 +1,9 @@
-# Handoff — the reference implementation → Rust port
+# Handoff — `browser-rs`
 
 **Date:** 2026-08-26
 **Repo:** `/Users/himanshu/codes/browser-rs` (branch `main`)
-**Upstream being ported:** [Himasnhu-AT/browser-rs](https://github.com/Himasnhu-AT/browser-rs) v0.4.15 (~16k lines of Python)
+**Project:** an undetectable, adaptive web-scraping library for Rust — 14 crates, no `unsafe`,
+no system C libraries, no Python runtime.
 
 ---
 
@@ -70,32 +71,16 @@ deliberately still red (housekeeping item 5). Everything remaining is **unit 20*
 5. **`docs/DIVERGENCES.md`** — every intentional behavioural difference from Python, in one place.
    Now ~1,390 lines, through unit 19.
 
-### The reference implementation is installed — use it
+### How the golden corpora work
 
-```
-/Users/himanshu/.claude/jobs/a62e4b8e/tmp/pyref/bin/python
-```
+Every `crates/*/testdata/*.jsonl` is a **frozen differential corpus**: rows were produced by
+running a reference implementation and recording its answers, then replayed here by pure Rust.
+Replaying needs **neither Python nor a network** — that is the property to preserve.
 
-A venv with **the reference implementation, lxml 6.1.2, cssselect, markdownify, w3lib, protego**, on CPython
-3.14. This is what made every wave trustworthy: instead of reasoning about what Python does, run it
-and diff. Every corpus in `crates/*/testdata/*.jsonl` was generated from it, and every "bug found"
-below was found by disagreeing with it — never by reading its source and believing yourself.
-
-```bash
-PYREF=/Users/himanshu/.claude/jobs/a62e4b8e/tmp/pyref/bin/python
-$PYREF -c "from reference.parser import Selector; print(Selector('<p>hi</p>').css('p::text').get())"
-```
-
-⚠️ This venv is in a **job temp dir**. If it disappears: `python3 -m venv pyref && ./pyref/bin/pip
-install lxml cssselect markdownify w3lib protego the reference implementation`. The Python source is then
-readable at `<venv>/lib/python3.14/site-packages/browser-rs` (and the real CLI console script at
-`<venv>/bin/browser-rs`), or re-clone Himasnhu-AT/browser-rs from GitHub.
-
-All 87 corpus generator scripts (19 directories) are in-repo at `tools/corpus/` with a `README.md`
-mapping each directory to the `testdata/` it regenerates, and a section naming the scripts that are
-**not** replayed by `cargo test`. `u10`, `u12`, `u15`, `u16`, `u17`, `u18` and `u19` were written
-in-repo and carry no absolute paths; `mdgold` and `xconf` were fixed in wave 3; the rest may still
-carry paths from the original session — check the constants at the top before re-running.
+Rows that this port deliberately does *not* reproduce are kept as **declared divergences that
+fail the test if they ever start passing**, each with a written reason. Never delete a row, never
+skip one, and never loosen a comparison to raise a pass rate: a lower honest number is worth more
+than a manufactured 100%. `docs/DIVERGENCES.md` is the register.
 
 ---
 
@@ -297,7 +282,7 @@ over a `std::net` fixture. What unit 20 must know:
 - **`extract_content` is Python's `_extract_content` statement for statement** since wave 6:
   cleaning happens only when `main_content_only` is set, for all three modes, and each CSS match is
   one piece. `scrub_for_ai` is still public but is no longer on that path.
-- **Not verified:** `browser-rs install`'s download has **never been run** (~150 MB over a network
+- **Not verified:** `brs install`'s download has **never been run** (~150 MB over a network
   this environment does not have) and `install` has only ever been exercised on macOS;
   `extract fetch` / `stealthy-fetch` are never run end to end (what is checked is that the assembled
   `BrowserConfig` matches Python's kwargs dict field for field over 24,000 fuzzed command lines);

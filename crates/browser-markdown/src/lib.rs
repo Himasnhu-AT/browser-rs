@@ -25,7 +25,7 @@
 //! [`strip_noise_tags`] and [`sanitize_for_ai`] are the reference implementation's
 //! `Convertor._strip_noise_tags` / `Convertor._sanitize_for_ai`; `to_markdown`
 //! is `markdownify(body)` with every default in place, which is the only way
-//! the reference implementation ever calls it.
+//! The reference implementation ever calls it.
 //!
 //! # Fidelity
 //!

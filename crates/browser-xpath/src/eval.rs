@@ -23,8 +23,8 @@
 
 use std::borrow::Cow;
 
-use indexmap::IndexMap;
 use browser_dom::{Document, NodeRef};
+use indexmap::IndexMap;
 
 use crate::ast::{Axis, BinaryOp, Expr, NodeTest, Path, PathStart, Step};
 use crate::axes::{axis_nodes, descendants, matches_test};

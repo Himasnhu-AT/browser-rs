@@ -42,10 +42,10 @@
 
 use std::path::{Path, PathBuf};
 
+use browser_core::ElementFingerprint;
 use parking_lot::Mutex;
 use rusqlite::types::ValueRef;
 use rusqlite::Connection;
-use browser_core::ElementFingerprint;
 
 use crate::base_url::{normalise_url, registrable_domain};
 use crate::error::StorageError;

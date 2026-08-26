@@ -4,8 +4,8 @@
 //! interactive shell, which this port does not have (`ARCHITECTURE.md` §8). Its
 //! two useful halves are exposed as one subcommand instead:
 //!
-//! * `browser-rs uncurl '<curl …>'` is `uncurl()` — parse and print;
-//! * `browser-rs uncurl -o out.md '<curl …>'` is `curl2fetcher()` — parse, run
+//! * `brs uncurl '<curl …>'` is `uncurl()` — parse and print;
+//! * `brs uncurl -o out.md '<curl …>'` is `curl2fetcher()` — parse, run
 //!   through the fetcher, and write the page.
 //!
 //! # Why the argument scanner is hand-rolled
@@ -253,7 +253,7 @@ impl fmt::Display for CurlParseError {
             Self::UnsupportedMethod(method) => {
                 write!(
                     f,
-                    "Request method \"{method}\" isn't supported by the reference implementation yet"
+                    "Request method \"{method}\" isn't supported yet"
                 )
             }
             Self::Header(message) => f.write_str(message),
@@ -745,7 +745,7 @@ pub fn shlex_split(input: &str) -> Option<Vec<String>> {
 ///
 /// A leading `curl` token is dropped, which is the token form of
 /// [`strip_curl_prefix`]; anything else is left for the positional matcher, so
-/// `browser-rs uncurl not a curl command` still produces Python's
+/// `brs uncurl not a curl command` still produces Python's
 /// `Unknown/Unsupported curl arguments: ['curl', 'command']`.
 ///
 /// # Errors
@@ -1429,7 +1429,7 @@ fn parse_qsl(query: &str) -> OrderedMap {
 // Running it
 // ---------------------------------------------------------------------------
 
-/// `browser-rs uncurl`.
+/// `brs uncurl`.
 ///
 /// Without `--output` this is `uncurl()`: parse and print the request as JSON.
 /// With one it is `curl2fetcher()`: run the request and write the page.

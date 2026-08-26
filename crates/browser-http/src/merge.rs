@@ -20,10 +20,10 @@
 
 use std::time::Duration;
 
+use browser_core::types::{FollowRedirects, Proxy};
 use indexmap::IndexMap;
 use rand::seq::IndexedRandom;
 use rand::Rng;
-use browser_core::types::{FollowRedirects, Proxy};
 use serde_json::Value;
 
 use crate::config::{
@@ -459,8 +459,8 @@ pub(crate) fn static_proxy(config: &FetcherConfig, overrides: &RequestOverrides)
 
 #[cfg(test)]
 mod tests {
-    use rand::rngs::ThreadRng;
     use browser_core::types::{Override, RedirectMode};
+    use rand::rngs::ThreadRng;
     use serde_json::json;
 
     use super::*;

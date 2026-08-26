@@ -111,7 +111,7 @@ async-stream = "0.3.6"
 # expand to `chromiumoxide_fetcher/<tls>`, which force-enables that optional crate
 # without granting it a zip backend, and it then fails to compile under
 # `--no-default-features`. We only need the CDP client; `browser-cli` depends on
-# `chromiumoxide_fetcher` directly, with its own defaults, for `browser-rs install`.
+# `chromiumoxide_fetcher` directly, with its own defaults, for `brs install`.
 chromiumoxide = "0.9.1"
 chromiumoxide_fetcher = "0.9.1"
 
