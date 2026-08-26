@@ -14,9 +14,9 @@
 | Tests | **2237 passing, 0 failing, 2 ignored** under `--all-features`; 68 of them launch **real Chrome** and skip cleanly without it |
 | Clippy | `--workspace --all-targets --all-features -D warnings` ✅ clean |
 | Format | `cargo fmt --all --check` ✅ clean |
-| Code written | **120,146 lines across 14 crates** (88,773 of it `src/`) |
+| Code written | **120,153 lines across 14 crates** (88,780 of it `src/`) |
 | Plan progress | **19 of 20 work units done** (units 1–19) |
-| Last commit | `e7a6932 Wave 6: the ready-made spiders, the CLI, and the façade re-export surface` |
+| Last commit | `3b329ad docs: fix the four rustdoc intra-doc-link warnings units 18 and 19 introduced` |
 
 The two ignored tests are both regeneration aids, not checks, and are meant to stay ignored:
 `browser-markdown`'s `emit_rust_answers` (reads `$MD_CASES`, writes `$MD_OUT` for
@@ -26,7 +26,8 @@ The two ignored tests are both regeneration aids, not checks, and are meant to s
 Commits so far:
 
 ```
-e7a6932 Wave 6: the ready-made spiders, the CLI, and the façade re-export surface
+3b329ad   docs: fix the four rustdoc intra-doc-link warnings units 18 and 19 introduced
+e7a6932   Wave 6: the ready-made spiders, the CLI, and the façade re-export surface
 5488cd6   handoff: record the wave-5 commit hash
 23edc39   Wave 5: the CDP browser driver, the crawler engine, and the unit-18/19 seams
 9ac6251   handoff: record the wave-4 commit hash
@@ -117,7 +118,7 @@ carry paths from the original session — check the constants at the top before 
 | `browser-cli` | 8530 | ✅ done | **unit 19** — the clap-derive `browser-rs` binary: `extract get/post/put/delete/fetch/stealthy-fetch`, the seconds-vs-milliseconds split, `Convertor` (`write_content_to_file`, the three-mode extension map, `--ai-targeted`), `install`, and `uncurl` with a transcription of CPython's `argparse` **and** `shlex.read_token` |
 | `browser-rs` (façade) | 4347 | 🟡 partial | 34 cross-crate seam tests, all passing; the re-export surface is complete and proven by `unit_20_facade_seam`, but the README, benches, examples and `--no-default-features` `cfg` aliases are unit 20 |
 
-**120,146 lines across 14 crates** (88,773 of it `src/`).
+**120,153 lines across 14 crates** (88,780 of it `src/`).
 
 All 14 crates were **pre-scaffolded**: every module file exists, every `pub mod` is declared, every
 dependency is wired in `[workspace.dependencies]`. Implementers fill in files; they never touch
