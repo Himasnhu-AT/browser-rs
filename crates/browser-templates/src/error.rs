@@ -11,7 +11,7 @@
 //!
 //! Three of those messages interpolate `self.__class__.__name__`, which has no
 //! Rust equivalent — a `CrawlSpider` subclass is a *value*, not a type. The port
-//! interpolates [`crate::crawl::CrawlSpider::name`] (Python's `spider.name`)
+//! interpolates `CrawlSpider::name` (Python's `spider.name`)
 //! instead, which is the identifier a user actually recognises in a log line.
 
 /// Everything that can go wrong inside `browser-templates`.

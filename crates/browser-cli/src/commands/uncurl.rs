@@ -770,7 +770,7 @@ pub fn parse_curl_tokens(tokens: &[String]) -> Result<CurlRequest, CurlParseErro
 /// * A value that itself looks like an option (`-d -X`) is refused rather than
 ///   consumed, matching argparse's `expected one argument`.
 /// * Positional arguments are matched per contiguous run against
-///   `[placeholder?, url]` by [`match_positionals`], which is
+///   `[placeholder?, url]` by `match_positionals`, which is
 ///   `_match_arguments_partial` over `(-*A?-*)(-*A-*)` written out longhand —
 ///   including the `-` that a literal `--` contributes to the pattern.
 ///

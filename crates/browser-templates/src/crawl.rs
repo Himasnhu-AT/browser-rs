@@ -194,7 +194,7 @@ impl CrawlRule {
 ///
 /// # Errors
 ///
-/// [`TemplateError::Crawl`] wrapping `CrawlError::NoRequestOnResponse` when
+/// [`TemplateError::Crawl`](crate::error::TemplateError::Crawl) wrapping `CrawlError::NoRequestOnResponse` when
 /// `response` was built by hand and has no originating request to inherit `sid`
 /// and the session kwargs from.
 pub fn requests_to_follow(rules: &[CrawlRule], response: &CrawlResponse) -> Result<Vec<Request>> {

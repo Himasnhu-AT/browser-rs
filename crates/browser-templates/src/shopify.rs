@@ -359,7 +359,7 @@ fn lower_capital_sigma(before: &str, after: &str) -> char {
 /// ```
 ///
 /// where `lower` is `_PyUnicode_ToLowerFull` except for `Σ`, whose Final_Sigma
-/// context is resolved by [`lower_capital_sigma`]. The three functions Rust's
+/// context is resolved by `lower_capital_sigma`. The three functions Rust's
 /// standard library lacks — `_PyUnicode_ToTitleFull`, `_PyUnicode_IsCased` and
 /// `_PyUnicode_IsCaseIgnorable` — come from the generated tables above. What is
 /// left is a Unicode-version skew: CPython 3.14 and
