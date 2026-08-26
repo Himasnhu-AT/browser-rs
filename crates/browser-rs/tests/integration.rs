@@ -3025,3 +3025,565 @@ mod cli_extract_seam {
         );
     }
 }
+
+// ---------------------------------------------------------------------------
+// (d) Unit 20's façade: four end-to-end user journeys, written **only** against
+//     `browser::`.
+// ---------------------------------------------------------------------------
+
+/// Proof that unit 20 is expressible from the API that exists today.
+///
+/// Every other module in this file reaches past the façade on purpose — that is
+/// what makes them *seam* tests, and `Cargo.toml`'s `[dev-dependencies]` block
+/// says so. **This one does not.** Nothing below names `browser_parser`,
+/// `browser_http`, `browser_cdp`, `browser_spider`,
+/// `browser_templates`, `browser_dom`, `browser_markdown`,
+/// `browser_storage` or `browser_xpath`; every path starts at `browser::`.
+/// That restraint is the whole assertion. A member crate that is in the graph
+/// but has no path through the façade is invisible to a real user, and this
+/// module is the only thing in the repo that would notice.
+///
+/// Unit 20's deliverables are the re-export surface, the feature flags,
+/// end-to-end tests against a local server, criterion benches and runnable
+/// examples for the four entry points. So there is one journey per entry point:
+///
+/// 1. **parse** — `Document::parse`, CSS, XPath, `find_similar`, and the
+///    adaptive save → relocate round trip through a real SQLite database;
+/// 2. **fetch over HTTP** — `AsyncFetcher` and the blocking `Fetcher` against a
+///    loopback site, then the document API on the reply;
+/// 3. **fetch through Chrome** — `BrowserSession`, skipping cleanly when there
+///    is no browser;
+/// 4. **crawl** — a ready-made `SiteToMarkdownSpider` *and* a user-written
+///    `Spider`, both run to completion by `SpiderRunner` over a loopback site.
+///
+/// Writing it found five holes, all now closed:
+///
+/// * `browser-markdown`, `browser-dom`, `browser-xpath` and
+///   `browser-storage` were `[dev-dependencies]` only, so four types the
+///   public API *hands back* had no name — `Document::dom`,
+///   `Document::xpath_value`, the `StorageSystem` implementation and the two
+///   sanitiser passes;
+/// * `CallbackStream` was missing from the flat spider surface;
+/// * `async_trait` was not re-exported at all, and **every** user-written
+///   `Spider` needs it, because the trait is declared with it;
+/// * neither was `futures`, and `CallbackStream` is a type alias for
+///   `futures::stream::BoxStream<'static, Yielded>`, so a callback cannot
+///   construct its own return value without it.
+///
+/// The last two are the sharp ones: a re-export surface that makes a trait
+/// *nameable* but not *implementable* looks complete and is not.
+///
+/// # Feature gate
+///
+/// The module needs `spider`, `browser`, `markdown`, `adaptive` and `blocking`
+/// all at once, because it exercises all four entry points. That is what
+/// `--all-features` gives it, and it is how the workspace's own definition of
+/// done runs. Under a smaller feature set it is replaced by a single test that
+/// says so out loud, rather than vanishing silently.
+#[cfg(all(
+    feature = "spider",
+    feature = "browser",
+    feature = "markdown",
+    feature = "adaptive",
+    feature = "blocking"
+))]
+mod unit_20_facade_seam {
+    use std::sync::{Arc, Mutex};
+
+    use browser::prelude::*;
+    use browser::{
+        async_trait, hostname_of, strip_html5_whitespace, url_extensions, CallbackStream,
+        CrawlRule, CssOpts, DocumentConfig, LinkExtractor, RunOptions, SimilarOpts,
+        SiteToMarkdownSpider, SpiderRunner, IGNORED_EXTENSIONS,
+    };
+
+    use super::local_site::{Page, Site};
+
+    /// A small catalogue: an index, two products with a repeating card
+    /// structure, and a `robots.txt`.
+    fn catalogue(path: &str) -> Option<Page> {
+        match path {
+            "/robots.txt" => Some(Page::text("User-agent: *\nDisallow: /admin/\n")),
+            "/" => Some(Page::html(
+                r#"<!doctype html><html><head><title>Catalogue</title></head><body>
+<main>
+  <div class="card"><h2>Widget</h2><span class="price">$9.99</span></div>
+  <div class="card"><h2>Gadget</h2><span class="price">$19.99</span></div>
+  <div class="card"><h2>Doohickey</h2><span class="price">$4.50</span></div>
+</main>
+<a href="/p/widget">Widget</a> <a href="/p/gadget">Gadget</a>
+<a href="/admin/secret">admin</a>
+</body></html>"#,
+            )),
+            "/p/widget" | "/p/gadget" => Some(Page::html(format!(
+                r#"<!doctype html><html><head><title>{name}</title></head><body>
+<nav><a href="/">home</a></nav>
+<article><h1>{name}</h1><p>A <strong>fine</strong> {name}.</p></article>
+<script>track()</script>
+</body></html>"#,
+                name = if path.ends_with("widget") {
+                    "Widget"
+                } else {
+                    "Gadget"
+                },
+            ))),
+            _ => None,
+        }
+    }
+
+    // -- (1) parse ---------------------------------------------------------
+
+    /// The document entry point: parse a string, query it four ways, and run
+    /// the adaptive round trip — all through `browser::`.
+    #[test]
+    fn the_parse_entry_point_is_complete_through_the_facade() {
+        let html = catalogue("/").expect("the index").body;
+        let doc = Document::parse(&html);
+
+        // CSS, including the `::text` pseudo-element and the option struct.
+        assert_eq!(doc.css("h2::text").expect("valid").texts().len(), 3);
+        assert_eq!(
+            doc.css_with(".price", &CssOpts::default())
+                .expect("valid")
+                .texts(),
+            ["$9.99", "$19.99", "$4.50"]
+        );
+
+        // XPath — both the node-set form and the scalar one, whose return type
+        // needed `browser-xpath` to be nameable at all.
+        assert_eq!(doc.xpath("//div[@class='card']").expect("valid").len(), 3);
+        let count = doc
+            .xpath_value("count(//a)", &browser::xpath::eval::Variables::default())
+            .expect("valid");
+        assert!(matches!(count, browser::xpath::Value::Number(n) if n == 3.0));
+
+        // `find_all` and `find_similar`, the two the reference implementation-specific queries.
+        let first_card = doc.css_first(".card").expect("valid").expect("matched");
+        assert_eq!(
+            first_card
+                .find_similar(&SimilarOpts::default())
+                .texts()
+                .len(),
+            2,
+            "the other two cards, the query node excluded"
+        );
+        assert_eq!(
+            doc.find_all(&FindQuery::new().tag("span"))
+                .expect("valid")
+                .len(),
+            3
+        );
+
+        // The tree underneath, which `Document::dom()` hands back.
+        let tree: &browser::dom::Document = doc.dom();
+        assert!(tree.root_element().is_some());
+    }
+
+    /// The adaptive branch, end to end: save a fingerprint against a real
+    /// SQLite database, re-parse a page whose markup has *moved*, and relocate.
+    ///
+    /// This is the journey that needed `browser-storage` promoted — there is
+    /// exactly one `StorageSystem` implementation and a façade-only user could
+    /// not construct it.
+    #[test]
+    fn the_adaptive_round_trip_runs_through_the_facade() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let storage: Arc<dyn browser::storage::StorageSystem> = Arc::new(
+            browser::storage::SqliteStorage::open(
+                dir.path().join("elements.db"),
+                Some("https://shop.test/"),
+            )
+            .expect("a database"),
+        );
+
+        let config = DocumentConfig {
+            url: "https://shop.test/".to_owned(),
+            adaptive: true,
+            storage: Some(Arc::clone(&storage)),
+            ..DocumentConfig::new()
+        };
+
+        let before = Document::parse_with(
+            r#"<html><body><main><div class="card" id="w"><h2>Widget</h2>
+               <span class="price">$9.99</span></div></main></body></html>"#,
+            &config,
+        );
+        let card = before.css_first(".card").expect("valid").expect("matched");
+        before.save(&card, "product-card").expect("saved");
+
+        // The site redesigns: the class is gone and the element has moved.
+        let after = Document::parse_with(
+            r#"<html><body><section><article id="w" data-role="product">
+               <h2>Widget</h2><span class="price">$9.99</span></article></section></body></html>"#,
+            &config,
+        );
+        assert!(
+            after.css(".card").expect("valid").is_empty(),
+            "the old selector really is dead"
+        );
+
+        let fingerprint = after
+            .retrieve("product-card")
+            .expect("readable")
+            .expect("stored");
+        let relocated = after.relocate(&fingerprint, 40);
+        assert_eq!(
+            relocated.len(),
+            1,
+            "the element is found by similarity, not by selector"
+        );
+        assert!(relocated
+            .first()
+            .expect("one")
+            .get_all_text_with(&AllTextOpts::default())
+            .contains("Widget"));
+    }
+
+    // -- (2) fetch over HTTP -----------------------------------------------
+
+    /// The async fetcher entry point: one request, then the whole document API
+    /// on the reply, then markdown.
+    #[tokio::test]
+    async fn the_http_entry_point_is_complete_through_the_facade() {
+        let site = Site::start(catalogue);
+
+        let response: Response = AsyncFetcher::get(site.url("/p/widget"))
+            .header("Accept", "text/html")
+            .timeout(Some(std::time::Duration::from_secs(10)))
+            .send()
+            .await
+            .expect("the fixture answers");
+
+        assert_eq!(response.status, 200);
+        assert_eq!(response.encoding, "utf-8");
+        assert_eq!(
+            response.css("h1::text").expect("valid").get().as_deref(),
+            Some("Widget")
+        );
+        assert!(response.markdown().contains("**fine**"));
+        assert!(
+            !response.markdown().contains("track()"),
+            "`Response::markdown` sanitises unconditionally, as in Python"
+        );
+
+        // A session, which is the shape a scraping program actually uses.
+        let session = AsyncFetcherSession::builder()
+            .build()
+            .expect("a default session");
+        let index = session
+            .get(site.url("/"))
+            .send()
+            .await
+            .expect("the fixture answers");
+        assert_eq!(index.css(".card").expect("valid").len(), 3);
+
+        // …and a failure is an ordinary error, not a panic.
+        let missing = session
+            .get(site.url("/nope"))
+            .send()
+            .await
+            .expect("a reply");
+        assert_eq!(missing.status, 404);
+    }
+
+    /// The blocking façade, which is what a script and the CLI's sync paths
+    /// use. It owns its own runtime, so it cannot run inside `#[tokio::test]`.
+    #[test]
+    fn the_blocking_fetcher_is_complete_through_the_facade() {
+        let site = Site::start(catalogue);
+        let response = Fetcher::get(site.url("/"))
+            .send()
+            .expect("the fixture answers");
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            response.css("title::text").expect("valid").get().as_deref(),
+            Some("Catalogue")
+        );
+    }
+
+    // -- (3) fetch through Chrome ------------------------------------------
+
+    /// Whether a live-browser test can run here — the same probe the rest of
+    /// the workspace uses, written through the façade.
+    fn browser_available() -> bool {
+        if std::env::var_os("BROWSER_RS_SKIP_BROWSER_TESTS").is_some() {
+            return false;
+        }
+        BrowserConfig::new()
+            .validate()
+            .is_ok_and(|config| browser::browser::session::resolve_executable(&config).is_ok())
+    }
+
+    /// The browser entry point: launch Chrome, fetch, and get back the *same*
+    /// `Response` the HTTP fetcher produces.
+    #[tokio::test]
+    async fn the_browser_entry_point_is_complete_through_the_facade() {
+        if !browser_available() {
+            eprintln!(
+                "skipping unit_20_facade_seam::the_browser_entry_point: no Chrome on \
+                 this machine (or BROWSER_RS_SKIP_BROWSER_TESTS is set)"
+            );
+            return;
+        }
+
+        let site = Site::start(catalogue);
+        let config = BrowserConfig::new()
+            .headless(true)
+            .timeout_ms(20_000.0)
+            .disable_resources(true);
+
+        // The one-shot form — `DynamicFetcher.fetch` in Python.
+        let once: Response = browser::fetch_once(
+            config.clone(),
+            &site.url("/p/gadget"),
+            FetchParams::default(),
+        )
+        .await
+        .expect("Chrome reaches the fixture");
+        assert_eq!(once.status, 200);
+        assert_eq!(
+            once.css("h1::text").expect("valid").get().as_deref(),
+            Some("Gadget")
+        );
+
+        // …and the session form, for more than one page.
+        let session = BrowserSession::new(config).expect("a valid config");
+        session.start().await.expect("Chrome starts");
+        let index = session
+            .fetch(&site.url("/"), FetchParams::default())
+            .await
+            .expect("the browser reaches the fixture");
+        session.close().await;
+        assert_eq!(index.css(".card").expect("valid").len(), 3);
+    }
+
+    // -- (4) crawl ---------------------------------------------------------
+
+    /// The ready-made template, run to completion by the real engine.
+    ///
+    /// `SiteToMarkdownSpider` needs `spider` **and** `markdown`, which is the
+    /// only two-feature gate on the whole surface.
+    #[tokio::test]
+    async fn a_ready_made_spider_runs_to_completion_through_the_facade() {
+        let site = Site::start(catalogue);
+        let out = tempfile::tempdir().expect("tempdir");
+
+        let spider = Arc::new(
+            SiteToMarkdownSpider::builder("catalogue")
+                .settings(
+                    SpiderSettings::default()
+                        .with_start_urls([site.url("/")])
+                        .with_allowed_domains([site.netloc()])
+                        .with_robots_txt_obey(true)
+                        .with_concurrent_requests(1),
+                )
+                .css_selector("article")
+                .output_dir(out.path())
+                .build()
+                .expect("a valid spider"),
+        );
+
+        let result = SpiderRunner::new(spider, RunOptions::default().with_ctrl_c(false))
+            .expect("a runner")
+            .run()
+            .await
+            .expect("the crawl finishes");
+
+        assert!(result.completed());
+        // One item per page reached, index included — the spider emits whatever
+        // the selector found, empty or not, which is Python's behaviour.
+        let urls: Vec<&str> = result
+            .items
+            .as_slice()
+            .iter()
+            .map(|item| item["url"].as_str().expect("a string"))
+            .collect();
+        assert_eq!(
+            urls,
+            [site.url("/"), site.url("/p/widget"), site.url("/p/gadget")],
+            "the index and both products, in discovery order"
+        );
+        let markdown: Vec<&str> = result
+            .items
+            .as_slice()
+            .iter()
+            .map(|item| item["markdown"].as_str().expect("a string"))
+            .collect();
+        assert_eq!(markdown[0], "", "the index has no <article>");
+        assert!(markdown[1].contains("**fine**"), "{:?}", markdown[1]);
+        assert!(
+            !markdown[1].contains("track()"),
+            "the noise strip runs: {:?}",
+            markdown[1]
+        );
+        assert_eq!(
+            site.hit_count("/admin/secret"),
+            0,
+            "robots.txt is obeyed through the façade too"
+        );
+        assert!(
+            std::fs::read_dir(out.path())
+                .expect("readable")
+                .any(|entry| entry
+                    .expect("entry")
+                    .path()
+                    .extension()
+                    .is_some_and(|e| e == "md")),
+            "`output_dir` really wrote the pages"
+        );
+    }
+
+    /// A **user-written** spider: the trait, the attribute macro, the callback
+    /// stream and rule dispatch as a free function, all from `browser::`.
+    ///
+    /// This is the journey that found the `async_trait` hole. Without the
+    /// re-export the `impl` block below does not compile, and a façade-only user
+    /// would have had to add `async-trait` to their own manifest and hope the
+    /// version unified with the one the trait was declared with.
+    #[tokio::test]
+    async fn a_user_written_spider_needs_nothing_but_the_facade() {
+        const PRODUCT: browser::CallbackId = browser::CallbackId::from_static("parse_product");
+
+        struct Shop {
+            settings: SpiderSettings,
+            rules: Vec<CrawlRule>,
+            seen: Mutex<Vec<String>>,
+        }
+
+        #[async_trait]
+        impl Spider for Shop {
+            fn name(&self) -> &str {
+                "shop"
+            }
+
+            fn settings(&self) -> &SpiderSettings {
+                &self.settings
+            }
+
+            async fn parse(self: Arc<Self>, response: CrawlResponse) -> CallbackStream {
+                // The free function, not an inherited method: a spider that is
+                // not a `CrawlSpider` composes rule dispatch into its own
+                // callback.
+                let requests = requests_to_follow(&self.rules, &response).unwrap_or_default();
+                Box::pin(browser::futures::stream::iter(
+                    requests
+                        .into_iter()
+                        .map(Yielded::request)
+                        .collect::<Vec<_>>(),
+                ))
+            }
+
+            async fn dispatch(
+                self: Arc<Self>,
+                callback: browser::CallbackId,
+                response: CrawlResponse,
+            ) -> CallbackStream {
+                if callback.as_str() != PRODUCT.as_str() {
+                    return self.parse(response).await;
+                }
+                self.seen
+                    .lock()
+                    .expect("not poisoned")
+                    .push(response.url.clone());
+                let mut item = Item::new();
+                item.insert(
+                    "title".to_owned(),
+                    serde_json::Value::String(
+                        response
+                            .css("h1::text")
+                            .ok()
+                            .and_then(|nodes| nodes.get())
+                            .unwrap_or_default(),
+                    ),
+                );
+                Box::pin(browser::futures::stream::iter([Yielded::item(item)]))
+            }
+
+            // A spider that overrides `dispatch` must override this too, or a
+            // restored checkpoint rewrites every named callback to `parse`.
+            fn has_callback(&self, callback: &browser::CallbackId) -> bool {
+                callback.as_str() == browser::CallbackId::PARSE.as_str()
+                    || callback.as_str() == PRODUCT.as_str()
+            }
+        }
+
+        let site = Site::start(catalogue);
+        let extractor = LinkExtractor::builder()
+            .allow([r"/p/"])
+            .deny([r"/admin/"])
+            .build()
+            .expect("valid patterns");
+
+        let spider = Arc::new(Shop {
+            settings: SpiderSettings::default()
+                .with_start_urls([site.url("/")])
+                .with_allowed_domains([site.netloc()])
+                .with_concurrent_requests(1),
+            rules: vec![CrawlRule::new(extractor).callback(PRODUCT)],
+            seen: Mutex::new(Vec::new()),
+        });
+
+        let result = SpiderRunner::new(
+            Arc::clone(&spider) as Arc<dyn Spider>,
+            RunOptions::default().with_ctrl_c(false),
+        )
+        .expect("a runner")
+        .run()
+        .await
+        .expect("the crawl finishes");
+
+        let titles: Vec<&str> = result
+            .items
+            .as_slice()
+            .iter()
+            .map(|item| item["title"].as_str().expect("a string"))
+            .collect();
+        assert_eq!(titles, ["Widget", "Gadget"]);
+        assert_eq!(spider.seen.lock().expect("not poisoned").len(), 2);
+        assert_eq!(site.hit_count("/admin/secret"), 0, "the `deny` rule holds");
+
+        // The stats and the exporter, which is where a crawl ends.
+        assert_eq!(result.stats.items_scraped(), 2);
+        let dir = tempfile::tempdir().expect("tempdir");
+        let path = dir.path().join("items.jsonl");
+        result.items.to_jsonl(&path).expect("exports");
+        let exported = std::fs::read_to_string(&path).expect("readable");
+        assert_eq!(exported.lines().count(), 2, "{exported}");
+        assert!(exported.contains("Widget"), "{exported}");
+    }
+
+    /// The URL primitives on their own, which is what someone extending a
+    /// template reaches for.
+    #[test]
+    fn the_link_extraction_primitives_are_reachable_flat() {
+        assert_eq!(strip_html5_whitespace("\u{c}\n /a \t"), "/a");
+        // NOT `str::trim`: U+00A0 is Unicode whitespace and is *not* one of the
+        // five HTML5 space characters.
+        assert_eq!(strip_html5_whitespace("\u{a0}/a"), "\u{a0}/a");
+        assert_eq!(url_extensions("/files/report.tar.gz"), ["tar.gz", "gz"]);
+        assert!(IGNORED_EXTENSIONS.contains(&"pdf"));
+        assert!(!IGNORED_EXTENSIONS.contains(&"html"));
+        assert_eq!(hostname_of("https://Shop.TEST:443/a"), "shop.test");
+    }
+}
+
+/// The notice the façade seam leaves behind when it is compiled out.
+///
+/// A test that disappears with a feature flag is indistinguishable from a test
+/// that was deleted. This one is always compiled, so `cargo test -p browser-rs`
+/// on the default feature set still says why eight tests are missing.
+#[cfg(not(all(
+    feature = "spider",
+    feature = "browser",
+    feature = "markdown",
+    feature = "adaptive",
+    feature = "blocking"
+)))]
+#[test]
+fn unit_20_facade_seam_needs_all_features() {
+    eprintln!(
+        "skipping unit_20_facade_seam: it drives all four entry points and so \
+         needs `spider`, `browser`, `markdown`, `adaptive` and `blocking` \
+         together. Run `cargo test -p browser-rs --all-features`."
+    );
+}

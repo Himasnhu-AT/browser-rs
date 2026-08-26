@@ -25,10 +25,8 @@ browser-rs = { workspace = true, features = ["http", "parser", "markdown", "adap
 chromiumoxide_fetcher = { workspace = true, optional = true }
 
 anyhow.workspace = true
-chrono.workspace = true
 clap.workspace = true
 serde_json.workspace = true
-shlex.workspace = true
 tempfile.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "signal", "fs"] }
 tracing.workspace = true

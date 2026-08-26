@@ -1127,3 +1127,267 @@ page — which is an assertion about this fixture, not a law: a page whose DOM
 JavaScript rewrites cannot agree, and that is the entire reason the browser
 engine exists. It is asserted anyway because drift there would be a real
 regression in one of the two paths.
+
+---
+
+# Wave 6 — units 18 and 19, and the façade re-export surface
+
+---
+
+## Unit 18 — `browser-templates` (the ready-made spiders)
+
+Verified against `the reference implementation` + lxml 6.1.2 + w3lib + protego + CPython 3.14 over a **670-row
+corpus in six files**, of which **596 reproduce (89.0 %)**, plus 30,196 out-of-corpus fuzz
+observations (28,634 agreeing) across thirteen surfaces. Every one of the 74 misses is a row of
+`crates/browser-templates/tests/u18_golden.rs::DECLARED_DIVERGENCES` and is asserted to **keep**
+differing. The full table, with per-corpus rates, is in `crates/browser-templates/API.md`.
+
+The rate is *lower* than an interim 481/495 (97.2 %) on purpose, and both halves of the drop are
+deliberate: the corpus grew by 175 rows, 42 of them added **because** they do not reproduce, and the
+`matches` comparison was un-loosened — it had been forcing both sides to `null` whenever CPython
+raised, which made 18 rows agree by construction.
+
+1. **`tags=()` or `attrs=()` yields no links instead of raising.** Python's `"| ".join(())` is `""`
+   and `lxml.xpath("")` raises `XPathEvalError`, so a configuration that means "look nowhere" takes
+   the whole callback down. 14 declared rows.
+2. **A `<!-- comment -->` among a `<urlset>`'s direct children does not crash.** `etree.QName(
+   comment.tag)` raises `ValueError` in `_extract_urls`, and `_sm_body` catches only
+   `XMLSyntaxError`. Comments and processing instructions are dropped when the XML tree is built
+   here. 2 declared rows.
+3. **`urlsplit` cannot fail.** CPython raises `ValueError("Invalid IPv6 URL")` for an unbalanced
+   bracket in the netloc, and neither `LinkExtractor.matches`, `_url_extensions` nor `_filename_for`
+   catches it — one malformed `<loc>` kills the callback. `browser_spider::canonicalize::urlparse`
+   is total by the workspace decision in §"Unit 15" item 2. 23 declared rows.
+   **`safe_url_string` is the exception**: it re-derives CPython's bracket, host and port errors
+   itself and returns a `SafeUrlError`, because w3lib's caller catches those.
+4. **A document whose parsed root is `None` does not crash.** `Selector("<!-- c -->")._root` is
+   `None` in lxml and `extract` reaches straight for `scope._root.xpath(...)`, so a comment-only page
+   raises `AttributeError` in Python under *every* configuration. html5ever always builds a root. 27
+   declared rows. (This is the same family as unit 19's `LXML_HAS_NO_ROOT`, found independently on
+   the other side of the port.)
+5. **`quick-xml` is not a validating parser — a new family, distinct from the html5ever tree-shape
+   one.** lxml rejects an undeclared namespace prefix, an unescaped `<` in an attribute value and a
+   redefined attribute; `_sm_body` turns each into an empty result plus a warning, losing the
+   sitemap. This port reads all three, and reads an undeclared `a:item` as the *unprefixed* `item`. 6
+   declared rows, and `XMLFeedSpider` inherits the same behaviour through `parse_xml`, where it is
+   uncorpused (1,500 fuzzed feeds agree once every prefix is declared; the 1,031 that disagreed
+   before that were all this).
+6. **A lone `\r` inside an unquoted CSV field is a record terminator**, not
+   `_csv.Error("new-line character seen in unquoted field")` — which `CSVFeedSpider.parse` does not
+   catch, so a legacy Mac-line-ending feed takes the callback down in Python and is read here. 2
+   declared rows; 645 of 2,000 fuzzed rows when `\r` is in the alphabet.
+7. **`restrict_css="table"` scopes to a different element**, because html5ever foster-parents an
+   `<a>` out of a `<table>` per the HTML5 spec and libxml2 does not. The T3 family, accepted
+   workspace-wide in `ARCHITECTURE.md` §11.6. 2 declared rows; 18 of 1,500 malformed-markup fuzz
+   pages and **0** of 2,400 well-formed ones.
+8. **`safe_url_string` IDNA-encodes with UTS-46 non-transitional, not CPython's IDNA 2003.** They
+   differ on `ß`, `ς`, ZWJ and ZWNJ — 66 of 1,500 fuzzed URLs, all `ß`. The same family as the
+   unit-15 `canonicalize` divergence. Its `encoding` parameter is also accepted and **ignored**:
+   w3lib encodes the query and fragment with the page's charset before percent-encoding, and no
+   corpus or fuzz row is non-UTF-8, so nothing can see it.
+9. **`_checknetloc` is not implemented.** CPython raises `ValueError` for a non-ASCII netloc whose
+   NFKC normalisation contains `/?#@:`. It needs a Unicode normaliser this crate does not depend on,
+   and no fuzz input reached it, so the size of the class is **unknown**.
+10. **`python_title` carries a Unicode-version skew.** The three generated tables at the top of
+    `shopify.rs` supply `_PyUnicode_ToTitleFull`, `_PyUnicode_IsCased` and
+    `_PyUnicode_IsCaseIgnorable`, so `ß` → `"Ss"`, `ǅungla` → `ǅungla` and a word-final `Σ` → `ς` all
+    reproduce. What is left is that CPython 3.14 and `rustc` 1.97 disagree about the case mapping of
+    28 code points and about whether 5 others are cased (`꟎ ꟏ ꟒ ꟔ ꟱` and the Medefaidrin block,
+    where `rustc` is ahead). 6 of 8,202 fuzzed strings. The same vintage-drift family as `psl`'s
+    public-suffix snapshot.
+11. **The XML declaration's encoding is ignored.** `quick-xml`'s `encoding` feature is off and the
+    dependency set is frozen, so a non-UTF-8 feed or sitemap is decoded lossily rather than
+    transcoded. **Zero coverage** — the distance from lxml was never measured, because it could not
+    be closed without a dependency change.
+12. **A `CrawlRule` always names its callback explicitly**, never `None` — the requirement the wave-5
+    integration note predicted (§"Wave 5 integration"). `requests_to_follow` writes
+    `Some(rule.effective_callback())`.
+13. **`SitemapSpider`'s unruled route defaults to `parse`**, where Python's `_dispatch` inherits
+    `_parse_sitemap` and feeds the target page back into the sitemap parser.
+    `UnruledRoute::InheritSitemapCallback` reproduces Python exactly, for anyone who wants it.
+14. **Smaller, all asserted by unit tests**: `ShopifySpider`'s `allowed_domains` fallback is the
+    lexicographically first `BTreeSet` entry where Python takes an arbitrary `set` member;
+    `process_request` may return `None` to drop a request, where Python's type cannot; a `write_item`
+    failure is logged rather than raised; `CSVFeedSpider`'s delimiter and quote are `u8`, so a
+    non-ASCII one-character Python delimiter cannot be expressed; `regex` has no backreferences or
+    lookaround, so a pattern using them is `TemplateError::InvalidPattern`; and error messages
+    interpolate the spider's `name` where Python interpolates `self.__class__.__name__`.
+
+### Fixed here, not divergences
+
+Seven real bugs came out of the fuzzing, all found by running Python rather than reading it:
+`url_extensions` used `urlparse` (which peels off `;params`) where Python uses `urlsplit`, so
+`/report.pdf;jsessionid=X` was dropped by the extension deny-list; `safe_url_string` ignored CPython's
+`uses_netloc` rule in `urlunsplit` (146 of 1,500 random URLs wrong), split host from port on the
+*last* colon rather than the first, accepted a `+`-signed port that `port.isdigit()` rejects, checked
+bracket balance on the wrong substring, and never ran `_check_bracketed_host` at all; `python_title`
+upper-cased where CPython title-cases (995 mismatches in 7,002 strings, and the divergence had been
+mis-declared as "digraphs only, unreachable"); `CSVFeedSpider` skipped blank lines when picking the
+header, where `DictReader.fieldnames` is a bare `next(self.reader)`; `ShopifySpider` errored on
+`float(True)` (a bool **is** an int in Python) and keyed `collected_ids` on the JSON rendering, so `1`
+and `1.0` were two variants where Python's `set` has one; and `gzip::decompress` refused an empty body
+that Python inflates to `b""` and misclassified a stray trailing byte as truncation rather than
+`BadGzipFile`.
+
+**One more was closed by the wave-6 green agent.** Item 13 of the old list —
+`float("٣.٥")` — is gone: `browser_spider::throttle::python_float` is now `pub` and `to_float`
+calls it. Making that call exposed a **bug in `python_float` itself**, dating from unit 16. It
+stripped with `str.strip()`'s rule; CPython's numeric parsers strip with C's `Py_ISSPACE` *after*
+`_PyUnicode_TransformDecimalAndSpaceToASCII` has folded the **non-ASCII** whitespace to spaces. A C0
+separator (`\x1c`–`\x1f`) is ASCII, so it survives the fold and is refused by the strip — even though
+`str.strip()` removes it and `str.isspace()` correctly calls it whitespace:
+
+```text
+>>> float('\xa04.5')     # NBSP: folded to ' ', then stripped
+4.5
+>>> float(' 4.5\x1c')    # FILE SEPARATOR: ASCII, never folded
+ValueError
+>>> ' 4.5\x1c'.strip()   # …even though str.strip() does remove it
+'4.5'
+```
+
+395 of 6,000 fuzzed strings disagreed. `python_float` and `python_int` are now 6,000/6,000 on both.
+Pinned by `throttle::tests::the_numeric_strip_is_c_isspace_not_str_strip`. Unit 16's whole 172,447-
+assertion corpus still passes unchanged, because its caller (`parse_retry_after_value`) does Python's
+`.strip()` itself before calling `float()`, exactly as `reference/spiders/throttle.py` line 15 does.
+
+---
+
+## Unit 19 — `browser-cli` (the `browser-rs` binary)
+
+Verified against `the reference implementation` and, for the CLI surface, the real `browser-rs` console script.
+Three committed corpora: 142 curl command lines (1,105 field checks), 73 Click invocations (1,093
+field checks) and **1,302 `Convertor._extract_content` rows**. All 3,281 comparable field checks
+reproduce. Row-level on the convert corpus: **1,196 of 1,302 (91.9 %)**, with the remaining 106 in
+five declared families in `crates/browser-cli/tests/u19_convert_golden.rs::DIVERGENCES`, each
+asserted to keep differing.
+
+### Three families the green agent closed, 113 rows
+
+Unit 19 was told not to edit `Cargo.toml`, so `Convertor._strip_noise_tags` / `_sanitize_for_ai` and
+the *uncleaned* markdown conversion had no entry point reachable from the CLI. The consequences were
+declared as `MARKDOWN_ALWAYS_SANITISES` (38 rows), `AI_TARGETED_CANNOT_CLEAN` (65) and
+`MARKDOWN_PIECES_AGGREGATED` (14). Wave 6 added the two APIs that were actually missing —
+`Document::clean_for_ai` and `Node::markdown`, both in `browser-parser` behind `markdown` — and
+`extract_content` is now Python's control flow statement for statement. All 113 rows were deleted
+from the divergence table.
+
+Four rows that had been filed under those families turned out to have a *different* cause once the
+real one was removed, and were **re-classified rather than deleted**: the three
+`list-and-table/html/*/ai` rows are the implied `<tbody>`, and `template-first/markdown/body/plain` is
+`<template>` being parsed into `<head>`. That is exactly the signal the "assert a declared row still
+differs" rule exists to produce.
+
+### What is left, none of it this crate's
+
+1. **`LXML_HAS_NO_ROOT` (42 rows).** A document with no element — `<!-- just a comment -->` with
+   `keep_comments=False` — leaves `Selector._root` as `None`, so **Python raises**
+   (`AttributeError: 'NoneType' object has no attribute 'xpath'`, or `TypeError: Type 'NoneType'
+   cannot be serialized` for the no-selector `html` and `markdown` rows). html5ever's tree builder
+   always produces `<html><head></head><body></body></html>`, so the port succeeds and writes an
+   empty file. Reproducing the crash would mean teaching `browser-dom` to return no root for a
+   document HTML5 says has one, which is a worse answer for a scraper. Found by
+   `tools/corpus/u19/fuzz_convert.py` seed 61.
+2. **`HTML5EVER_TREE_SHAPE` (27 rows).** The synthesised `<head></head>` and the implied `<tbody>`.
+   Carried since unit 5; `ARCHITECTURE.md` §11.6.
+3. **`SYNTHESISED_HTML_SKELETON` (16 rows).** For `""` and `<html></html>`, html5ever fills in the
+   whole skeleton, so `css("body")` matches an empty element where lxml finds nothing at all.
+4. **`NOSCRIPT_LEAVES_HEAD` (13 rows).** An element HTML5 allows in `<head>` (`<noscript>`,
+   `<template>`) written before any body content ends up **in `<head>`** under the HTML5 algorithm,
+   which is what browsers do; libxml2 leaves it where it was written. So `css("body")` and
+   `ignore_tags` see different things on the two sides.
+5. **`TABLE_CELL_FRAGMENT` (4 rows).** `markdown` with a `td` selector. Both implementations
+   *re-parse* — markdownify takes an HTML string, not a tree — but `html.parser` has no
+   foster-parenting rule, so Python keeps the cell and emits `" a |"` where the HTML5 algorithm
+   throws the `<td>` away and leaves the bare text. The fix is to parse the fragment in its parent's
+   context, the way `innerHTML` does, and it belongs in `browser-dom` / `browser-markdown`.
+
+### CLI-level divergences
+
+6. **Output files are always written as UTF-8.** Python opens with `encoding=page.encoding`, so a
+   windows-1252 page round-trips as windows-1252 there. `encoding_rs` is not a dependency of this
+   crate; a non-UTF-8 page encoding is reported through `tracing::warn!` instead. **No corpus row
+   covers this** and the end-to-end comparator serves UTF-8 only.
+7. **`--version` prints this crate's version**, not `0.4.15`. Same shape, different number.
+8. **Help *layout* is clap's, help *text* is Python's.** Click renders a boolean pair as one
+   `--verify / --no-verify` line; clap renders two.
+9. **`shell` and `mcp` are not implemented** (`ARCHITECTURE.md` §8). `uncurl` is a new subcommand
+   carrying the shell's `uncurl()` and, with `--output`, `curl2fetcher()`.
+10. **`-L/--loglevel` is global**, where Python exposes it only on `shell`; `critical` and `fatal`
+    both map to `tracing`'s `error`, which makes the CLI slightly more talkative at those two
+    settings and never less.
+11. **`install` downloads Chromium through `chromiumoxide_fetcher`**, not `python -m playwright
+    install chromium`. `install-deps` and `update_tld_names` have no analogue. The marker file keeps
+    Python's name and semantics but lives in the browser cache directory. **The download has never
+    been run** — it needs ~150 MB over a network this environment does not have.
+12. **`--timeout` and `--wait` are `u64`**, so a negative value is a clap usage error (exit 2).
+    Python's `type=int` accepts `-5` and passes it down to the transport.
+13. **`platform_cache_dir` on Windows reads `%LOCALAPPDATA%`**, where `directories 6.0.0` reads the
+    `FOLDERID_LocalAppData` known folder; they agree on a stock machine and can differ if the
+    variable is unset or redirected. And where `dirs_sys::home_dir` falls back to `getpwuid` when
+    `$HOME` is unset, this returns `None` and `install` reports `NoCacheDirectory`. Established by
+    reading `directories`/`dirs-sys`/`chromiumoxide_fetcher` source, not by running on those
+    platforms.
+14. **The argparse emulation approximates one thing**: an unknown *short* option takes the rest of
+    its cluster into the unknown list, where argparse's `consume_optional` recovery is finer-grained.
+    102,000 fuzzed command lines agree; inputs outside them may not. The error *message texts* for
+    `MissingValue` / `AmbiguousOption` / `UnexpectedValue` are paraphrases, because Python returns
+    `None` for all of them and the text is never observable.
+15. **`python_repr`'s printability test treats an unassigned code point (Cn) as printable**, where
+    Python escapes it. No Unicode category table is available in this crate, and it can only ever
+    change the *text of an error message*.
+
+### Fixed here, not divergences
+
+The differential caught nine real bugs in this crate. The largest: `--` was being swallowed
+(argparse writes a `'-'` into its pattern, keeps the token in `arg_strings`, and drops it again only
+from the slice of the action whose range covers it — 99 of the first 2,000 fuzz rows); a missing URL
+must beat an unknown argument, because argparse raises the required-argument error *inside*
+`parse_known_args` as a `ValueError` that `parse()` swallows into `None`; `-H ';'` really does produce
+`{"": ""}`; four options tested presence where Python tests truthiness (`-X ''`, `-x ''`, `-U ''`,
+`-b ''`); `repr()` chooses its quote character, so a rejected `{'a':1}` prints as `"{'a':1}"`;
+`_negative_number_matcher` in 3.11+ is the *prefix* pattern `-\.?\d`, so `-d -0NaNfalse` is accepted
+and `-d -Infinity` is not; the `shlex` **crate** is not `shlex.split` (it treats `#` as a comment
+introducer, does not count `\r` as whitespace, and unescapes `\$` inside double quotes — 274 hits in
+12,000 rows), so `uncurl` now carries a transcription of CPython's `shlex.read_token`; Click lets a
+non-`multiple` option be repeated and takes the last, where clap refused (**388 of 1,500** random
+argv lines); and `write_content_to_file` tested `Path::file_name` where Python does
+`str(output_path).endswith(...)` on the whole path, so `dir.md/` was accepted here and raises there.
+
+---
+
+## Wave 6 integration — the façade re-export surface (unit 20 preflight)
+
+Nothing here is a difference from Python. These are the port's own decisions, made while proving that
+unit 20's four entry points are expressible from what exists —
+`crates/browser-rs/tests/integration.rs::unit_20_facade_seam`, the only module in that file that does
+**not** reach past the façade.
+
+1. **Nothing a public method returns may be unnameable.** Four member crates were
+   `[dev-dependencies]` of `browser-rs` only, so four types the public API hands back had no path
+   through the façade: `Document::dom()` → `browser_dom::Document`, `Document::xpath_value()` →
+   `browser_xpath::Value<XNode>`, the only `StorageSystem` implementation there is, and the two
+   `Convertor` sanitiser passes. All four are now optional `[dependencies]` re-exported as
+   `browser::{dom, xpath, storage, markdown}` under `parser` / `parser` / `adaptive` / `markdown`.
+   None of them adds a compilation unit — `browser-parser` already depended on the first three
+   unconditionally.
+2. **A trait that can be named but not implemented is not re-exported.** `Spider` is declared
+   `#[async_trait]` and its callbacks return `CallbackStream`, which is a type alias for
+   `futures::stream::BoxStream<'static, Yielded>`. Without both macro and crate a façade-only user
+   cannot write an `impl` block at all, and adding their own `async-trait` risks a version that does
+   not unify with the one the trait was declared with. `browser::async_trait` and
+   `browser::futures` are now re-exported under `spider`, and `CallbackStream` joined the flat
+   surface.
+3. **`browser-selectors` is still absent, deliberately.** No public signature anywhere mentions it.
+   `browser-fingerprint`'s types arrive through the `http::config` re-exports.
+4. **The feature-gating sharp edge is unchanged and is still only ever *smaller*.** `markdown` and
+   `adaptive` are written as `browser-parser/markdown` and so on, which pulls the member crate in
+   *without* turning on `feature = "parser"` here, and `blocking` does the same for
+   `browser-http`. So `--no-default-features --features markdown` builds and exposes no `Document`.
+   The failing direction — a `cfg` that is on while its crate is absent — cannot happen, because
+   `parser`, `http`, `browser` and `spider` all name `dep:` explicitly. Unit 20 should add the `cfg`
+   aliases that close it.
+5. **The façade seam test is gated on five features at once** (`spider`, `browser`, `markdown`,
+   `adaptive`, `blocking`), because it drives all four entry points. A test that vanishes with a
+   feature flag is indistinguishable from a test that was deleted, so a
+   `unit_20_facade_seam_needs_all_features` notice is compiled in its place under any smaller set.

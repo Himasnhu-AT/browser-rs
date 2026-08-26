@@ -1,0 +1,26 @@
+{"case": "header", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"price": "10.5", "title": "First", "url": "https://example.com/products/1"}, {"price": "3", "title": "Second", "url": "https://example.com/products/2"}], "text": "title,price,url\nFirst,10.5,https://example.com/products/1\nSecond,3,https://example.com/products/2\n"}
+{"case": "explicit-headers", "delimiter": ",", "error": null, "headers": ["name", "cost"], "quotechar": "\"", "rows": [{"cost": "10.5", "name": "First"}, {"cost": "3", "name": "Second"}], "text": "First,10.5\nSecond,3\n"}
+{"case": "semicolon", "delimiter": ";", "error": null, "headers": ["title", "price"], "quotechar": "'", "rows": [{"price": "10.5", "title": "First;Post"}], "text": "'First;Post';10.5\n"}
+{"case": "doubled-quote", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "say \"hi\""}], "text": "a\n\"say \"\"hi\"\"\"\n"}
+{"case": "ragged-short", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": "2", "c": null}], "text": "a,b,c\n1,2\n"}
+{"case": "ragged-long", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"": ["4"], "a": "1", "b": "2", "c": "3"}], "text": "a,b,c\n1,2,3,4\n"}
+{"case": "ragged-both", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": "2", "c": null}, {"": ["4"], "a": "1", "b": "2", "c": "3"}, {"a": "1", "b": "2", "c": "3"}], "text": "a,b,c\n1,2\n1,2,3,4\n1,2,3\n"}
+{"case": "blank-lines", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": "2"}], "text": "a,b\n\n1,2\n\n"}
+{"case": "empty", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [], "text": ""}
+{"case": "header-only", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [], "text": "a,b\n"}
+{"case": "crlf", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": "2"}], "text": "a,b\r\n1,2\r\n"}
+{"case": "quoted-newline", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "one\ntwo", "b": "3"}], "text": "a,b\n\"one\ntwo\",3\n"}
+{"case": "trailing-comma", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": ""}], "text": "a,b\n1,\n"}
+{"case": "unicode", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "café", "b": "crème"}], "text": "a,b\ncafé,crème\n"}
+{"case": "spaces", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{" b": " 2", "a": "1"}], "text": "a, b\n1, 2\n"}
+{"case": "tab", "delimiter": "\t", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "1", "b": "2"}], "text": "a\tb\n1\t2\n"}
+{"case": "leading-blank-line", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"": ["a", "b"]}, {"": ["1", "2"]}], "text": "\na,b\n1,2\n"}
+{"case": "leading-blank-crlf", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"": ["a", "b"]}, {"": ["1", "2"]}], "text": "\r\na,b\r\n1,2\r\n"}
+{"case": "two-leading-blanks", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"": ["a", "b"]}, {"": ["1", "2"]}], "text": "\n\na,b\n1,2\n"}
+{"case": "leading-blank-with-headers", "delimiter": ",", "error": null, "headers": ["a", "b"], "quotechar": "\"", "rows": [{"a": "1", "b": "2"}], "text": "\n1,2\n"}
+{"case": "only-blank-lines", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [], "text": "\n\n\n"}
+{"case": "quoted-empty-row", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": ""}, {"a": "b"}], "text": "a\n\"\"\nb\n"}
+{"case": "quoted-empty-header", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"": "a"}], "text": "\"\"\na\n"}
+{"case": "unterminated-quote-at-eof", "delimiter": ",", "error": null, "headers": null, "quotechar": "\"", "rows": [{"a": "", "b": null}], "text": "a,b\n\""}
+{"case": "lone-cr", "delimiter": ",", "error": "Error", "headers": null, "quotechar": "\"", "rows": null, "text": "a,b\r1,2\r"}
+{"case": "lone-cr-midfield", "delimiter": ",", "error": "Error", "headers": null, "quotechar": "\"", "rows": null, "text": "a,b\nx\ry,2\n"}

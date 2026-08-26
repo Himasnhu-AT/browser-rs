@@ -2501,11 +2501,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chromiumoxide_fetcher",
- "chrono",
  "clap",
  "browser-rs",
  "serde_json",
- "shlex 2.0.1",
  "tempfile",
  "tokio",
  "tracing",

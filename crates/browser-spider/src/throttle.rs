@@ -446,13 +446,37 @@ fn python_min(left: f64, right: f64) -> f64 {
 /// (group), `\x1e` (record) and `\x1f` (unit) as whitespace, because they carry the
 /// bidirectional `B`/`S` class. A `Retry-After: "\x1c5"` therefore strips to `"5"` and
 /// parses as five seconds in Python, and used to answer `None` here.
-pub(crate) fn python_is_space(ch: char) -> bool {
+pub fn python_is_space(ch: char) -> bool {
     ch.is_whitespace() || matches!(ch, '\u{1c}'..='\u{1f}')
 }
 
 /// Python's `str.strip()` — whitespace by [`python_is_space`], both ends.
-pub(crate) fn python_strip(text: &str) -> &str {
+pub fn python_strip(text: &str) -> &str {
     text.trim_matches(python_is_space)
+}
+
+/// C's `Py_ISSPACE`: ASCII space, `\t`, `\n`, `\v`, `\f`, `\r` — **and nothing else**.
+///
+/// This is *not* [`python_is_space`], and the difference is observable. CPython's
+/// numeric parsers strip with this macro, after
+/// [`transform_decimal_and_space`] has already folded every **non-ASCII**
+/// whitespace character down to a plain space. An ASCII character is copied
+/// through that transform untouched (the C code's fast path is `if (ch < 127)`),
+/// so a C0 separator survives to the strip and is rejected there:
+///
+/// ```text
+/// >>> float('\xa04.5')      # NBSP: folded to ' ', then stripped
+/// 4.5
+/// >>> float(' 4.5\x1c')     # FILE SEPARATOR: ASCII, so never folded
+/// ValueError: could not convert string to float: ' 4.5\x1c'
+/// >>> ' 4.5\x1c'.strip()    # …even though `str.strip()` does remove it
+/// '4.5'
+/// ```
+///
+/// Wave 6 found [`python_float`] answering `Some(4.5)` for that second line,
+/// because it stripped with `str.strip()`'s rule instead of the parser's.
+fn is_c_space(ch: char) -> bool {
+    matches!(ch, ' ' | '\t' | '\n' | '\u{b}' | '\u{c}' | '\r')
 }
 
 /// The first code point of every contiguous run of ten Unicode `Nd` decimal digits.
@@ -508,7 +532,7 @@ pub(crate) fn python_is_digit(ch: char) -> bool {
 ///
 /// Returns the input untouched when it is already ASCII-clean, so the common path does not
 /// allocate.
-pub(crate) fn transform_decimal_and_space(text: &str) -> std::borrow::Cow<'_, str> {
+pub fn transform_decimal_and_space(text: &str) -> std::borrow::Cow<'_, str> {
     let needs_work = text
         .chars()
         .any(|ch| !ch.is_ascii() && (python_is_space(ch) || nd_digit_value(ch).is_some()));
@@ -544,9 +568,10 @@ pub(crate) fn transform_decimal_and_space(text: &str) -> std::borrow::Cow<'_, st
 /// * Python accepts any Unicode decimal digit (`float("٣.٥") == 3.5`), because every
 ///   string-to-number conversion runs [`transform_decimal_and_space`] first.
 /// * Python accepts `"infinity"`, `"inf"` and `"nan"` case-insensitively, as does Rust.
-pub(crate) fn python_float(text: &str) -> Option<f64> {
+pub fn python_float(text: &str) -> Option<f64> {
     let transformed = transform_decimal_and_space(text);
-    let stripped = python_strip(&transformed);
+    // `Py_ISSPACE`, not `str.strip()` — see [`is_c_space`].
+    let stripped = transformed.trim_matches(is_c_space);
     if stripped.is_empty() {
         return None;
     }
@@ -564,9 +589,10 @@ pub(crate) fn python_float(text: &str) -> Option<f64> {
 /// so a `Request-rate: 99999999999999999999/1` is ignored here and honoured there. No
 /// corpus row exercises it — a `Request-rate` that large is meaningless — but it is a real
 /// difference and is called out rather than hidden.
-pub(crate) fn python_int(text: &str) -> Option<i64> {
+pub fn python_int(text: &str) -> Option<i64> {
     let transformed = transform_decimal_and_space(text);
-    let stripped = python_strip(&transformed);
+    // `Py_ISSPACE`, not `str.strip()` — see [`is_c_space`].
+    let stripped = transformed.trim_matches(is_c_space);
     if stripped.is_empty() {
         return None;
     }
@@ -950,6 +976,54 @@ mod tests {
         assert_eq!(parse_retry_after_value("1_0"), Some(10.0));
         assert_eq!(parse_retry_after_value(".5"), Some(0.5));
         assert_eq!(parse_retry_after_value("+3."), Some(3.0));
+    }
+
+    /// `float()` and `int()` strip with C's `Py_ISSPACE`, **not** `str.strip()`.
+    ///
+    /// Wave 6 found `python_float` disagreeing with CPython on 395 of 6,000
+    /// fuzzed strings, all of them this: a C0 separator is ASCII, so
+    /// `_PyUnicode_TransformDecimalAndSpaceToASCII` copies it through untouched
+    /// and the parser's own strip refuses it — even though `str.strip()` removes
+    /// it and [`python_is_space`] therefore, correctly, says it is whitespace.
+    /// Verified against CPython 3.14:
+    ///
+    /// ```text
+    /// >>> float('\xa04.5'), int('\x0b12')
+    /// (4.5, 12)
+    /// >>> float(' 4.5\x1c'), int('\x1c12')
+    /// ValueError  # both
+    /// >>> ' 4.5\x1c'.strip()
+    /// '4.5'
+    /// ```
+    #[test]
+    fn the_numeric_strip_is_c_isspace_not_str_strip() {
+        // Non-ASCII whitespace is folded to a space and then stripped.
+        assert_eq!(python_float("\u{a0}4.5"), Some(4.5));
+        assert_eq!(python_int("\u{3000}12"), Some(12));
+        // ASCII whitespace proper is stripped.
+        assert_eq!(python_float("\u{b}4.5\u{c}"), Some(4.5));
+        assert_eq!(python_int("\u{b}12"), Some(12));
+        // The four C0 separators are not, in either direction.
+        for separator in ['\u{1c}', '\u{1d}', '\u{1e}', '\u{1f}'] {
+            assert_eq!(
+                python_float(&format!(" 4.5{separator}")),
+                None,
+                "{separator:?}"
+            );
+            assert_eq!(
+                python_float(&format!("{separator}4.5")),
+                None,
+                "{separator:?}"
+            );
+            assert_eq!(python_int(&format!("{separator}12")), None, "{separator:?}");
+            // …but `str.strip()` still removes them, which is what
+            // `parse_retry_after_value` relies on before it calls `float()`.
+            assert_eq!(python_strip(&format!("{separator}12{separator}")), "12");
+            assert_eq!(
+                parse_retry_after_value(&format!("{separator}12{separator}")),
+                Some(12.0)
+            );
+        }
     }
 
     #[test]

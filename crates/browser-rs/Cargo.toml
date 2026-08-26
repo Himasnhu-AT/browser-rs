@@ -20,7 +20,35 @@ browser-parser = { workspace = true, optional = true }
 browser-spider = { workspace = true, optional = true }
 browser-templates = { workspace = true, optional = true }
 
+# Promoted from `[dev-dependencies]` in wave 6. Each of these was already in the
+# graph transitively — `browser-parser` depends on `browser-dom`,
+# `browser-selectors` and `browser-xpath` unconditionally — so naming them
+# here costs nothing to compile and closes four "the type exists but cannot be
+# written down" holes:
+#
+# * `Document::dom()` hands back a `browser_dom::Document`;
+# * `Document::xpath_value()` hands back a `browser_xpath::Value<XNode>`;
+# * `SqliteStorage` is the only `StorageSystem` there is, and a façade-only user
+#   could not construct one to switch adaptive storage on;
+# * `strip_noise_tags` / `sanitize_for_ai` / `html_to_markdown` had no path at
+#   all, which is what cost `browser-cli` 113 corpus rows before wave 6.
+browser-dom = { workspace = true, optional = true }
+browser-markdown = { workspace = true, optional = true }
+browser-storage = { workspace = true, optional = true }
+browser-xpath = { workspace = true, optional = true }
+
 thiserror.workspace = true
+
+# Re-exported as `browser::async_trait` under the `spider` feature. The
+# `Spider` trait is `#[async_trait]`, so **every** user-written spider needs the
+# attribute macro — and needs the same version of it the trait was declared
+# with. Making a façade user add `async-trait` to their own manifest and hope the
+# versions unify is not a public API.
+async-trait = { workspace = true, optional = true }
+# Re-exported as `browser::futures` under the same feature, for the same
+# reason: `CallbackStream` *is* `futures::stream::BoxStream<'static, Yielded>`,
+# so a spider cannot return one without naming the crate.
+futures = { workspace = true, optional = true }
 
 # The seam tests in `tests/integration.rs` reach past the façade on purpose: they
 # assert that the member crates unit 12 and unit 14 are about to be built on top
@@ -32,16 +60,20 @@ thiserror.workspace = true
 # having to remember `--features adaptive`. It does not change the façade's own
 # feature surface: `browser-rs`'s `#[cfg(feature = "adaptive")]` stays off.
 [dev-dependencies]
+# `tests/integration.rs` names these unconditionally, and the façade only pulls
+# `browser-storage` in under `adaptive` and `browser-markdown` under
+# `markdown` — neither of which is a default. Listing them here as well keeps
+# the wave-1..5 seam tests compiling under a plain `cargo test`.
 browser-dom.workspace = true
+browser-markdown.workspace = true
 browser-selectors.workspace = true
-browser-xpath.workspace = true
 browser-storage.workspace = true
+browser-xpath.workspace = true
 # `markdown` is switched on here (and only here) so the wave-5 seam tests can call
 # `Response::markdown()` on an HTTP-driven *and* a browser-driven response —
 # `SiteToMarkdownSpider`'s whole premise — under a plain `cargo test`.
 browser-http = { workspace = true, features = ["markdown"] }
 browser-cdp = { workspace = true, features = ["markdown"] }
-browser-markdown.workspace = true
 browser-parser = { workspace = true, features = ["adaptive", "markdown"] }
 browser-spider = { workspace = true, features = ["markdown"] }
 async-trait.workspace = true
@@ -60,16 +92,23 @@ tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "sy
 
 [features]
 default = ["http", "parser"]
-parser = ["dep:browser-parser"]
+parser = ["dep:browser-parser", "dep:browser-dom", "dep:browser-xpath"]
 http = ["dep:browser-http", "parser"]
 browser = ["dep:browser-cdp", "http"]
-spider = ["dep:browser-spider", "dep:browser-templates", "http"]
+spider = [
+    "dep:browser-spider",
+    "dep:browser-templates",
+    "dep:async-trait",
+    "dep:futures",
+    "http",
+]
 # `markdown` and `adaptive` gate methods on *several* member crates, not just the
 # parser: `Response::markdown()` lives in `browser-http`, and a `CrawlResponse`
 # derefs to it. The `dep?/feature` form only fires when the member is already in
 # the graph, so enabling `markdown` alone still does not pull in the browser or
 # the spider.
 markdown = [
+    "dep:browser-markdown",
     "browser-parser/markdown",
     "browser-http?/markdown",
     "browser-cdp?/markdown",
@@ -77,6 +116,7 @@ markdown = [
     "browser-templates?/markdown",
 ]
 adaptive = [
+    "dep:browser-storage",
     "browser-parser/adaptive",
     "browser-http?/adaptive",
     "browser-cdp?/adaptive",

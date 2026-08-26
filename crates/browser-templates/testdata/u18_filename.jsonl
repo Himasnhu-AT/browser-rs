@@ -1,0 +1,16 @@
+{"case": "filenames-0", "names": ["example.com"], "urls": ["https://example.com/"]}
+{"case": "filenames-1", "names": ["example.com-docs-page-1"], "urls": ["https://example.com/docs/page-1"]}
+{"case": "filenames-2", "names": ["example.com", "example.com-923db161"], "urls": ["https://example.com/", "https://example.com/?a=1"]}
+{"case": "filenames-3", "names": ["example.com", "example.com-b559c7ed", "example.com-b559c7ed"], "urls": ["https://example.com/", "https://example.com/", "https://example.com/"]}
+{"case": "filenames-4", "names": ["example.com-a-b-c", "example.com-a-b-c-91a6dadd"], "urls": ["https://example.com/a/b/c", "https://example.com/a/b/c#frag"]}
+{"case": "filenames-5", "names": ["index"], "urls": ["https:///"]}
+{"case": "filenames-6", "names": ["example.com-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], "urls": ["https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]}
+{"case": "filenames-7", "names": ["example.com-8443-x"], "urls": ["https://example.com:8443/x"]}
+{"case": "filenames-8", "names": ["ex-ample.com-sp-ace"], "urls": ["https://ex ample.com/sp ace"]}
+{"case": "filenames-9", "names": ["example.com-caf-cr-me"], "urls": ["https://example.com/café/crème"]}
+{"case": "filenames-10", "names": ["example.com----leading"], "urls": ["https://example.com/---leading---"]}
+{"case": "filenames-11", "names": ["example.com-a_b.c-d"], "urls": ["https://example.com/a_b.c-d"]}
+{"case": "filenames-12", "names": ["user-pw-example.com-x"], "urls": ["https://user:pw@example.com/x"]}
+{"case": "filenames-13", "names": ["example.com-2Fencoded"], "urls": ["https://example.com/%2Fencoded"]}
+{"case": "filenames-14", "names": [{"error": "ValueError"}, "example.com-x"], "urls": ["http://[::1/x", "https://example.com/x"]}
+{"case": "filenames-15", "names": ["example.com-a", "example.com-a-1c55ec22"], "urls": ["https://example.com/a[", "https://example.com/a["]}

@@ -2668,11 +2668,18 @@ mod tests {
         use browser_http::session::AsyncFetcherSession;
 
         let server = fixture::Server::start();
+        // 30 s, not 5 s, and it is a *load* margin rather than a latency one. The
+        // fixture is on loopback and answers in microseconds; but a `robots.txt`
+        // fetch that times out is treated as "allow everything" (faithfully —
+        // Python does the same), and then `/admin/secret` is crawled and the
+        // titles assertion below fails for a reason that has nothing to do with
+        // the engine. That was observed once, under a full `cargo test
+        // --workspace` on a loaded machine, in wave 6.
         let transport = AsyncFetcherSession::builder()
             .config(
                 FetcherConfig::default()
                     .with_retries(Some(1))
-                    .with_timeout(Some(Duration::from_secs(5))),
+                    .with_timeout(Some(Duration::from_secs(30))),
             )
             .build()
             .expect("a session over the default backend");

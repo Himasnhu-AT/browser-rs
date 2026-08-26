@@ -379,6 +379,42 @@ impl<'a> Node<'a> {
         }
     }
 
+    /// `Convertor._convert_to_markdown(self.html_content)` — this node's outer
+    /// HTML, converted by the markdownify port.
+    ///
+    /// This is the *uncleaned* markdown path, and it is deliberately separate
+    /// from [`Document::markdown_with`](crate::document::Document::markdown_with).
+    /// `Response.markdown()` always runs `_strip_noise_tags` and
+    /// `_sanitize_for_ai` first; `Convertor._extract_content` runs them **only**
+    /// when `main_content_only` is set, and then hands each CSS match to
+    /// `markdownify(page.html_content)` on its own. Without this method the CLI
+    /// cannot express the second shape, which cost it 38 corpus rows
+    /// (`crates/browser-cli/tests/u19_convert_golden.rs`, family
+    /// `MARKDOWN_ALWAYS_SANITISES`) before wave 6.
+    ///
+    /// Like Python, the string is **re-parsed** before conversion — markdownify
+    /// takes HTML text, not a tree — so an element whose parent restricts its
+    /// content model (a bare `<td>`) is reshaped by the HTML5 tree builder.
+    ///
+    /// ```
+    /// # #[cfg(feature = "markdown")] {
+    /// use browser_parser::document::Document;
+    ///
+    /// let doc = Document::parse("<p>a</p><p style='display:none'>hidden</p>");
+    /// // No cleaning: the hidden paragraph is converted like any other.
+    /// assert_eq!(doc.root().markdown(), "a\n\nhidden");
+    /// # }
+    /// ```
+    ///
+    /// (`<script>` and `<style>` still vanish — markdownify's own converter
+    /// drops them, which is why `_strip_noise_tags` is only observable in the
+    /// `html` and `text` modes.)
+    #[cfg(feature = "markdown")]
+    #[must_use]
+    pub fn markdown(&self) -> String {
+        browser_markdown::html_to_markdown(&self.html_content())
+    }
+
     /// `Selector.prettify`.
     #[must_use]
     pub fn prettify(&self) -> String {

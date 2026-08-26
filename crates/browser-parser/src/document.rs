@@ -610,6 +610,61 @@ impl Document {
             .collect::<Vec<_>>()
             .join(""))
     }
+
+    /// `Convertor._sanitize_for_ai(Convertor._strip_noise_tags(self))` — a copy
+    /// of this document with the noise tags, the hidden elements and the
+    /// zero-width / XML-illegal characters gone.
+    ///
+    /// [`markdown_with`](Self::markdown_with) applies the same two passes
+    /// internally and unconditionally, because `Response.markdown()` does. This
+    /// method exposes them on their own, which is what
+    /// `Convertor._extract_content` needs: it cleans **only** when
+    /// `main_content_only` is set, and it cleans for the `html` and `text` modes
+    /// too, not just for markdown.
+    ///
+    /// # One re-ordering
+    ///
+    /// Python narrows to `<body>` *first* and deep-copies that subtree, so the
+    /// cleaning passes run over the body element. Here they run over the whole
+    /// document and the caller narrows afterwards. Nothing outside `<body>`
+    /// survives into the narrowed output either way, so the trees agree — with
+    /// one reachable-in-principle exception: `_HIDDEN_XPATH` is `.//*`, so
+    /// Python never removes its own root, which means a `<body hidden>` is kept
+    /// there and dropped here. No corpus row reaches it.
+    ///
+    /// The copy carries `keep_comments = false`, matching Python's
+    /// `Selector(root=clean_root, url=…, keep_comments=False)`, and — like every
+    /// `Selector(root=…)` — has no raw body, so [`body`](Self::body) is empty.
+    ///
+    /// ```
+    /// # #[cfg(feature = "markdown")] {
+    /// use browser_parser::document::Document;
+    ///
+    /// let doc = Document::parse(
+    ///     "<body><p>keep</p><script>evil()</script><p style='display:none'>hide</p></body>",
+    /// );
+    /// let clean = doc.clean_for_ai();
+    /// assert_eq!(clean.get_all_text(), "keep");
+    /// # }
+    /// ```
+    #[cfg(feature = "markdown")]
+    #[must_use]
+    pub fn clean_for_ai(&self) -> Self {
+        let config = DocumentConfig {
+            url: self.url.clone(),
+            encoding: self.encoding.clone(),
+            keep_comments: false,
+            keep_cdata: self.keep_cdata,
+            huge_tree: self.huge_tree,
+            adaptive: self.adaptive_enabled,
+            adaptive_domain: None,
+            #[cfg(feature = "adaptive")]
+            storage: self.storage.clone(),
+            #[cfg(not(feature = "adaptive"))]
+            storage: None,
+        };
+        Self::from_dom(browser_markdown::clean_for_ai(&self.dom), &config)
+    }
 }
 
 /// Python constructs `SQLiteStorageSystem(<pkg>/elements_storage.db, url)` when

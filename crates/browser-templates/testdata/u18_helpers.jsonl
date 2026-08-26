@@ -1,0 +1,153 @@
+{"input": "  /spaced  ", "kind": "strip_html5_whitespace", "out": "/spaced"}
+{"input": "\t\n\f\r /x \r\f\n\t", "kind": "strip_html5_whitespace", "out": "/x"}
+{"input": " /nbsp ", "kind": "strip_html5_whitespace", "out": " /nbsp "}
+{"input": " /ls ", "kind": "strip_html5_whitespace", "out": " /ls "}
+{"input": "　/ideographic　", "kind": "strip_html5_whitespace", "out": "　/ideographic　"}
+{"input": "᠎/mongolian᠎", "kind": "strip_html5_whitespace", "out": "᠎/mongolian᠎"}
+{"input": "", "kind": "strip_html5_whitespace", "out": ""}
+{"input": "   ", "kind": "strip_html5_whitespace", "out": ""}
+{"input": "no-space", "kind": "strip_html5_whitespace", "out": "no-space"}
+{"input": "\nleading", "kind": "strip_html5_whitespace", "out": "leading"}
+{"input": "trailing\r", "kind": "strip_html5_whitespace", "out": "trailing"}
+{"input": "\u000bvertical-tab\u000b", "kind": "strip_html5_whitespace", "out": "\u000bvertical-tab\u000b"}
+{"input": "\u001cfile-sep\u001c", "kind": "strip_html5_whitespace", "out": "\u001cfile-sep\u001c"}
+{"input": "mid dle", "kind": "strip_html5_whitespace", "out": "mid dle"}
+{"error": null, "input": "https://a.test/d.tar.gz", "kind": "url_extensions", "out": ["tar.gz", "gz"]}
+{"error": null, "input": "https://a.test/d.gz", "kind": "url_extensions", "out": ["gz"]}
+{"error": null, "input": "https://a.test/index", "kind": "url_extensions", "out": []}
+{"error": null, "input": "https://a.test/", "kind": "url_extensions", "out": []}
+{"error": null, "input": "https://a.test/a.b.c.d", "kind": "url_extensions", "out": ["b.c.d", "c.d", "d"]}
+{"error": null, "input": "https://a.test/a..gz", "kind": "url_extensions", "out": ["gz"]}
+{"error": null, "input": "https://a.test/x.PDF?a=1", "kind": "url_extensions", "out": ["pdf"]}
+{"error": null, "input": "https://a.test/v1.2/index", "kind": "url_extensions", "out": []}
+{"error": null, "input": "https://a.test/.hidden", "kind": "url_extensions", "out": ["hidden"]}
+{"error": null, "input": "https://a.test/a.b.", "kind": "url_extensions", "out": ["b."]}
+{"error": null, "input": "https://a.test/dir.d/file", "kind": "url_extensions", "out": []}
+{"error": null, "input": "https://a.test/file.TAR.GZ", "kind": "url_extensions", "out": ["tar.gz", "gz"]}
+{"error": null, "input": "https://a.test/f.z#frag", "kind": "url_extensions", "out": ["z"]}
+{"error": null, "input": "mailto:x@y.test", "kind": "url_extensions", "out": ["test"]}
+{"error": null, "input": "https://a.test/a.b.c.d.e.f", "kind": "url_extensions", "out": ["b.c.d.e.f", "c.d.e.f", "d.e.f", "e.f", "f"]}
+{"error": null, "input": "", "kind": "url_extensions", "out": []}
+{"error": null, "input": "/relative/x.png", "kind": "url_extensions", "out": ["png"]}
+{"error": null, "input": "https://a.test/report.pdf;jsessionid=ABC", "kind": "url_extensions", "out": ["pdf;jsessionid=abc"]}
+{"error": null, "input": "https://a.test/a.b;c.d", "kind": "url_extensions", "out": ["b;c.d", "d"]}
+{"error": null, "input": "https://a.test/x.zip;=", "kind": "url_extensions", "out": ["zip;="]}
+{"error": null, "input": "https://a.test/d.tar.gz;v=2", "kind": "url_extensions", "out": ["tar.gz;v=2", "gz;v=2"]}
+{"error": null, "input": "https://a.test/f.p\tdf", "kind": "url_extensions", "out": ["pdf"]}
+{"error": null, "input": "\u0001\thttps://a.test/g.pdf", "kind": "url_extensions", "out": ["pdf"]}
+{"error": null, "input": "https://a.test/h.pdf#.zip", "kind": "url_extensions", "out": ["pdf"]}
+{"error": null, "input": "https://a.test/i.pdf?a=.zip", "kind": "url_extensions", "out": ["pdf"]}
+{"error": "ValueError", "input": "http://[::1/x.pdf", "kind": "url_extensions", "out": null}
+{"error": "ValueError", "input": "http://a]b/x.pdf", "kind": "url_extensions", "out": null}
+{"error": null, "input": "https://a.test/a b", "kind": "safe_url_string", "out": "https://a.test/a%20b"}
+{"error": null, "input": "https://a.test/x?q=1&r=2#f", "kind": "safe_url_string", "out": "https://a.test/x?q=1&r=2#f"}
+{"error": null, "input": "https://a.test/résumé", "kind": "safe_url_string", "out": "https://a.test/r%C3%A9sum%C3%A9"}
+{"error": null, "input": "https://A.TEST:443/X", "kind": "safe_url_string", "out": "https://a.test:443/X"}
+{"error": null, "input": "https://a.test/a%20b", "kind": "safe_url_string", "out": "https://a.test/a%20b"}
+{"error": null, "input": "http://[::1]:8080/x", "kind": "safe_url_string", "out": "http://[::1]:8080/x"}
+{"error": null, "input": "  https://a.test/x\t\r\n  ", "kind": "safe_url_string", "out": "https://a.test/x"}
+{"error": null, "input": "http://u ser:p=ss@a.test/", "kind": "safe_url_string", "out": "http://u%20ser:p%3Dss@a.test/"}
+{"error": null, "input": "https://a.test/x?q=a'b", "kind": "safe_url_string", "out": "https://a.test/x?q=a%27b"}
+{"error": "ValueError", "input": "http://a.test:99999/x", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://[::1/x", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "https://a.test/p|pe", "kind": "safe_url_string", "out": "https://a.test/p%7Cpe"}
+{"error": null, "input": "https://a.test/#only-fragment", "kind": "safe_url_string", "out": "https://a.test/#only-fragment"}
+{"error": null, "input": "https://a.test/?", "kind": "safe_url_string", "out": "https://a.test/"}
+{"error": null, "input": "https://a.test", "kind": "safe_url_string", "out": "https://a.test"}
+{"error": null, "input": "https://a.test/a%2Fb", "kind": "safe_url_string", "out": "https://a.test/a%2Fb"}
+{"error": null, "input": "ftp://a.test/x y", "kind": "safe_url_string", "out": "ftp://a.test/x%20y"}
+{"error": null, "input": "https://a.test/中文", "kind": "safe_url_string", "out": "https://a.test/%E4%B8%AD%E6%96%87"}
+{"error": null, "input": "https://a.test/x?q=é", "kind": "safe_url_string", "out": "https://a.test/x?q=%C3%A9"}
+{"error": null, "input": "https://a.test/;params", "kind": "safe_url_string", "out": "https://a.test/;params"}
+{"error": null, "input": "//protocol-relative/x", "kind": "safe_url_string", "out": "//protocol-relative/x"}
+{"error": null, "input": "https://user@a.test/", "kind": "safe_url_string", "out": "https://user@a.test/"}
+{"error": null, "input": "https://a.test/x[1]", "kind": "safe_url_string", "out": "https://a.test/x%5B1%5D"}
+{"error": null, "input": "https://a.test/back\\slash", "kind": "safe_url_string", "out": "https://a.test/back%5Cslash"}
+{"error": null, "input": "http:/x", "kind": "safe_url_string", "out": "http:///x"}
+{"error": null, "input": "https:/x", "kind": "safe_url_string", "out": "https:///x"}
+{"error": null, "input": "ws:/x", "kind": "safe_url_string", "out": "ws:///x"}
+{"error": null, "input": "file:/x", "kind": "safe_url_string", "out": "file:///x"}
+{"error": null, "input": "ftp://?q=1", "kind": "safe_url_string", "out": "ftp://?q=1"}
+{"error": null, "input": "http://", "kind": "safe_url_string", "out": "http://"}
+{"error": null, "input": "http:///x", "kind": "safe_url_string", "out": "http:///x"}
+{"error": null, "input": "mailto:/x", "kind": "safe_url_string", "out": "mailto:/x"}
+{"error": null, "input": "javascript:/x", "kind": "safe_url_string", "out": "javascript:/x"}
+{"error": null, "input": "a+b-c.d:/x", "kind": "safe_url_string", "out": "a+b-c.d:/x"}
+{"error": null, "input": "mailto:////x", "kind": "safe_url_string", "out": "mailto:////x"}
+{"error": null, "input": "javascript://:/x", "kind": "safe_url_string", "out": "javascript:/x"}
+{"error": "ValueError", "input": "http://a:1:2/x", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "http://a:/x", "kind": "safe_url_string", "out": "http://a/x"}
+{"error": "ValueError", "input": "http://a:+1/x", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "http://a:0/x", "kind": "safe_url_string", "out": "http://a:0/x"}
+{"error": "ValueError", "input": "http://a:65536/x", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://a:０/x", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "http://[::1]/x", "kind": "safe_url_string", "out": "http://[::1]/x"}
+{"error": "ValueError", "input": "http://[abc]/x", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://[1.2.3.4]/x", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "http://[v1.abc]/x", "kind": "safe_url_string", "out": "http://v1.abc/x"}
+{"error": "ValueError", "input": "http://[v.abc]/x", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://[vz1.abc]/x", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://x[::1]/y", "kind": "safe_url_string", "out": null}
+{"error": "ValueError", "input": "http://[::1]z:80/y", "kind": "safe_url_string", "out": null}
+{"error": null, "input": "http://[::1%25tESt]:1234/keys", "kind": "safe_url_string", "out": "http://[::1%25tESt]:1234/keys"}
+{"error": null, "input": "http://[::1%25]/x", "kind": "safe_url_string", "out": "http://[::1%25]/x"}
+{"error": "ValueError", "input": "http://u[@a.test/x", "kind": "safe_url_string", "out": null}
+{"input": "<p>A <b>matte</b> lipstick</p>", "kind": "remove_tags", "out": "A matte lipstick"}
+{"input": "", "kind": "remove_tags", "out": ""}
+{"input": "a < b", "kind": "remove_tags", "out": "a < b"}
+{"input": "a > b", "kind": "remove_tags", "out": "a > b"}
+{"input": "<br/>x<BR />y", "kind": "remove_tags", "out": "xy"}
+{"input": "<p\nclass='x'>hi</p>", "kind": "remove_tags", "out": "hi"}
+{"input": "<!-- c -->x", "kind": "remove_tags", "out": "x"}
+{"input": "<div>a</div><div>b</div>", "kind": "remove_tags", "out": "ab"}
+{"input": "&amp; stays", "kind": "remove_tags", "out": "&amp; stays"}
+{"input": "<p>multi\nline</p>", "kind": "remove_tags", "out": "multi\nline"}
+{"input": "< notatag>", "kind": "remove_tags", "out": "< notatag>"}
+{"input": "</ >x", "kind": "remove_tags", "out": "</ >x"}
+{"input": "<a href='x'>link</a>", "kind": "remove_tags", "out": "link"}
+{"input": "plain text", "kind": "remove_tags", "out": "plain text"}
+{"input": "<SCRIPT>alert(1)</SCRIPT>", "kind": "remove_tags", "out": "alert(1)"}
+{"input": "summer-sale", "kind": "title", "out": "Summer Sale"}
+{"input": "o'neil", "kind": "title", "out": "O'Neil"}
+{"input": "a1b", "kind": "title", "out": "A1B"}
+{"input": "ALL CAPS", "kind": "title", "out": "All Caps"}
+{"input": "mixed-CASE items", "kind": "title", "out": "Mixed Case Items"}
+{"input": "", "kind": "title", "out": ""}
+{"input": "3d-printing", "kind": "title", "out": "3D Printing"}
+{"input": "  padded  ", "kind": "title", "out": "Padded"}
+{"input": "multi--dash", "kind": "title", "out": "Multi  Dash"}
+{"input": "éclair-tarts", "kind": "title", "out": "Éclair Tarts"}
+{"input": "x", "kind": "title", "out": "X"}
+{"input": "-leading", "kind": "title", "out": "Leading"}
+{"input": "trailing-", "kind": "title", "out": "Trailing"}
+{"input": "9lives", "kind": "title", "out": "9Lives"}
+{"input": "straße-sale", "kind": "title", "out": "Straße Sale"}
+{"input": "ßeta", "kind": "title", "out": "Sseta"}
+{"input": "ǅungla", "kind": "title", "out": "ǅungla"}
+{"input": "Ǆ-ǅ-ǆ", "kind": "title", "out": "ǅ ǅ ǅ"}
+{"input": "Ǳx", "kind": "title", "out": "ǲx"}
+{"input": "ﬁle", "kind": "title", "out": "File"}
+{"input": "ﬄ-x", "kind": "title", "out": "Ffl X"}
+{"input": "և-x", "kind": "title", "out": "Եւ X"}
+{"input": "ΟΔΟΣ ΑΘΗΝΑΣ", "kind": "title", "out": "Οδος Αθηνας"}
+{"input": "ΣΣΣ", "kind": "title", "out": "Σσς"}
+{"input": "aΣ-b", "kind": "title", "out": "Aς B"}
+{"input": "ͅΣ XY", "kind": "title", "out": "Ισ Xy"}
+{"input": "აბ-x", "kind": "title", "out": "აბ X"}
+{"body_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg==", "case": "plain", "content_type": null, "error": null, "kind": "decompress", "out_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg=="}
+{"body_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg==", "case": "plain-xml-ct", "content_type": "application/xml", "error": null, "kind": "decompress", "out_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg=="}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j5Uo3AAAA", "case": "magic", "content_type": null, "error": null, "kind": "decompress", "out_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg=="}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j5Uo3AAAA", "case": "ct-gzip", "content_type": "application/gzip", "error": null, "kind": "decompress", "out_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg=="}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j5Uo3AAAA", "case": "ct-x-gzip-upper", "content_type": "application/X-GZIP", "error": null, "kind": "decompress", "out_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg=="}
+{"body_b64": "PHVybHNldD48dXJsPjxsb2M+aHR0cHM6Ly9hLnRlc3QveDwvbG9jPjwvdXJsPjwvdXJsc2V0Pg==", "case": "lying-ct", "content_type": "application/gzip", "error": "BadGzipFile", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4s=", "case": "magic-only", "content_type": null, "error": "EOFError", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j", "case": "truncated", "content_type": null, "error": "EOFError", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4sJAAAAAAAAAw==", "case": "bad-method", "content_type": null, "error": "BadGzipFile", "kind": "decompress", "out_b64": null}
+{"body_b64": "", "case": "empty", "content_type": null, "error": null, "kind": "decompress", "out_b64": ""}
+{"body_b64": "", "case": "empty-ct-gzip", "content_type": "application/gzip", "error": null, "kind": "decompress", "out_b64": ""}
+{"body_b64": "Hw==", "case": "one-magic-byte-ct-gzip", "content_type": "application/gzip", "error": "BadGzipFile", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4s=", "case": "magic-only-ct-gzip", "content_type": "application/gzip", "error": "EOFError", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j5Uo3AAAAHw==", "case": "trailing-magic-byte", "content_type": null, "error": "BadGzipFile", "kind": "decompress", "out_b64": null}
+{"body_b64": "H4sIAAAAAAAC/7MpLcopTi2xswHSdjY5+cl2GSUlBcVW+vqJeiWpxSX6FTb6IFEbfbACfahyAD+j5Uo3AAAAH4s=", "case": "trailing-magic-pair", "content_type": null, "error": "EOFError", "kind": "decompress", "out_b64": null}
+{"body_b64": "Hw==", "case": "one-magic-byte", "content_type": null, "error": null, "kind": "decompress", "out_b64": "Hw=="}
+{"body_b64": "H4sIAAAAAAAC/0vLLCousQYAELOUlgYAAAAfiwgAAAAAAAL/K05Nzs9LAQBpER+2BgAAAA==", "case": "concatenated", "content_type": null, "error": null, "kind": "decompress", "out_b64": "Zmlyc3Q7c2Vjb25k"}

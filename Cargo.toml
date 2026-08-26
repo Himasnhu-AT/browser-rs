@@ -136,22 +136,35 @@ phf_codegen = "0.14.0"
 quick-xml = "0.42.0"
 csv = "1.4.0"
 flate2 = "1.1.9"
-texting_robots = "0.2.2"
+# `texting_robots` was dropped in wave 6: unit 16 ported protego from scratch
+# (166,839 differential assertions) and unit 17 removed the last reference, so
+# the declaration had been dangling since then.
 
 # --- time ------------------------------------------------------------------
 chrono = "0.4.45"
 
 # --- CLI (§1.13) -----------------------------------------------------------
 clap = { version = "4.6.6", features = ["derive"] }
-shlex = "2.0.1"
+# `shlex` was dropped in wave 6: `browser-cli`'s `uncurl` carries a
+# transcription of CPython's `shlex.read_token` instead, because the crate treats
+# `#` as a comment introducer and `\r` as non-whitespace where Python does not
+# (274 disagreements in 12,000 fuzzed command lines).
 tempfile = "3.27.0"
 
 # --- misc ------------------------------------------------------------------
 rand = "0.10.2"
 
 # --- dev-only (unit 20) ----------------------------------------------------
+# ⚠️ `criterion` is **not in `Cargo.lock`** and crates.io is not reachable from
+# this environment, so `cargo bench` cannot be wired up until someone runs
+# `cargo add --dev criterion -p browser-rs` on a machine with a network. The
+# declaration is kept because unit 20's benches (`parse`, `relocate`,
+# `markdown`) are still owed; it is not a dependency of anything today.
 criterion = "0.8.2"
-wiremock = "0.6.5"
+# `wiremock` was dropped in wave 6, closing housekeeping item 8. It was never in
+# `Cargo.lock` either, and the workspace now has six hand-rolled `std::net` /
+# `tokio` loopback fixtures that do the job without a network to fetch it from.
+# `crates/browser-rs/tests/integration.rs::local_site::Site` is the one to copy.
 
 [profile.release]
 lto = "thin"
