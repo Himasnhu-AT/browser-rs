@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Token strategy: CSS variables, swapped under prefers-color-scheme.
+   One theme for the whole page in either mode. No section inverts mid-scroll.
+
+   Accent lock: ONE accent for the entire page, --accent-ink on light surfaces
+   and --accent on dark, so the same hue reads correctly in both modes without
+   ever becoming a second colour.
+
+   Shape lock: --r-card 16px for every surface, buttons are full-pill, inputs
+   10px. That rule is followed everywhere.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+}
+
+:root {
+  --bg: #fbfbfa;
+  --bg-elev: #ffffff;
+  --bg-sunk: #f2f2f0;
+  --fg: #17171a;
+  --fg-muted: #61616b;
+  --fg-faint: #9a9aa4;
+  --border: #e4e4e1;
+  --border-strong: #d2d2ce;
+
+  /* The single accent. --accent fills, --accent-ink writes on light ground. */
+  --accent: #ff6a3d;
+  --accent-ink: #b23a10;
+  --on-accent: #1a0a04;
+
+  --r-card: 16px;
+  --r-input: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #09090b;
+    --bg-elev: #131316;
+    --bg-sunk: #050506;
+    --fg: #f7f7f8;
+    --fg-muted: #a1a1ab;
+    --fg-faint: #6b6b76;
+    --border: #232327;
+    --border-strong: #35353b;
+
+    --accent: #ff6a3d;
+    --accent-ink: #ff8a63;
+    --on-accent: #1a0a04;
+  }
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Fixed, pointer-events-none grain. Never on a scrolling container. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
