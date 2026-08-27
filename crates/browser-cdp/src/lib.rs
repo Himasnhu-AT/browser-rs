@@ -14,9 +14,11 @@ pub mod cloudflare;
 pub mod config;
 pub mod error;
 pub mod flags;
+pub mod input;
 pub mod pool;
 pub mod response;
 pub mod route;
+pub mod screencast;
 pub mod session;
 
 #[cfg(test)]

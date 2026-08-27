@@ -15,6 +15,8 @@ members = [
     "crates/browser-templates",
     "crates/browser-cli",
     "crates/browser-rs",
+    "crates/browser-server",
+    "crates/browser-mcp",
 ]
 
 # Single source of truth for every property shared by the 14 member crates.
@@ -52,6 +54,8 @@ browser-cdp = { version = "0.1.0", path = "crates/browser-cdp" }
 browser-spider = { version = "0.1.0", path = "crates/browser-spider" }
 browser-templates = { version = "0.1.0", path = "crates/browser-templates" }
 browser-rs = { version = "0.1.0", path = "crates/browser-rs", default-features = false }
+browser-server = { version = "0.1.0", path = "crates/browser-server" }
+browser-mcp = { version = "0.1.0", path = "crates/browser-mcp" }
 
 # --- HTML tree (§1.2) ------------------------------------------------------
 html5ever = "0.39.0"
@@ -165,6 +169,16 @@ criterion = "0.8.2"
 # `Cargo.lock` either, and the workspace now has six hand-rolled `std::net` /
 # `tokio` loopback fixtures that do the job without a network to fetch it from.
 # `crates/browser-rs/tests/integration.rs::local_site::Site` is the one to copy.
+
+# --- the server layer (wave 7) ---------------------------------------------
+# `brs-serve` hosts the REST API, the MCP HTTP transport and the live dashboard
+# on one port. All four were probe-compiled against rust-version = 1.97.0
+# before being pinned here; axum 0.9 and rmcp 3.x both want a newer toolchain.
+axum = { version = "0.8.9", features = ["ws", "macros"] }
+tower-http = { version = "0.6.11", features = ["cors", "trace", "limit", "timeout"] }
+rmcp = { version = "2.2.0", features = ["server", "transport-io"] }
+tokio-tungstenite = "0.28.0"
+uuid = { version = "1", features = ["v4", "serde"] }
 
 [profile.release]
 lto = "thin"
