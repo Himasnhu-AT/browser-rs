@@ -12,7 +12,7 @@
 
 mod local_site {
     //! A copy of the façade's `local_site::Site`, which is the fixture server
-    //! `handoff.md` housekeeping item 8 names as the one to copy: a
+    //! the façade's own seam tests use, and the one to copy: a
     //! `fn(&str) -> Option<Page>` route table, one thread per connection, and a
     //! half-close (`Shutdown::Write` plus a drain to EOF) rather than an RST.
 

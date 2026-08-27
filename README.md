@@ -375,6 +375,21 @@ loopback only. There is a Dockerfile and a compose file at the repository root;
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) covers running it and
 [`crates/browser-server`](crates/browser-server) is the full contract.
 
+```bash
+export BROWSER_RS_API_TOKEN=$(openssl rand -hex 32)
+cargo run --offline --release -p browser-server --bin brs-serve
+
+curl -s localhost:8080/api/health                       # unauthenticated on purpose
+curl -s localhost:8080/api/fetch -H "authorization: Bearer $BROWSER_RS_API_TOKEN" \
+     -H 'content-type: application/json' \
+     -d '{"url":"https://example.com/","format":"markdown"}'
+open "http://localhost:8080/?token=$BROWSER_RS_API_TOKEN"
+```
+
+Point an agent at `http://localhost:8080/mcp` with the same bearer token, or spawn `brs-mcp` for
+stdio. The tools are `fetch`, `browse`, `extract`, `crawl`, `screenshot` and the three `session_*`
+calls; `GET /api/openapi.json` describes the REST surface well enough to hand an agent on its own.
+
 ---
 
 ## Divergences

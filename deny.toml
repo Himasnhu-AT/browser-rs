@@ -50,7 +50,7 @@ confidence-threshold = 0.9
 #      mapping in `crates/browser-http/src/backend/wreq.rs` is ours, only the
 #      profile data is theirs.
 #
-# See handoff.md §"Housekeeping TODOs" item 5.
+# See README.md §"License" and docs/DEPLOYMENT.md.
 exceptions = []
 
 [bans]

@@ -5,6 +5,20 @@
 # new enough to honour it.
 FROM rust:1.97-bookworm AS builder
 
+# BoringSSL, which `wreq` links for TLS/JA3 impersonation, is built from source
+# by `boring-sys2`, and none of its build tooling ships in the slim Rust image.
+# Two separate failures, in this order, if you leave them out:
+#
+#   cmake / perl / golang-go   the cmake build itself, which reports only
+#                              "failed to execute command: No such file or
+#                              directory (os error 2)" — it is failing to exec
+#                              a build tool, not missing a source file
+#   libclang-dev               `bindgen` generating the Rust bindings, which
+#                              says so plainly: "Unable to find libclang"
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      cmake perl golang-go clang libclang-dev \
+ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /src
 
 # Dependency layer first: manifests only, so a source edit does not invalidate
