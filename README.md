@@ -174,4 +174,12 @@ root `[workspace.dependencies]` table; **member crates must never write a versio
 
 ## License
 
-MIT.
+BSD 3-Clause with a commercial-use restriction — see [`LICENSE`](LICENSE).
+
+Personal, academic, research, and open source use is unrestricted under the usual BSD terms.
+Commercial use is also free **if the work using browser-rs publishes its own complete source under
+an OSI-approved open source license**. Commercial use inside a closed-source product, service, or
+internal system needs a separate written commercial license — contact
+[Himanshu](https://github.com/Himasnhu-AT) &lt;hyattherate2005@gmail.com&gt; to arrange one.
+
+This is a source-available license, not an OSI-approved open source license.
