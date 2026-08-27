@@ -564,7 +564,46 @@ async fn upgrade(
     ) {
         return ServerError::Unauthorized.into_response();
     }
+    if !origin_is_our_own(&headers) {
+        return ServerError::Forbidden(
+            "cross-origin websocket upgrades are refused; open the dashboard from this server"
+                .to_owned(),
+        )
+        .into_response();
+    }
     upgrade.on_upgrade(move |socket| serve(socket, engine, params.session))
+}
+
+/// Refuse an upgrade whose `Origin` belongs to somebody else.
+///
+/// The token alone does not cover this. Browsers do not apply the same-origin
+/// policy to WebSocket connections, so any page the operator happens to visit
+/// can open a socket to `127.0.0.1:8080/ws` — and this route can *drive an
+/// authenticated browser*, which makes it the most valuable thing on the server
+/// to an attacker. The token is not much of a secret either: it is accepted in
+/// the query string precisely because a page cannot set a header, so it lives in
+/// URL bars, history and screenshots.
+///
+/// An absent `Origin` is allowed: that is `curl`, a native client, or the
+/// `brs-mcp` binary, none of which a hostile web page can forge from.
+/// A present `Origin` must match the `Host` this request arrived on — comparing
+/// against `Host` rather than a configured address is what keeps this correct
+/// behind a reverse proxy or on a non-default port.
+fn origin_is_our_own(headers: &HeaderMap) -> bool {
+    let Some(origin) = headers.get(axum::http::header::ORIGIN) else {
+        return true;
+    };
+    let Ok(origin) = origin.to_str() else {
+        return false;
+    };
+    // `Origin` is `scheme://host[:port]`; `Host` is `host[:port]`.
+    let origin_authority = origin
+        .split_once("://")
+        .map_or(origin, |(_scheme, rest)| rest);
+    headers
+        .get(axum::http::header::HOST)
+        .and_then(|host| host.to_str().ok())
+        .is_some_and(|host| host.eq_ignore_ascii_case(origin_authority))
 }
 
 // ---------------------------------------------------------------------------

@@ -23,6 +23,7 @@ use browser_server::{api, dashboard, ws};
 use futures::{SinkExt, StreamExt};
 use serde_json::{json, Value};
 use tokio_tungstenite::tungstenite;
+use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 
 // Shared with `rest_api.rs`, which uses more of it than this file does.
 #[allow(dead_code)]
@@ -305,6 +306,50 @@ async fn the_session_listing_needs_the_token_and_reports_what_is_open() {
 // ---------------------------------------------------------------------------
 // The handshake
 // ---------------------------------------------------------------------------
+
+/// A page the operator happens to visit must not be able to open this socket.
+///
+/// The token does not cover this on its own. Browsers do not apply the
+/// same-origin policy to WebSocket connections, and the token is accepted in the
+/// query string — precisely because a page cannot set a header — so it lives in
+/// URL bars, history and screenshots. This route can drive an authenticated
+/// browser, which makes it the most valuable thing here to an attacker.
+///
+/// Absent `Origin` stays allowed: that is `curl`, a native client or `brs-mcp`,
+/// none of which a hostile page can forge from.
+#[tokio::test]
+async fn a_cross_origin_upgrade_is_refused_even_with_a_valid_token() {
+    let profiles = tempfile::tempdir().expect("a temp dir");
+    let server = TestServer::authenticated(profiles.path()).await;
+    let ws = server.base.replacen("http://", "ws://", 1) + "/ws?token=" + TOKEN;
+
+    let mut foreign = ws.clone().into_client_request().expect("a request");
+    foreign
+        .headers_mut()
+        .insert("origin", "https://evil.test".parse().expect("a header"));
+    let Err(error) = tokio_tungstenite::connect_async(foreign).await else {
+        panic!("a cross-origin upgrade must not open");
+    };
+    match error {
+        tungstenite::Error::Http(response) => assert_eq!(
+            response.status(),
+            403,
+            "forbidden, not unauthorised: the token was fine"
+        ),
+        other => panic!("expected an HTTP refusal, got {other:?}"),
+    }
+
+    // The control. Without it this test would pass against a server that
+    // refuses every upgrade.
+    let mut same = ws.into_client_request().expect("a request");
+    let origin = server.base.clone();
+    same.headers_mut()
+        .insert("origin", origin.parse().expect("a header"));
+    let (socket, _) = tokio_tungstenite::connect_async(same)
+        .await
+        .expect("a same-origin upgrade must open");
+    drop(socket);
+}
 
 #[tokio::test]
 async fn a_socket_without_the_token_is_refused_at_the_handshake() {

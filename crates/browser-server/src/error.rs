@@ -39,6 +39,15 @@ pub enum ServerError {
     #[error("missing or invalid bearer token")]
     Unauthorized,
 
+    /// Authenticated, but refused anyway.
+    ///
+    /// Currently only a cross-origin websocket upgrade. Distinct from
+    /// [`Self::Unauthorized`] on purpose: the caller's token was fine, so
+    /// answering `401` would send them off to fix credentials that are not the
+    /// problem.
+    #[error("forbidden: {0}")]
+    Forbidden(String),
+
     /// The request was understood but is not valid: a malformed URL, a
     /// selector that does not parse, a limit outside its range. `400`.
     #[error("{0}")]
@@ -96,6 +105,7 @@ impl ServerError {
     pub fn status(&self) -> StatusCode {
         match self {
             Self::Unauthorized => StatusCode::UNAUTHORIZED,
+            Self::Forbidden(_) => StatusCode::FORBIDDEN,
             Self::BadRequest(_) => StatusCode::BAD_REQUEST,
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::BrowserLimit { .. } => StatusCode::TOO_MANY_REQUESTS,
@@ -114,6 +124,7 @@ impl ServerError {
     pub fn kind(&self) -> &'static str {
         match self {
             Self::Unauthorized => "unauthorized",
+            Self::Forbidden(_) => "forbidden",
             Self::BadRequest(_) => "bad_request",
             Self::NotFound(_) => "not_found",
             Self::BrowserLimit { .. } => "browser_limit",
