@@ -10,7 +10,8 @@ ignore = []
 
 [licenses]
 version = 2
-# Everything in the tree must be a permissive licence we can ship in a MIT crate.
+# Everything in the tree must be a permissive licence we can ship inside a
+# source-available crate that we relicense commercially. See LICENSE.
 allow = [
     "MIT",
     "Apache-2.0",
@@ -35,15 +36,17 @@ confidence-threshold = 0.9
 #
 # `wreq-util 0.1.0` — the emulation-profile tables behind `browser-http`'s
 # `impersonate` feature, which is ON BY DEFAULT — is **GPL-3.0**, while this
-# workspace is MIT. (`wreq` itself is Apache-2.0; only the profile crate is
-# copyleft.) Adding an `exceptions` entry here would hide a genuine licence
-# incompatibility rather than resolve it, so the check is left red until a human
-# picks one of:
+# workspace is BSD-3-Clause plus a commercial-use restriction. (`wreq` itself is
+# Apache-2.0; only the profile crate is copyleft.) The GPL forbids imposing any
+# further restriction on the combined work, so our clause 4 and `wreq-util`
+# cannot ship together at all — relicensing the workspace to GPL-3.0 is no
+# longer an escape hatch, because it would give away the commercial terms.
+# Adding an `exceptions` entry here would hide a genuine licence incompatibility
+# rather than resolve it, so the check is left red until a human picks one of:
 #
-#   1. relicense the workspace to GPL-3.0;
-#   2. take `impersonate` out of `browser-http`'s default features, ship the
-#      JA3/JA4 profiles as an opt-in GPL build, and document it;
-#   3. replace `wreq-util` with permissively licensed profile tables — the
+#   1. take `impersonate` out of `browser-http`'s default features, ship the
+#      JA3/JA4 profiles as a separate opt-in GPL build, and document it;
+#   2. replace `wreq-util` with permissively licensed profile tables — the
 #      mapping in `crates/browser-http/src/backend/wreq.rs` is ours, only the
 #      profile data is theirs.
 #
