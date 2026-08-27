@@ -85,3 +85,32 @@ jobs:
         with:
           command: check
           arguments: --all-features
+
+  docker:
+    name: docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: browser-rs:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: The server must start and answer its health check
+        run: |
+          docker run -d --name brs -p 8080:8080 \
+            -e BROWSER_RS_BIND=0.0.0.0:8080 browser-rs:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/api/health; then ok=1; break; fi
+            sleep 2
+          done
+          docker logs brs
+          test -n "$ok"
+      - name: Chromium must actually be present in the runtime image
+        run: docker run --rm --entrypoint /usr/bin/chromium browser-rs:ci --version
+

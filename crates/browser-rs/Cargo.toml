@@ -93,6 +93,31 @@ tempfile.workspace = true
 # `std::net` on a scratch thread — the same shape `browser-http`'s own
 # `tests/u12_support` uses.
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "sync"] }
+# The three benches below. `harness = false` on each `[[bench]]`, because
+# criterion supplies its own `main` through `criterion_main!`.
+criterion.workspace = true
+
+# ---------------------------------------------------------------------------
+# Benches. Each declares the façade features it measures through, so
+# `cargo bench -p browser-rs` on the default feature set runs `parse` and
+# silently skips the two that would not compile, instead of failing the build.
+# Run them all with `cargo bench -p browser-rs --all-features`.
+# ---------------------------------------------------------------------------
+
+[[bench]]
+name = "parse"
+harness = false
+required-features = ["parser"]
+
+[[bench]]
+name = "relocate"
+harness = false
+required-features = ["adaptive"]
+
+[[bench]]
+name = "markdown"
+harness = false
+required-features = ["markdown"]
 
 [features]
 default = ["http", "parser"]
@@ -111,7 +136,22 @@ spider = [
 # derefs to it. The `dep?/feature` form only fires when the member is already in
 # the graph, so enabling `markdown` alone still does not pull in the browser or
 # the spider.
+#
+# Each of the three below **also names the façade feature it presupposes**, and
+# that leading entry is the whole point. `browser-parser/markdown` (no `?`)
+# already force-enables `dep:browser-parser`, so without `"parser"` here the
+# crate was in the graph while `#[cfg(feature = "parser")]` stayed off: a build
+# of `--no-default-features --features markdown` compiled and exposed no
+# `Document` at all. It costs nothing to compile — `browser-parser` depends on
+# `browser-dom`, `browser-selectors` and `browser-xpath` unconditionally, and
+# `browser-http` depends on `browser-parser` unconditionally, so `"parser"` and
+# `"http"` here add re-export paths to crates that were already being built.
+# A `cfg` alias cannot do this job: `browser-dom` and `browser-xpath` are
+# separate optional dependencies, so under markdown-only they are not *nameable*
+# from this crate however the `cfg`s are written, and `Document::dom()` would
+# hand back a type with no path through `browser::`.
 markdown = [
+    "parser",
     "dep:browser-markdown",
     "browser-parser/markdown",
     "browser-http?/markdown",
@@ -120,6 +160,7 @@ markdown = [
     "browser-templates?/markdown",
 ]
 adaptive = [
+    "parser",
     "dep:browser-storage",
     "browser-parser/adaptive",
     "browser-http?/adaptive",
@@ -127,7 +168,7 @@ adaptive = [
     "browser-spider?/adaptive",
     "browser-templates?/adaptive",
 ]
-blocking = ["browser-http/blocking"]
+blocking = ["http", "browser-http/blocking"]
 full = ["browser", "spider", "markdown", "adaptive", "blocking"]
 
 [lints.rust]

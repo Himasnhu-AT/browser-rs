@@ -1,0 +1,9 @@
+# Without this the build context is gigabytes.
+target/
+.git/
+.github/
+docs/
+*.db
+**/testdata/
+**/*.jsonl
+.claude/

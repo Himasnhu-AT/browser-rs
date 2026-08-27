@@ -1,0 +1,42 @@
+services:
+  browser-rs:
+    build: .
+    image: browser-rs:latest
+    ports:
+      # Loopback-only by default. Change to "8080:8080" only once you have set
+      # BROWSER_RS_API_TOKEN and have read the security note in
+      # docs/DEPLOYMENT.md — this server drives a real browser and will fetch
+      # any URL it is asked for.
+      - "127.0.0.1:8080:8080"
+    environment:
+      BROWSER_RS_API_TOKEN: ${BROWSER_RS_API_TOKEN:?set this in .env}
+      BROWSER_RS_BIND: 0.0.0.0:8080
+      BROWSER_RS_PROFILE_ROOT: /var/lib/browser-rs/profiles
+      # Egress. Leave unset to go direct.
+      BROWSER_RS_PROXY: ${BROWSER_RS_PROXY:-}
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      # The point of the persistent-session design: a login done once through
+      # the dashboard survives `docker restart`.
+      - profiles:/var/lib/browser-rs/profiles
+    # Chromium's own sandbox needs user namespaces, which are not available in
+    # a default container. Read "Chromium sandboxing" in docs/DEPLOYMENT.md
+    # before changing this line.
+    security_opt:
+      - seccomp=unconfined
+    # Chromium exhausts the default 64 MB /dev/shm on real pages. The launch
+    # flags already carry --disable-dev-shm-usage, but raising this is cheap
+    # and removes a class of hard-to-read renderer crashes.
+    shm_size: "1gb"
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Example egress proxy. Uncomment, then point BROWSER_RS_PROXY at it so every
+  # fetch and every browser session leaves through an address you control.
+  # ---------------------------------------------------------------------------
+  # egress:
+  #   image: your-proxy-image:latest
+  #   # then set, in .env:  BROWSER_RS_PROXY=http://egress:3128
+
+volumes:
+  profiles:
