@@ -2076,7 +2076,6 @@ pub struct McpState {
 /// and nothing in this tool set pushes notifications, so there is no stream to
 /// open. `DELETE` — a client ending its session — succeeds trivially: this
 /// transport keeps no per-connection state, so there is nothing to tear down.
-#[must_use]
 pub fn router(engine: Arc<Engine>) -> Router {
     let token = engine.config().api_token.clone();
     router_with(EngineTools::shared(engine), token)
@@ -2086,7 +2085,6 @@ pub fn router(engine: Arc<Engine>) -> Router {
 ///
 /// The seam an embedder — or a test — needs in order to serve this exact HTTP
 /// surface without standing up a real engine.
-#[must_use]
 pub fn router_with(invoker: Arc<dyn ToolInvoker>, token: Option<String>) -> Router {
     let state = McpState {
         invoker,

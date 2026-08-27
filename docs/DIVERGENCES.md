@@ -1649,3 +1649,63 @@ Three readings worth keeping:
 * **The threshold buys nothing.** `relocate_threshold` at 10, 40 and 80 are
   within noise of each other, because the scan happens whatever the threshold is
   and only the *result* is gated.
+
+---
+
+# Wave 7 — the server layer
+
+Two behaviours in `browser-server` that are approximations rather than exact, both
+flagged by the agent that wrote them rather than found later. Neither is a bug to
+be fixed silently; both are trade-offs a caller should be able to look up.
+
+## 1. `wait_until: "commit"` behaves as `load`
+
+`browser-cdp`'s `wait_for_frame_stability` always awaits `load` before it consults
+`load_dom` or `network_idle`, so there is no point at which the port can honour
+"the navigation was committed, return immediately". A caller asking for `commit`
+gets `load` semantics: slower than requested, never wrong.
+
+Accepting the value and quietly upgrading it is the lesser of the two evils — the
+alternative is rejecting a documented Playwright wait state that most callers pass
+out of habit. It is stated on `fetch_params`, asserted by a test, and repeated in
+the OpenAPI description so an agent reading the schema sees it too.
+
+## 2. The HTTP cookie mirror is not a jar snapshot
+
+Browser sessions need nothing here: Chromium's own cookie database lives in the
+session's profile directory and is authoritative. The HTTP path is the problem.
+`browser_http::CookieJar` is process memory and exposes no iteration, so it cannot
+be serialised.
+
+`CookieStore` therefore mirrors what was *observed*: per origin, the `name=value`
+pairs that origin's `Set-Cookie` headers last carried, written to `cookies.json`
+inside the same profile directory and replayed into a fresh jar at open time as
+`name=value; Path=/`.
+
+Three ways that is wrong, each in the safe direction:
+
+| Original | Comes back as | Effect |
+|---|---|---|
+| `Domain=.example.com` | origin-scoped | narrower — not sent to subdomains |
+| `Path=/admin` | `Path=/` | wider — sent to more paths of the same origin |
+| any `Expires`/`Max-Age` | no expiry | outlives its intended lifetime in the jar |
+
+The first two are the ones that matter, and only the second widens anything — and
+only within an origin the session already authenticated to. Untested against a
+real site using `Domain=`-scoped or path-scoped cookies; the loopback fixture only
+exercises the simple case.
+
+## 3. `crawl` can return fewer pages than `max_pages`
+
+The budget is spent on **enqueue**, not on fetch, so a link the scheduler
+subsequently rejects as a duplicate has already been paid for. Deliberate: a
+ceiling that can be exceeded is not a ceiling. Documented on `mod crawler`.
+
+## 4. A `robots.txt` fetch that times out is cached as allow-everything
+
+Faithful to the reference implementation, and the reason it is recorded here
+rather than fixed: under enough load a crawl stops honouring `robots.txt` and
+nothing in the stats says so. Every counter is identical whether the fetch
+happened or not, which is why only a fixture hit-count can observe it. Found while
+diagnosing a test that fails only when the machine is saturated.
+

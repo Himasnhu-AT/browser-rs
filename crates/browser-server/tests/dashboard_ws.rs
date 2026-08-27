@@ -312,10 +312,9 @@ async fn a_socket_without_the_token_is_refused_at_the_handshake() {
     let server = TestServer::authenticated(profiles.path()).await;
 
     let url = server.base.replacen("http://", "ws://", 1) + "/ws";
-    let error = tokio_tungstenite::connect_async(url)
-        .await
-        .err()
-        .expect("an unauthenticated socket must not open");
+    let Err(error) = tokio_tungstenite::connect_async(url).await else {
+        panic!("an unauthenticated socket must not open");
+    };
     match error {
         tungstenite::Error::Http(response) => {
             assert_eq!(response.status(), 401);
