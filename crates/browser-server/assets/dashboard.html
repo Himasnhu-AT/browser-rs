@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>browser-rs</title>
+<style>/* @@CSS@@ */</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="brand" id="home" href="#">browser-rs</a>
+  <span class="crumb" id="crumb"></span>
+  <span class="spacer"></span>
+  <span class="pill" id="conn" data-state="off">offline</span>
+</header>
+
+<main>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- The index: what sessions exist, and what the agent is doing.        -->
+  <!-- ------------------------------------------------------------------ -->
+  <section id="index-view">
+
+    <div class="note" id="no-chrome" hidden>
+      <strong>No Chromium binary found.</strong>
+      <p>
+        <code>fetch</code>, <code>extract</code> and <code>crawl</code> still
+        work — they never needed a browser. <code>browse</code>, screenshots and
+        this live view cannot run until Chrome or Chromium is installed, or
+        <code>BROWSER_RS_EXECUTABLE_PATH</code> points at one.
+      </p>
+    </div>
+
+    <div class="panel explain">
+      <h2>Watch it work, then take over</h2>
+      <ol class="flow">
+        <li><b>Watch.</b> Open a session below to see the browser your agent is
+          driving, live.</li>
+        <li><b>Take control.</b> One button. Until you press it, your clicks go
+          nowhere — a stray click while the agent is mid-task is a real way to
+          lose work.</li>
+        <li><b>Log in by hand.</b> Type the password yourself. Solve whatever the
+          site asks for.</li>
+        <li><b>Release.</b> The agent carries on in the same session, already
+          authenticated.</li>
+      </ol>
+      <p class="fine">
+        Each session keeps its own persistent Chromium
+        <b>profile&nbsp;directory</b>. That directory is what holds the cookies,
+        so a login survives the next request, the next hour and a restart of this
+        server.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Sessions</h2>
+        <span class="fine" id="server-facts"></span>
+      </div>
+      <table id="sessions">
+        <thead>
+          <tr>
+            <th>Session</th><th>Current URL</th><th>Browser</th>
+            <th class="num">Age</th><th class="num">Idle</th><th class="num">Requests</th>
+          </tr>
+        </thead>
+        <tbody id="session-rows"></tbody>
+      </table>
+      <p class="empty" id="no-sessions" hidden>
+        No sessions yet. One appears here as soon as an agent opens it —
+        <code>POST /api/sessions</code>, or any <code>/api/browse</code> that
+        names a session.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- The live view: one session, its frames, and the controls.           -->
+  <!-- ------------------------------------------------------------------ -->
+  <section id="live-view" hidden>
+
+    <div class="panel live-head">
+      <div class="live-title">
+        <h2 id="live-name"></h2>
+        <span class="url" id="live-url">—</span>
+      </div>
+      <button id="control" class="control" type="button" aria-pressed="false">
+        Take control
+      </button>
+    </div>
+
+    <div class="stage" id="stage" data-controlling="false">
+      <img id="frame" alt="Live view of the browser session" draggable="false">
+      <div class="stage-empty" id="stage-empty">
+        <p id="stage-message">Waiting for a browser…</p>
+        <p class="fine">
+          A session gets a browser the first time something browses with it. Ask
+          your agent to visit a page, or <code>POST /api/browse</code> with this
+          session name.
+        </p>
+      </div>
+      <div class="stage-badge" id="stage-badge" hidden>you have the controls</div>
+    </div>
+
+    <p class="fine hint" id="hint">
+      Watching. Your clicks and keystrokes are not being sent.
+    </p>
+
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- The activity log, on both views.                                    -->
+  <!-- ------------------------------------------------------------------ -->
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Activity</h2>
+      <span class="fine">live from the engine</span>
+    </div>
+    <ol class="log" id="log"></ol>
+    <p class="empty" id="no-activity">Nothing yet.</p>
+  </div>
+
+</main>
+
+<script>/* @@JS@@ */</script>
+</body>
+</html>

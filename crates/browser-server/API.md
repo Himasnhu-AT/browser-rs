@@ -82,6 +82,78 @@ Tool design is most of the value:
   cookies and logins, and a human can log in once via the dashboard.
 - Errors are tool errors with a useful message.
 
+## 3a. Router composition — binding
+
+Each surface exposes exactly this, and `bin/serve.rs` merges them. No unfilled
+state: every one returns a plain `Router` (i.e. `Router<()>`), with the engine
+already captured.
+
+```rust
+browser_server::api::router(engine: Arc<Engine>)       -> axum::Router  // /api/*
+browser_server::dashboard::router(engine: Arc<Engine>) -> axum::Router  // "/" + assets
+browser_server::ws::router(engine: Arc<Engine>)        -> axum::Router  // /ws
+browser_server::mcp::router(engine: Arc<Engine>)       -> axum::Router  // /mcp
+```
+
+Composition lives in **`api::surfaces(engine) -> Router`**, which merges all four,
+and `api::app(engine)` wraps it in the timeout, body-limit and trace layers.
+`bin/serve.rs` calls `api::app` and does nothing else.
+
+It is deliberately *not* in `serve.rs`: a composition inside `main` is one no test
+can drive, and a wrong mount path compiles and passes every unit test. The test
+that earns this is `every_surface_is_reachable_on_the_one_port`, which also
+asserts an unowned path still 404s so the other assertions cannot pass vacuously.
+
+The trace, timeout and body-limit layers are applied once, around the merged
+router, so no surface repeats them.
+
+**Auth is NOT one of them, and this is deliberate — read this before assuming a
+surface is protected.** `api::router` scopes `require_token` with `route_layer`,
+which in axum covers only the routes declared on *that* `Router`, never a merged
+or nested one. A plain `.layer` would cover everything, including unmatched paths,
+turning every 404 into a 401. So **each surface guards itself**:
+
+| Surface | Guard |
+|---|---|
+| `/api/*` | `route_layer(require_token)`, except `/api/health` |
+| `/mcp` | a per-handler bearer check inside `mcp.rs` |
+| `/`, `/ws` | `?token=` or header, plus an `Origin` check on the upgrade |
+
+That split is why the three differ: `/api/health` must stay open for container
+health checks, and a dashboard opened in a browser cannot send an
+`Authorization` header. Do not remove a surface's own check on the assumption an
+outer layer covers it — none does. `every_surface_is_reachable_on_the_one_port`
+asserts an unauthenticated `/mcp` is refused, and that assertion is load-bearing.
+
+**Dashboard auth is separate and deliberate.** A page opened in a browser cannot
+send an `Authorization` header, so `/` and `/ws` accept the token from `?token=`
+*or* the header, and allow everything when no token is configured. `/ws`
+additionally **rejects an upgrade whose `Origin` is present and foreign**:
+browsers do not apply the same-origin policy to WebSocket connections, so without
+that check any page the operator visits could drive an authenticated browser
+session. The cost of the query parameter is that the token reaches URL bars and
+history; that trade-off is recorded in `docs/DEPLOYMENT.md`.
+
+## 3b. The engine activity log — binding
+
+`ws.rs` gets `{"t":"action",…}` from here, and nowhere else:
+
+```rust
+impl Engine {
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<ActivityEvent>;
+}
+
+pub struct ActivityEvent {
+    pub at: String,
+    pub kind: String,
+    pub session: Option<String>,
+    pub detail: String,
+}
+```
+
+A bounded `tokio::sync::broadcast`, so a slow dashboard client **lags and skips**
+rather than growing a queue. Every engine operation emits one event.
+
 ## 4. Screencast and input (`browser-cdp`)
 
 ```rust
@@ -115,6 +187,10 @@ impl CdpPage {
     pub async fn dispatch_mouse(&self, ev: MouseEvent) -> Result<()>;
     pub async fn dispatch_key(&self, ev: KeyEvent) -> Result<()>;
     pub async fn insert_text(&self, text: &str) -> Result<()>;
+
+    /// PNG bytes. `browser-server` has no `chromiumoxide` dependency and must
+    /// not grow one, so the CDP types stay behind this boundary.
+    pub async fn screenshot(&self, full_page: bool) -> Result<Vec<u8>>;
 }
 ```
 

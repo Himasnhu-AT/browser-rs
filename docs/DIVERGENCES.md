@@ -3,9 +3,44 @@
 Every intentional difference in behaviour, in one place, so that none of them is
 an accident.
 
-> **Status.** Work unit 20 compiles this file in full from `ARCHITECTURE.md` §9.
-> Until then it records only the divergences that already exist in the tree, so
-> that no later unit has to remember them.
+## How to read this file
+
+The register is ordered the way the port was built — by **wave**, then by the
+**work unit** inside it. That ordering is kept rather than regrouped by subject,
+because most entries only make sense next to the differential corpus that found
+them, and the corpora were generated per unit.
+
+Four kinds of section recur, and the distinction between them is the point:
+
+| Section | What it means |
+|---|---|
+| *Still divergent* | The port behaves differently on purpose. There is a reason, and a test asserts the difference. |
+| *Fixed here, not divergences* | The reference is wrong or inconsistent and this port is not. Recorded so nobody "restores fidelity" by reintroducing a bug. |
+| *Not divergences after all* | Suspected differences that the corpus disproved. Recorded so they are not re-investigated. |
+| *Notes* | Decisions this port made where the reference has no opinion at all. |
+
+Two rules hold everywhere in this document, and they are why it can be trusted:
+
+1. **Every divergence is asserted by a test.** The corpus rows carry both
+   answers. A divergence that silently *stopped* being one would fail the suite
+   just as loudly as one that appeared — see `docs/AGENTS.md`, "corpus honesty".
+2. **Nothing is removed to raise a pass rate.** Golden rows are not deleted,
+   corpora are not shrunk, and comparisons are not loosened. An unreproducible
+   case is encoded as a declared divergence with a written reason.
+
+## Contents
+
+| Wave | Units | Starts at |
+|---|---|---|
+| Build level | 1 | [Build-level divergences](#build-level-divergences-unit-1) |
+| 2 | 5, 6, 7, 8, 11, 13 | [Wave 2](#wave-2--units-5-6-7-8-11-and-13) |
+| 3 | 10 | [Wave 3 — unit 10](#wave-3--unit-10-browser-parser) |
+| 3 | 15 | [Wave 3 — unit 15](#wave-3--unit-15-browser-spider-data-plane) |
+| 3 integration | 12/14 preflight | [the `Response` seam](#wave-3-integration--the-response-seam-units-12--14-preflight) |
+| 4 | 12, 14, 16, 17 | [Wave 4](#wave-4--units-12-14-16-and-17) |
+| 5 integration | 18/19 preflight | [Wave 5 integration](#wave-5-integration--the-seams-for-units-18-and-19) |
+| 6 | 18, 19, façade preflight | [Wave 6](#wave-6--units-18-and-19-and-the-façade-re-export-surface) |
+| 7 | 20 (the façade) | [Wave 7](#wave-7--unit-20-the-façade) |
 
 ## Build-level divergences (unit 1)
 
@@ -516,6 +551,12 @@ Not divergences — open seams, recorded so the next session does not rediscover
   `fetch` takes `&Request` and must not mutate `request.session_kwargs`.
 
 ---
+
+# Wave 4 — units 12, 14, 16 and 17
+
+The transport wave: the HTTP driver, the CDP driver, and the two halves of the
+crawling engine. These four sections were nested under the wave-3 integration
+heading by accident of chronology; they are their own wave.
 
 ## Unit 12 — `browser-http` (the driver, `Response`, sessions, the `"safe"` guard)
 
@@ -1253,7 +1294,7 @@ assertion corpus still passes unchanged, because its caller (`parse_retry_after_
 
 ---
 
-## Unit 19 — `browser-cli` (the `browser-rs` binary)
+## Unit 19 — `browser-cli` (the `brs` binary)
 
 Verified against `the reference implementation` and, for the CLI surface, the real `browser-rs` console script.
 Three committed corpora: 142 curl command lines (1,105 field checks), 73 Click invocations (1,093
@@ -1386,8 +1427,225 @@ unit 20's four entry points are expressible from what exists —
    `browser-http`. So `--no-default-features --features markdown` builds and exposes no `Document`.
    The failing direction — a `cfg` that is on while its crate is absent — cannot happen, because
    `parser`, `http`, `browser` and `spider` all name `dep:` explicitly. Unit 20 should add the `cfg`
-   aliases that close it.
+   aliases that close it. **→ Closed in wave 7, and not with `cfg` aliases** — see
+   [Wave 7, item 4](#4-the-feature-gap-is-closed-in-cargotoml-because-a-cfg-alias-cannot-close-it).
 5. **The façade seam test is gated on five features at once** (`spider`, `browser`, `markdown`,
    `adaptive`, `blocking`), because it drives all four entry points. A test that vanishes with a
    feature flag is indistinguishable from a test that was deleted, so a
    `unit_20_facade_seam_needs_all_features` notice is compiled in its place under any smaller set.
+
+---
+
+# Wave 7 — unit 20 (the façade)
+
+The last unit of the original plan: the benches, the examples, the feature-flag
+closure and the docs. Nothing here is a difference from Python — the façade has
+no Python counterpart at all. These are the port's own decisions, recorded for
+the same reason as everything above: so that none of them is an accident.
+
+## 1. The benches measure the round trip, not the pieces
+
+`ARCHITECTURE.md` §7 pins one number for this crate: parse 5000 nested
+`div.item`, then `css(".item")`, under 0.5 s. `benches/parse.rs` writes that as
+**one** criterion benchmark (`budget/parse_then_css_5000`) rather than as the
+sum of a parse benchmark and a query benchmark, because a caller who parses and
+then queries pays for the tree once and the sum would overstate it.
+
+"Nested" is read as *structural* nesting — 5000 cards, each with three element
+children, under a six-deep wrapper — not as a 5000-deep tree. A 5000-deep DOM
+measures recursion limits rather than parsing, and no real page is one.
+
+Two benchmarks assert inside the timed loop (`budget/parse_then_css_5000` checks
+that 5000 elements matched; `relocate/*` checks that the element was found).
+That is deliberate: without it, a benchmark cannot distinguish "this got faster"
+from "this stopped doing the work".
+
+## 2. Relocation is not linear in page size, and the curve has a step in it
+
+`benches/relocate.rs` was written expecting a linear scan and found neither a
+linear curve nor a smooth one. Two things are worth recording, because both are
+faithful behaviour that a reader would otherwise take for a bug:
+
+* `similarity_score` compares the element's **sibling tag list** with a
+  `SequenceMatcher` ratio. On a page whose cards are all siblings, growing the
+  page grows both the candidate count and the length of every comparison, and
+  the two multiply.
+* CPython's `difflib` purges "popular" elements from the sequence it indexes,
+  but only once that sequence reaches 200 entries — `AUTOJUNK_THRESHOLD` in
+  `browser-core`'s `similarity` module, which reproduces the heuristic exactly.
+  `siblings` excludes the element itself, so a page of **201** identical cards
+  gets the purge and a page of **200** does not, and the larger page relocates
+  **33× faster** than the smaller one: 26.9 ms against 0.81 ms, one card apart.
+  `relocate_autojunk` is that pair.
+
+The `relocate` size sweep therefore stays entirely above 200 cards so that its
+three numbers are comparable, and a separate `relocate_autojunk` group pins the
+boundary at the single card that crosses it. Nothing was changed to smooth the
+curve; the benchmark reports it.
+
+## 3. `relocate` and `save`/`retrieve` are benchmarked against an in-memory database
+
+`benches/relocate.rs` uses `SqliteStorage::in_memory`, so what the
+`adaptive_storage` group reports is SQLite and serialisation cost with the
+filesystem taken out. A real `SqliteStorage::open` against a disk file is slower
+by whatever that machine's fsync costs, and that number belongs to the machine
+rather than to this library.
+
+## 4. The feature gap is closed in `Cargo.toml`, because a `cfg` alias cannot close it
+
+The wave-6 preflight (item 4 above) recorded that
+`--no-default-features --features markdown` compiled and exposed no `Document`,
+and proposed `cfg` aliases. `cfg` aliases do not work here, and the reason is
+worth writing down:
+
+* `markdown` and `adaptive` name `browser-parser/markdown` and
+  `browser-parser/adaptive` — the non-`?` form, which force-enables the optional
+  `browser-parser` dependency without turning on the façade's own
+  `feature = "parser"`. `blocking` does the same for `browser-http`.
+* Widening the `cfg` on the `browser_parser` re-exports would work, because
+  `browser-parser` really is in the graph in those builds.
+* It would **not** work for `browser-dom` and `browser-xpath`, which are separate
+  optional dependencies that only `parser` enables. Under markdown-only they are
+  not *nameable* from the façade however the `cfg`s are written.
+* So a `cfg` alias buys a build in which `Document::dom()` and
+  `Document::xpath_value()` exist and return types that have no path through
+  `browser::` — precisely the property `crates/browser-rs/src/lib.rs` says this
+  crate maintains, and the property wave 6 added four dependencies to restore.
+
+The fix is therefore in the feature table: `markdown` and `adaptive` name
+`"parser"`, and `blocking` names `"http"`. It costs nothing to compile —
+`browser-parser` depends on `browser-dom`, `browser-selectors` and
+`browser-xpath` unconditionally, and `browser-http` depends on `browser-parser`
+unconditionally, so every crate the implication adds was already being built.
+What it adds is the re-export path, not the code.
+
+The invariant is now enforced at compile time rather than by a test. Three
+`compile_error!` guards at the top of `crates/browser-rs/src/lib.rs` fire in
+exactly the configurations that regressed — `markdown` or `adaptive` without
+`parser`, `blocking` without `http`. A test could not do this: no test binary in
+this repository is ever built under `--no-default-features --features markdown`.
+
+## 5. Two names were added to the curated surface
+
+* **`CrawlError`** (`browser_spider::spider::CrawlError`) is now flat, next to
+  `SpiderError`. It is what `SpiderRunner::new` and `SpiderRunner::run` return,
+  and a caller who cannot name the error of the entry point cannot write the
+  entry point's signature. It was reachable through
+  `browser::spider::spider::CrawlError` before, so this is a shortening, not a
+  hole being closed.
+* **`browser::error::Error`** now exists. `crates/browser-rs/src/error.rs` had
+  been a documented stub since unit 1, leaving `pub mod error;` exporting an
+  empty module. It is one `thiserror` enum with a `#[from]` for each member
+  crate's error, per `ARCHITECTURE.md` §5.3 — an application that reaches for two
+  entry points can write one `Result` and one `?`.
+
+  It is deliberately **not** re-exported flat at the crate root: `browser::Error`
+  next to `ParseError` and `FetchError` would read as the one a given call
+  returns, and none of them return it; and a flat `Result` would shadow
+  `std::result::Result` in any module that glob-imported the crate root. Every
+  variant is `#[error(transparent)]`, so a message the specs pin as observable
+  survives being carried through it unchanged — asserted by
+  `error::tests::wrapping_does_not_change_the_message`.
+
+  **Three variants are boxed and the rest are not**, which is worth explaining
+  because it looks arbitrary. `ParseError`, `FetchError` and `StorageError` are
+  120 bytes each and every other member error is 72 or less; left inline the
+  aggregate came to exactly 128 bytes, which is `clippy::result_large_err`'s
+  threshold, and the lint is right — `Result<T, Error>` is what a *caller's*
+  signatures become, so the size is paid on their success paths too. Boxing
+  those three brings it to 80; boxing a 16-byte `DomError` as well would be a
+  heap allocation bought for nothing. `#[from]` cannot box, so those three have
+  a hand-written `From` generated by a local macro, and nothing changes at a
+  call site: `?` still converts and `Box<E>` derefs.
+  `error::tests::the_aggregate_stays_under_the_large_err_threshold` fails before
+  clippy does if a new variant pushes it back over.
+
+## 6. Three of the four examples use the public network; the crawler does not
+
+`examples/spider.rs` starts its own loopback HTTP server and crawls that.
+Crawling a third party's site to demonstrate a crawler is bad manners and makes
+the output depend on their deploy schedule, and a crawl is the one case where
+"just point it at a real site" has a cost to somebody else.
+
+`one_shot_fetch`, `session` and `browser_fetch` do make real requests, to
+`https://example.com/` unless a URL is given as the first argument — IANA's
+reserved documentation domain, which exists for this. Each says so in a marked
+block at the top of the file. None of them runs during `cargo test`: cargo
+compiles example targets and never executes them, and no CI job invokes them.
+
+Every example declares its features through `required-features`, so
+`cargo build --examples` on a smaller feature set *skips* the ones it cannot
+build instead of failing. `browser_fetch` additionally probes for a browser
+binary and exits 0 with an explanation when there is none, because a machine
+without Chrome is an ordinary machine.
+
+## 7. The measured numbers, and what they are worth
+
+Recorded because the wave-6 handoff carried an unmeasured claim about the §7
+budget, and an unmeasured number in a register like this one is worse than no
+number. Every figure below is a criterion mean from a single clean
+`cargo bench -p browser-rs --benches --all-features` run.
+
+**Machine:** Apple M5 Pro (15 cores), macOS 26.5.2, rustc 1.97.0, `[profile.bench]`
+(`lto = "thin"`, `codegen-units = 1`). **It was not a quiet machine** — this is a
+shared working tree and other builds ran on it during the session. Repeat runs of
+the same benchmark varied by up to ~50% under load, so treat every figure as an
+order of magnitude and a shape, not as a number to regress against. The
+`target/criterion` baselines are the thing to compare against, on one machine, at
+one time.
+
+### The §7 budget
+
+| | |
+|---|---|
+| Spec | parse 5000 nested `div.item`, then `css(".item")`, **under 0.5 s** |
+| Measured | **15.5 ms** (`budget/parse_then_css_5000`, 95% CI 15.4–15.8 ms) |
+| Margin | **~32× under budget** |
+
+The wave-6 handoff guessed "~50×" from a rough release-mode timing. The measured
+margin is 32×, on the harness, with the assertion in the loop. Both the guess and
+the measurement clear the budget comfortably; only one of them is a number.
+
+### Everything else
+
+| Group / benchmark | Mean |
+|---|---|
+| `parse/1000` | 2.71 ms |
+| `parse/5000` | 15.04 ms |
+| `parse/20000` | 64.01 ms |
+| `query/css_class` (5000 cards) | 280 µs |
+| `query/css_with_opts` | 279 µs |
+| `query/find_all` | 283 µs |
+| `query/css_text_pseudo` | 696 µs |
+| `query/xpath_predicate` | 5.07 ms |
+| `relocate/500` | 2.16 ms |
+| `relocate/1000` | 7.44 ms |
+| `relocate/5000` | 163.2 ms |
+| `relocate_autojunk/200_cards` | 26.87 ms |
+| `relocate_autojunk/201_cards` | 813 µs |
+| `relocate_threshold/{10,40,80}` | 8.30 / 7.25 / 7.85 ms |
+| `adaptive_storage/save` (in-memory) | 24.9 µs |
+| `adaptive_storage/retrieve` (in-memory) | 29.0 µs |
+| `html_to_markdown/{10,100,500}` sections | 237 µs / 1.56 ms / 7.49 ms |
+| `convert/to_markdown_default` (100 sections, pre-parsed) | 814 µs |
+| `sanitize/strip_noise_tags` | 191 µs |
+| `sanitize/sanitize_for_ai` | 239 µs |
+| `sanitize/clean_for_ai` (both passes) | 907 µs |
+| `document/markdown` | 1.97 ms |
+| `document/markdown_with_selector` | 3.11 ms |
+| `document/parse_then_markdown` | 2.82 ms |
+
+Three readings worth keeping:
+
+* **Selection is not where the time goes.** Parsing 5000 cards costs 15 ms and
+  selecting all of them costs 0.28 ms — about 2%. CSS, `find_all` and
+  `css_with` are within a few percent of each other; XPath with a predicate is
+  ~18× the CSS cost, which is the price of a general expression evaluator rather
+  than a compiled matcher.
+* **`markdown_with_selector` is not the cheap option.** Narrowing to `<article>`
+  costs *more* than converting the whole document (3.11 ms against 1.97 ms),
+  because the selector runs over the sanitised tree on top of everything the
+  unnarrowed call already did. Narrow for output quality, not for speed.
+* **The threshold buys nothing.** `relocate_threshold` at 10, 40 and 80 are
+  within noise of each other, because the scan happens whatever the threshold is
+  and only the *result* is gated.

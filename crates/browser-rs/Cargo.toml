@@ -119,6 +119,32 @@ name = "markdown"
 harness = false
 required-features = ["markdown"]
 
+# ---------------------------------------------------------------------------
+# Examples. Same reason as the benches: a target that names the features it
+# needs is *skipped* by a build that lacks them, where an ungated one would
+# fail the build. `cargo build --examples` on the default feature set therefore
+# builds the two that can build; `--all-features` builds all four.
+#
+# `spider` is the only one that needs no network — it serves its own loopback
+# fixture. The other three make real requests and are documented as doing so.
+# ---------------------------------------------------------------------------
+
+[[example]]
+name = "one_shot_fetch"
+required-features = ["http"]
+
+[[example]]
+name = "session"
+required-features = ["http"]
+
+[[example]]
+name = "browser_fetch"
+required-features = ["browser"]
+
+[[example]]
+name = "spider"
+required-features = ["spider"]
+
 [features]
 default = ["http", "parser"]
 parser = ["dep:browser-parser", "dep:browser-dom", "dep:browser-xpath"]

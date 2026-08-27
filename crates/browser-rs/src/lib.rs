@@ -6,16 +6,19 @@
 //!
 //! # Features
 //!
-//! | Feature | Pulls in |
-//! |---|---|
-//! | `parser` *(default)* | the document API |
-//! | `http` *(default)* | the HTTP fetchers |
-//! | `browser` | headless Chromium over CDP |
-//! | `spider` | the crawling engine and the ready-made spiders |
-//! | `markdown` | HTML-to-markdown conversion and AI sanitisation |
-//! | `adaptive` | adaptive selector storage (bundled SQLite) |
-//! | `blocking` | the synchronous fetcher façade |
-//! | `full` | all of the above |
+//! | Feature | Pulls in | Implies |
+//! |---|---|---|
+//! | `parser` *(default)* | the document API | |
+//! | `http` *(default)* | the HTTP fetchers | `parser` |
+//! | `browser` | headless Chromium over CDP | `http` |
+//! | `spider` | the crawling engine and the ready-made spiders | `http` |
+//! | `markdown` | HTML-to-markdown conversion and AI sanitisation | `parser` |
+//! | `adaptive` | adaptive selector storage (bundled SQLite) | `parser` |
+//! | `blocking` | the synchronous fetcher façade | `http` |
+//! | `full` | all of the above | |
+//!
+//! The `Implies` column costs nothing to compile — see
+//! [the note below](#feature-gating-and-the-gap-that-used-to-be-here).
 //!
 //! # The two spellings
 //!
@@ -34,19 +37,36 @@
 //! constantly; anything rarer keeps its module path. [`prelude`] bundles the
 //! handful worth glob-importing.
 //!
-//! # Feature gating, and one sharp edge
+//! # Feature gating, and the gap that used to be here
 //!
 //! Every re-export below is gated on the **façade's** feature name, not on
 //! whether the member crate happens to be in the graph. Those are not the same
-//! thing: `markdown` and `adaptive` are written as `browser-parser/markdown`
-//! and so on, which pulls `browser-parser` in *without* turning on
-//! `feature = "parser"` here, and `blocking` does the same for
-//! `browser-http`. So `--no-default-features --features markdown` builds fine
-//! but exposes no `Document` — the *smaller* surface, never a broken one. Unit
-//! 20 should add the `cfg` aliases that close the gap; the direction that would
-//! actually fail to compile (a `cfg` that is on while its crate is absent)
-//! cannot happen, because `parser`, `http`, `browser` and `spider` all name
-//! `dep:` explicitly.
+//! thing, and for a while they came apart: `markdown` and `adaptive` are
+//! written as `browser-parser/markdown` and so on, which pulls `browser-parser`
+//! into the graph *without* turning on `feature = "parser"` here, and
+//! `blocking` did the same for `browser-http`. `--no-default-features --features
+//! markdown` therefore compiled and exposed no [`Document`] at all — the
+//! *smaller* surface, never a broken one, but not a surface anyone asked for.
+//!
+//! It is closed in `Cargo.toml`, not here: `markdown` and `adaptive` now name
+//! `"parser"` and `blocking` names `"http"`. That is the only fix available.
+//! A `cfg` alias — `#[cfg(any(feature = "parser", feature = "markdown"))]` —
+//! looks like it would do the job and does not: [`dom`] and [`xpath`] are
+//! separate optional dependencies which only `parser` enables, so under
+//! markdown-only they are not *nameable* from this crate however the `cfg`s are
+//! written, and [`Document::dom`] would be a method returning a type with no
+//! path through `browser::` — exactly the thing the section below says this
+//! crate does not ship.
+//!
+//! The implication costs nothing. `browser-parser` depends on `browser-dom`,
+//! `browser-selectors` and `browser-xpath` unconditionally, and `browser-http`
+//! depends on `browser-parser` unconditionally, so those crates were already
+//! being compiled in every build that reached this gap; what the implication
+//! adds is the re-export path, not the code.
+//!
+//! The opposite direction — a `cfg` that is on while its crate is absent, which
+//! would fail to compile — cannot happen: `parser`, `http`, `browser` and
+//! `spider` all name `dep:` explicitly.
 //!
 //! # Nothing in the public API is unnameable
 //!
@@ -80,6 +100,25 @@
 //! module in that file which does not reach past the façade, and that restraint
 //! is its whole assertion.
 //!
+//! # One error type, when you want one
+//!
+//! Each member crate raises its own `thiserror` enum, and a function that only
+//! talks to one of them is better off naming that enum. [`error::Error`] is the
+//! aggregate for everything else: one `From` per member crate, so an
+//! application that fetches *and* parses *and* writes a file still needs one
+//! `Result` and one `?`. It is not re-exported flat — see the module docs.
+//!
+//! # Runnable programs
+//!
+//! `crates/browser-rs/examples/` has one complete program per entry point:
+//! `one_shot_fetch`, `session`, `browser_fetch` and `spider`. `spider` serves
+//! its own loopback fixture and needs no network; the other three make real
+//! requests and say so at the top of the file. None of them runs during
+//! `cargo test`.
+//!
+//! `crates/browser-rs/benches/` has the criterion benches — `parse`, `relocate`
+//! and `markdown`. `cargo bench -p browser-rs --benches --all-features`.
+//!
 //! [`Document::dom`]: parser::document::Document::dom
 //! [`Document::xpath_value`]: parser::document::Document::xpath_value
 
@@ -90,6 +129,39 @@
 
 pub mod error;
 pub mod prelude;
+
+// ---------------------------------------------------------------------------
+// The feature-gap guards.
+//
+// `markdown`, `adaptive` and `blocking` each force a member crate into the
+// graph through a `dep/feature` entry, and each therefore *has* to name the
+// façade feature that exposes it — see the module docs above. A test cannot
+// check this: the configuration that regressed is
+// `--no-default-features --features markdown`, and no test binary in this repo
+// is ever built under it. A `compile_error!` is, and it fires in exactly that
+// build and in no other.
+// ---------------------------------------------------------------------------
+
+#[cfg(all(feature = "markdown", not(feature = "parser")))]
+compile_error!(
+    "`markdown` pulls `browser-parser` into the graph and must therefore imply the \
+     façade's `parser` feature; without it this crate exposes no `Document`. \
+     Add \"parser\" to the `markdown` entry in Cargo.toml."
+);
+
+#[cfg(all(feature = "adaptive", not(feature = "parser")))]
+compile_error!(
+    "`adaptive` pulls `browser-parser` into the graph and must therefore imply the \
+     façade's `parser` feature; without it there is no `Document` to relocate on. \
+     Add \"parser\" to the `adaptive` entry in Cargo.toml."
+);
+
+#[cfg(all(feature = "blocking", not(feature = "http")))]
+compile_error!(
+    "`blocking` pulls `browser-http` into the graph and must therefore imply the \
+     façade's `http` feature; without it there is no `Response` for `Fetcher` to \
+     return. Add \"http\" to the `blocking` entry in Cargo.toml."
+);
 
 // ---------------------------------------------------------------------------
 // The member crates, re-exported whole.
@@ -305,10 +377,15 @@ pub use browser_spider::request::{CallbackId, Item, RequestBody, SessionKwargs};
 #[cfg(feature = "spider")]
 #[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
 pub use browser_spider::session::{CrawlSession, FetchedResponse};
+/// `CrawlError` is the one [`SpiderRunner`] itself raises — a spider with no
+/// name, no configured session, or a run that could not start. It is flat
+/// alongside [`SpiderError`] because it is what `SpiderRunner::new` and
+/// `SpiderRunner::run` return, and a caller who cannot name the error of the
+/// entry point cannot write the entry point's signature.
 #[cfg(feature = "spider")]
 #[cfg_attr(docsrs, doc(cfg(feature = "spider")))]
 pub use browser_spider::spider::{
-    CallbackStream, CrawlResponse, FollowOptions, HttpCrawlSession, RunOptions, Spider,
+    CallbackStream, CrawlError, CrawlResponse, FollowOptions, HttpCrawlSession, RunOptions, Spider,
     SpiderRunner, SpiderSettings, Yielded,
 };
 
