@@ -2332,16 +2332,14 @@ document.getElementById('scheme').textContent =
     async fn a_custom_useragent_and_cookies_reach_the_server() {
         require_browser!();
         let server = TestServer::start();
-        let session = session_for(
-            live_config()
-                .useragent("browser-rs/1.0 probe")
-                .cookies([browser_core::types::SetCookieParam {
-                    name: "seeded".to_owned(),
-                    value: "yes".to_owned(),
-                    url: Some(server.url("/")),
-                    ..Default::default()
-                }]),
-        )
+        let session = session_for(live_config().useragent("browser-rs/1.0 probe").cookies([
+            browser_core::types::SetCookieParam {
+                name: "seeded".to_owned(),
+                value: "yes".to_owned(),
+                url: Some(server.url("/")),
+                ..Default::default()
+            },
+        ]))
         .await;
 
         let response = session

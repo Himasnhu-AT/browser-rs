@@ -251,10 +251,7 @@ impl fmt::Display for CurlParseError {
                 candidates.join(", ")
             ),
             Self::UnsupportedMethod(method) => {
-                write!(
-                    f,
-                    "Request method \"{method}\" isn't supported yet"
-                )
+                write!(f, "Request method \"{method}\" isn't supported yet")
             }
             Self::Header(message) => f.write_str(message),
         }
